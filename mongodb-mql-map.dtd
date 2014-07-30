@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Mongodb mql configuration DTD.
+   Use the following DOCTYPE
+   
+   <!DOCTYPE mql PUBLIC 
+	"-//eason.xp.yu@gmail.com//DTD MONGODB SQL Map Config 1.0//ZH-CN"
+	"mongodb-mql-map.dtd">
+-->
+
+<!ELEMENT mqls (mapping|select|update|insert|delete|command|group|aggregate)+>
+
+<!ELEMENT mapping (property)+>
+<!ATTLIST mapping
+    id CDATA #REQUIRED
+    class CDATA #REQUIRED
+    extends CDATA #IMPLIED
+>
+
+<!ELEMENT property (value|dynamic)?>
+<!ATTLIST property
+	column CDATA #IMPLIED
+	name CDATA #IMPLIED
+	operate CDATA #IMPLIED
+	type (int|long|double|objectid|regex) #IMPLIED
+	value CDATA #IMPLIED
+	isIgnoreNull (true|false) #IMPLIED
+>
+
+<!ELEMENT value (property)*>
+<!ATTLIST value
+	class CDATA #IMPLIED
+>
+
+<!ELEMENT dynamic (list|text)?>
+<!ATTLIST dynamic
+	class CDATA #IMPLIED
+>
+
+<!ELEMENT list (#PCDATA)>
+<!ATTLIST list
+	type (int|long|double|objectid|regex) #IMPLIED
+>
+
+<!ELEMENT text (#PCDATA)*>
+
+<!ELEMENT select (query+,field+,order?,skip?,limit?)>
+<!ATTLIST select
+	id CDATA #REQUIRED
+	collection CDATA #REQUIRED
+>
+
+<!ELEMENT query (property)*>
+<!ATTLIST query
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+
+<!ELEMENT field (property)*>
+<!ATTLIST field
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+
+<!ELEMENT order (property)*>
+<!ATTLIST order
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+
+<!ELEMENT skip (#PCDATA)>
+<!ELEMENT limit (#PCDATA)>
+
+<!ELEMENT update (query+,action+,field?)>
+<!ATTLIST update
+	id CDATA #REQUIRED
+	collection CDATA #REQUIRED
+>
+
+<!ELEMENT action (property)*>
+<!ATTLIST action
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+
+<!ELEMENT insert (document+,selectKey?)>
+<!ATTLIST insert
+	id CDATA #REQUIRED
+	collection CDATA #REQUIRED
+>
+
+<!ELEMENT document (property)*>
+<!ATTLIST document
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+<!ATTLIST selectKey
+	column CDATA #REQUIRED
+	name CDATA #REQUIRED
+>
+
+<!ELEMENT delete (query)+>
+<!ATTLIST delete
+	id CDATA #REQUIRED
+	collection CDATA #REQUIRED
+>
+
+<!ELEMENT command (query+,field+)>
+<!ATTLIST command
+	id CDATA #REQUIRED
+	collection CDATA #REQUIRED
+>
+
+<!ELEMENT group (key+,initial+,condition+,reduce+,finalize+)>
+<!ATTLIST group
+	id CDATA #REQUIRED
+	collection CDATA #REQUIRED
+>
+
+<!ELEMENT key (property)*>
+<!ATTLIST key
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+
+<!ELEMENT initial (property)*>
+<!ATTLIST initial
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+
+<!ELEMENT condition (property)*>
+<!ATTLIST condition
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+
+<!ELEMENT reduce (#PCDATA)*>
+<!ATTLIST reduce
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+
+<!ELEMENT finalize (#PCDATA)*>
+<!ATTLIST finalize
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
+
+<!ELEMENT aggregate (function+,field+)>
+<!ATTLIST aggregate
+	id CDATA #REQUIRED
+	collection CDATA #REQUIRED
+>
+
+<!ELEMENT function (#PCDATA)*>
+<!ATTLIST function
+	class CDATA #IMPLIED
+	mapping CDATA #IMPLIED
+>
