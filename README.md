@@ -39,6 +39,10 @@ query.put("$or", subQuery);
 So, this framework help me to work easy.
 It working like ibatis or hibernate. We just create the mql config.
 
+```java
+List<Model> list = mongoTemplet.queryOne("queryModelList", "eason");
+```
+
 ```xml
 <mapping id="model" class="test.mongodborm.Model">
 		<property column="_id" name="id" />
@@ -80,6 +84,15 @@ It working like ibatis or hibernate. We just create the mql config.
 		<property column="newProperty" name="newProperty" />
 	</mapping>
 	
+	<select id="queryModelList" collection="test_sample">
+		<query class="java.lang.String">
+			<property column="name" name="${value}" />
+		</query>
+		<field mapping="model" />
+		<order>
+			<property column="time" value="desc" />
+		</order>
+	</select>
 	
 	<!-- Model List1 -->
 	<select id="queryModelList1" collection="test_sample">
@@ -158,11 +171,11 @@ It working like ibatis or hibernate. We just create the mql config.
 ```
 
 
-More configuration see  [[sample.xml]]
+More configuration see  [sample.xml]
 
 
 
-For more information, please visit:
+###For more information, please visit:
 
-Wiki
-Download and Install guide
+* Wiki
+* Download and Install guide
