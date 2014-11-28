@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mql PUBLIC "-//eason.xp.yu@gmail.com//DTD MONGODB QL Config 1.0//zh-CN" "mongodb-mql-map.dtd">
+<mql>
+	<!-- 笔记 对象关系映射 -->
+	<mapping id="model" class="test.mongodborm.Model">
+		<property column="_id" name="id" />
+		<property column="name" name="name" />
+		<property column="time" name="time" value="0" />
+		<property column="status" name="status" />
+		<property column="parent" name="parent">
+			<value class="test.mongodborm.Model$Parent">
+				<property column="name" name="name" />
+				<property column="child" name="child">
+					<value class="test.mongodborm.Model$Child">
+						<property column="name" name="name" />
+						<property column="time" name="time" value="0" />
+					</value>
+				</property>
+				<property column="data" name="data">
+					<value class="java.util.Map">
+						<property column="title" name="title" />
+						<property column="content" name="content" />
+					</value>
+				</property>
+			</value>
+		</property>
+		<property column="childrens" name="childrens">
+			<value class="test.mongodborm.Model$Child">
+				<property column="name" name="name" />
+				<property column="time" name="time" />
+			</value>
+		</property>
+		<property column="data" name="data">
+			<value class="java.util.Map">
+				<property column="title" name="title" />
+				<property column="content" name="content" />
+			</value>
+		</property>
+	</mapping>
+
+	<mapping id="extendModel" class="test.mongodborm.Model" extends="model">
+		<property column="newProperty" name="newProperty" />
+	</mapping>
+
+	<!-- Model List1 -->
+	<select id="queryModelList1" collection="test_sample">
+		<query class="java.util.Map">
+			<property column="name" name="name" />
+			<property column="status" operate="in">
+				<list type="number">0,1</list>
+			</property>
+			<property column="time">
+				<text>{"$gte":200,"$lte":300}</text>
+			</property>
+			<property column="childrens" operate="elemMatch" name="search_key">
+				<value class="java.lang.String">
+					<property column="name" value="${value}" />
+					<property column="time" operate="lt" value="${systime}" />
+				</value>
+			</property>
+		</query>
+		<field mapping="model" />
+		<order class="java.util.Map">
+			<property column="time" value="desc" />
+		</order>
+	</select>
+
+	<!-- Model List2 -->
+	<select id="queryModelList2" collection="test_sample">
+		<query class="test.mongodborm.Model$Child">
+			<property column="name" name="name" />
+			<property column="time" operate="gte" value="0" type="number" />
+			<property column="status" operate="in">
+				<list type="number">0,1</list>
+			</property>
+			<property operate="or">
+			    <value class="test.mongodborm.Model$Child">
+			        <property column="name" name="name"/>
+			        <property column="time" name=""/>
+			    </value>
+			    <value>
+			        <property column="name" name="name"/>
+			        <property column="time" name=""/>
+			    </value>
+			</property>
+		</query>
+		<field class="test.mongodborm.Model">
+			<property column="_id" name="id" />
+			<property column="name" name="name" />
+			<property column="time" name="time" value="0" />
+			<property column="status" name="status" />
+			<property column="data" name="data">
+				<value class="java.util.Map">
+					<property column="title" name="title" />
+					<property column="content" name="content" />
+				</value>
+			</property>
+		</field>
+		<order class="java.util.Map">
+			<property column="time" value="desc" />
+		</order>
+	</select>
+
+	<!-- Model List3 -->
+	<select id="queryModelList3" collection="test_sample">
+		<query class="java.lang.String">
+			<property column="_id" value="${value}" />
+			<property column="time" value="0" type="number" />
+		</query>
+		<field class="java.util.Map">
+			<property column="name" name="name" />
+			<property column="parent" name="parent">
+				<value class="test.mongodborm.Model$Parent">
+					<property column="name" name="name" />
+					<property column="child" name="child">
+						<value class="test.mongodborm.Model$Child">
+							<property column="name" name="name" />
+							<property column="time" name="time" value="0" />
+						</value>
+					</property>
+					<property column="data" name="data">
+						<value class="java.util.Map">
+							<property column="title" name="title" />
+							<property column="content" name="content" />
+						</value>
+					</property>
+				</value>
+			</property>
+			<property column="data" name="data">
+				<value class="java.util.Map">
+					<property column="title" name="title" />
+					<property column="content" name="content" />
+				</value>
+			</property>
+		</field>
+		<order class="java.util.Map">
+			<property column="time" name="time" value="desc" />
+		</order>
+	</select>
+
+	<!-- Model List4 -->
+	<select id="queryModelList4" collection="test_sample">
+		<query mapping="model" />
+		<field mapping="model" />
+		<order>
+			<property column="time" value="desc" />
+		</order>
+	</select>
+
+	<!-- Update model1 -->
+	<update id="updateModel1" collection="test_sample">
+		<query class="test.mongodborm.Model$Child">
+			<property column="name" name="name" ignoreNull="true" />
+			<property column="time" operate="gte" value="0" type="number" />
+			<property column="status" operate="in">
+				<list type="number">0,1</list>
+			</property>
+		</query>
+		<action class="java.util.Map">
+			<property column="name" name="name" operate="set" />
+			<property column="status" operate="set" />
+		</action>
+	</update>
+
+	<!-- Update model2 -->
+	<update id="updateModel2" collection="test_sample">
+		<query mapping="model" />
+		<action class="java.util.Map">
+			<property column="name" name="name" operate="set" />
+			<property column="status" operate="set" type="number" />
+		</action>
+		<field mapping="model" />
+	</update>
+
+	<!-- Add model1 -->
+	<insert id="addModel1" collection="test_sample">
+		<document mapping="model" />
+		<selectKey column="_id" name="id" />
+	</insert>
+
+	<!-- 笔记版本 -->
+	<insert id="addModel2" collection="test_sample">
+		<document class="java.util.Map">
+			<property column="name" name="name" />
+			<property column="time" name="time" value="0" type="number" />
+			<property column="status" name="status" />
+			<property column="parent" name="parent">
+				<value class="test.mongodborm.Model$Parent">
+					<property column="name" name="name" />
+					<property column="child" name="child">
+						<value class="test.mongodborm.Model$Child">
+							<property column="name" name="name" />
+							<property column="time" name="time" value="0" />
+						</value>
+					</property>
+					<property column="data" name="data">
+						<value class="java.util.Map">
+							<property column="title" name="title" />
+							<property column="content" name="content" />
+						</value>
+					</property>
+				</value>
+			</property>
+			<property column="childrens" name="childrens">
+				<value class="test.mongodborm.Model$Child">
+					<property column="name" name="name" />
+					<property column="time" name="time" />
+				</value>
+			</property>
+			<property column="data" name="data">
+				<value class="java.util.Map">
+					<property column="title" name="title" />
+					<property column="content" name="content" />
+				</value>
+			</property>
+		</document>
+	</insert>
+
+	<!-- Delete model1 -->
+	<delete id="deleteModel1" collection="test_sample">
+		<query mapping="model" />
+	</delete>
+
+	<!-- Delete model2 -->
+	<delete id="deleteModel2" collection="test_sample">
+		<query class="java.util.Map">
+			<property column="name" name="name" />
+			<property column="time" operate="gte" value="0" type="number" />
+			<property column="status" operate="in">
+				<list type="number">0,1</list>
+			</property>
+		</query>
+	</delete>
+
+	<!-- Command model1 -->
+	<command id="commandModel1" collection="test_sample">
+		<query class="java.util.Map">
+			<property column="name" name="name" />
+			<property column="time" operate="gte" value="0" type="number" />
+			<property column="status" operate="in">
+				<list type="number">0,1</list>
+			</property>
+		</query>
+		<field class="java.util.Map">
+			<property column="name" name="name" />
+		</field>
+	</command>
+
+	<!-- Group model1 -->
+	<group id="groupModel1" collection="test_sample">
+		<key class="java.util.Map">
+			<property column="name" value="true" type="boolean" />
+		</key>
+		<initial class="java.util.Map">
+			<property column="counter" value="0" type="number" />
+		</initial>
+		<condition>
+			<property column="time">
+				<value class="java.util.Map">
+					<property operate="gte" name="start" />
+					<property operate="lte" name="end" />
+				</value>
+			</property>
+		</condition>
+		<reduce class="java.util.Map">
+			<![CDATA[
+				function(doc,prev) {
+					prev.counter++;
+				}
+			]]>
+		</reduce>
+		<finalize>
+			<![CDATA[
+				function (prev) {
+			     	var mostPopular = 0;
+			     	for (i in prev.tags) {
+		              	if (prev.tags[i] > mostPopular) {
+	                       	prev.tag = i;
+	                       	mostPopular = prev.tags[i];
+		            }
+			    }
+			    delete prev.tags;
+			]]>
+		</finalize>
+		<field class="java.util.Map">
+			<property column="name" name="name" />
+		</field>
+	</group>
+
+	<aggregate id="aggregateModel1" collection="test_sample">
+		<function class="java.util.Map">
+		    <pipeline operate="match">
+		        <property column="status" value="0" type="number"/>
+		        <property column="name" name="name" type="regex"/>
+		        <property column="time">
+		            <value>
+		                <property operate="lte" name="startTime"/>
+		                <property operate="gte" name="endTime"/>
+		            </value>
+		        </property>
+		    </pipeline>
+		    <pipeline operate="group">
+		        <property column="_id" value="$data.title" />
+		        <property column="name" name="name" type="regex"/>
+		        <property column="time">
+		            <value>
+		                <property operate="lte" name="startTime"/>
+		                <property operate="gte" name="endTime"/>
+		            </value>
+		        </property>
+		    </pipeline>
+		    <pipeline operate="match">
+		        <property column="total">
+		            <value>
+		                <property operate="gte" name="count"/>
+		            </value>
+		        </property>
+		    </pipeline>
+		</function>
+		<field class="java.util.Map">
+			<property column="_id" name="id" />
+			<property column="total" name="count" />
+		</field>
+	</aggregate>
+</mql>
