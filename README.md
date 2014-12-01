@@ -22,7 +22,7 @@ while(cursor.hasNext()) {
 }
 ```
 
-Some times , my query or update is complex. Then i have to use the same code.
+Some times, my query or update is complex.
 
 ```java
 BasicDBObject query = new BasicDBObject();
@@ -36,8 +36,7 @@ subQuery.put(subKey2, subValue2);
 query.put("$or", subQuery);
 ```
 
-So, this framework help me to work easy.
-It working like ibatis or hibernate. We just create the mql config.
+It working like ibatis or hibernate. Reduce dependent with code. 
 
 ```java
 List<Model> list = mongoTemplet.queryOne("queryModelList", "eason");
@@ -178,4 +177,4 @@ More configuration see  [sample.xml]
 ###For more information, please visit:
 
 * Wiki
-* Download and Install guide
+* Download
