@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mql PUBLIC "-//eason.xp.yu@gmail.com//DTD MONGODB QL Config 1.0//zh-CN" "mongodb-mql-map.dtd">
 <mql>
-	<!-- 笔记 对象关系映射 -->
+	<!--  对象映射 -->
 	<mapping id="model" class="test.mongodborm.Model">
 		<property column="_id" name="id" />
 		<property column="name" name="name" />
