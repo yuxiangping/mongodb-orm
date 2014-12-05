@@ -3,6 +3,8 @@ package com.mongodb.orm.engine.entry;
 import java.io.Serializable;
 import java.util.List;
 
+import com.mongodb.orm.executor.MqlExecutor;
+
 /**
  * Xml node entry.
  * 
@@ -29,6 +31,15 @@ public class NodeEntry implements Serializable {
    */
   private List<Entry> nodeMappings;
 
+  /**
+   * Mql node executor
+   */
+  private MqlExecutor<?> executor;
+  
+  public void executorNode(Object target) {
+    executor.parser(this, target);
+  }
+  
   public String getMappingId() {
     return mappingId;
   }
@@ -51,6 +62,10 @@ public class NodeEntry implements Serializable {
 
   public void setNodeMappings(List<Entry> nodeMappings) {
     this.nodeMappings = nodeMappings;
+  }
+
+  public void setExecutor(MqlExecutor<?> executor) {
+    this.executor = executor;
   }
 
 }

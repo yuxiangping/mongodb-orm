@@ -1,6 +1,8 @@
 package com.mongodb.orm.engine.entry;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.mongodb.orm.builder.dynamic.Dynamic;
 import com.mongodb.orm.engine.type.ColumnHandler;
@@ -53,9 +55,9 @@ public class Entry implements Serializable {
    */
   private Dynamic dynamic;
   /**
-   * Child node.
+   * Child nodes.
    */
-  private NodeEntry node;
+  private List<NodeEntry> nodes;
 
   public String getColumn() {
     return column;
@@ -121,12 +123,20 @@ public class Entry implements Serializable {
     this.dynamic = dynamic;
   }
 
-  public NodeEntry getNode() {
-    return node;
+  public List<NodeEntry> getNodes() {
+    return nodes;
   }
 
-  public void setNode(NodeEntry node) {
-    this.node = node;
+  public void setNodes(List<NodeEntry> nodes) {
+    this.nodes = nodes;
+  }
+
+  public Entry addNode(NodeEntry node) {
+    if (nodes == null) {
+      nodes = new ArrayList<NodeEntry>();
+    }
+    nodes.add(node);
+    return this;
   }
 
 }

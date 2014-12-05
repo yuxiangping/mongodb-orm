@@ -18,6 +18,8 @@ import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.entry.Operator;
 import com.mongodb.orm.engine.type.TypeHandlerFactory;
+import com.mongodb.orm.executor.parser.FieldParser;
+import com.mongodb.orm.executor.parser.QueryParser;
 
 /**
  * Base statement handler for convenience.
@@ -57,7 +59,7 @@ public abstract class BaseStatement implements StatementHandler {
         String nodeName = cnode.getNodeName();
         // Child
         if (ORM.NODE_CHILD_NODE.equals(nodeName)) {
-          entry.setNode(resolveChildNode(cnode, name));
+          entry.addNode(resolveChildNode(cnode, name));
           // Dynamic Function
         } else {
           entry.setDynamic(resolveDynamic(cnode, name));
@@ -74,6 +76,7 @@ public abstract class BaseStatement implements StatementHandler {
     String mapping = attributes.getProperty(ORM.ORM_MAPPING);
 
     NodeEntry entry = new NodeEntry();
+    entry.setExecutor(new QueryParser());
     if (mapping != null) {
       entry.setMappingId(mapping);
       return entry;
@@ -106,6 +109,7 @@ public abstract class BaseStatement implements StatementHandler {
     String mapping = attributes.getProperty(ORM.ORM_MAPPING);
 
     NodeEntry entry = new NodeEntry();
+    entry.setExecutor(new FieldParser());
     if (mapping != null) {
       entry.setMappingId(mapping);
       return entry;
