@@ -1,6 +1,5 @@
 # mongodb-orm简介
 ===========
-
 Mongodb ORM是基于java的ORM框架，简化了SDK的使用，使代码变得更清晰、简单。 </br>
 
 Mongodb提供的SDK相当于JDBC，而Mongodb ORM则扮演了ibatis的角色。 </br>
@@ -37,6 +36,8 @@ subQuery.put(subKey2, subValue2);
 query.put("$or", subQuery);
 ```
 
+-------------------
+
 Morphia的写法 类似hibernate，如果用过hibernate会比较容易上手
 ```java
 Mongo mongo = new Mongo(); 
@@ -49,6 +50,8 @@ for (Entry entry : list) {
     // do something
 } 
 ```
+
+--------------
 
 Mongodb ORM的写法
 ```java
@@ -97,7 +100,7 @@ for (Model model : list) {
 </update>
 
 	
-<!-- 当然 根据你的查询的复杂度  你也可以实现  Model List3 -->
+<!-- 当然 根据你的查询的复杂度  你也可以这样  Model List3 -->
 <select id="queryModelList3" collection="test_sample">
 	<query class="java.lang.String">
 		<property column="_id" value="${value}" />
