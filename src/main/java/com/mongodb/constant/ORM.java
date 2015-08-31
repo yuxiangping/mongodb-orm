@@ -107,6 +107,11 @@ public class ORM {
   public static final String NODE_KEY = "key";
   
   /**
+   * XML file node 'keyf'
+   */
+  public static final String NODE_KEY_FUNCTION = "keyf";
+  
+  /**
    * XML file node 'initial'
    */
   public static final String NODE_INITIAL = "initial";

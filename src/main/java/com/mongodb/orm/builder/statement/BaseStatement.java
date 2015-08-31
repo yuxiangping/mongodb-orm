@@ -30,7 +30,7 @@ import com.mongodb.orm.executor.parser.QueryParser;
  */
 public abstract class BaseStatement implements StatementHandler {
 
-  protected static List<Entry> getEntry(NodeList nodes, Class<?> clazz) {
+  protected List<Entry> getEntry(NodeList nodes, Class<?> clazz) {
     List<Entry> entrys = new ArrayList<Entry>(nodes.getLength());
     for (int i = 0; i < nodes.getLength(); i++) {
       Node node = nodes.item(i);
@@ -60,7 +60,7 @@ public abstract class BaseStatement implements StatementHandler {
         // Child
         if (ORM.NODE_CHILD_NODE.equals(nodeName)) {
           entry.addNode(resolveChildNode(cnode, name));
-          // Dynamic Function
+        // Dynamic Function
         } else {
           entry.setDynamic(resolveDynamic(cnode, name));
         }
@@ -70,7 +70,7 @@ public abstract class BaseStatement implements StatementHandler {
     return entrys;
   }
 
-  protected static NodeEntry getQuery(String id, Node node) {
+  protected NodeEntry getQuery(String id, Node node) {
     Properties attributes = NodeletUtils.parseAttributes(node);
     String clzz = attributes.getProperty(ORM.ORM_CLASS);
     String mapping = attributes.getProperty(ORM.ORM_MAPPING);
@@ -103,7 +103,7 @@ public abstract class BaseStatement implements StatementHandler {
     return entry;
   }
 
-  protected static NodeEntry getField(String id, Node node) {
+  protected NodeEntry getField(String id, Node node) {
     Properties attributes = NodeletUtils.parseAttributes(node);
     String clzz = attributes.getProperty(ORM.ORM_CLASS);
     String mapping = attributes.getProperty(ORM.ORM_MAPPING);
@@ -140,7 +140,7 @@ public abstract class BaseStatement implements StatementHandler {
     void analyze(T config, Node node);
   }
 
-  private static NodeEntry resolveChildNode(Node node, String name) {
+  private NodeEntry resolveChildNode(Node node, String name) {
     Properties attribute = NodeletUtils.parseAttributes(node);
     String clazz = attribute.getProperty(ORM.ORM_CLASS);
     String mapping = attribute.getProperty(ORM.ORM_MAPPING);
@@ -170,7 +170,7 @@ public abstract class BaseStatement implements StatementHandler {
     return entry;
   }
 
-  private static Dynamic resolveDynamic(Node node, String name) {
+  private Dynamic resolveDynamic(Node node, String name) {
     try {
       return DynamicFactory.builder(node);
     } catch (Exception ex) {

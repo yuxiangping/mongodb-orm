@@ -35,7 +35,7 @@ public class SelectStatement extends BaseStatement implements StatementHandler {
    * Select node analyzes.
    */
   @SuppressWarnings("serial")
-  private static final Map<String, NodeAnalyze<SelectConfig>> analyzes = new HashMap<String, NodeAnalyze<SelectConfig>>() {
+  private final Map<String, NodeAnalyze<SelectConfig>> analyzes = new HashMap<String, NodeAnalyze<SelectConfig>>() {
     {
       put(ORM.NODE_QUERY, new QueryNodeAnalyze());
       put(ORM.NODE_FIELD, new FieldNodeAnalyze());
@@ -70,7 +70,7 @@ public class SelectStatement extends BaseStatement implements StatementHandler {
     return select;
   }
 
-  private static class QueryNodeAnalyze implements NodeAnalyze<SelectConfig> {
+  private class QueryNodeAnalyze implements NodeAnalyze<SelectConfig> {
     @Override
     public void analyze(SelectConfig config, Node node) {
       if (config.getQuery() != null) {
@@ -82,7 +82,7 @@ public class SelectStatement extends BaseStatement implements StatementHandler {
     }
   }
 
-  private static class FieldNodeAnalyze implements NodeAnalyze<SelectConfig> {
+  private class FieldNodeAnalyze implements NodeAnalyze<SelectConfig> {
     @Override
     public void analyze(SelectConfig config, Node node) {
       if (config.getField() != null) {
@@ -94,7 +94,7 @@ public class SelectStatement extends BaseStatement implements StatementHandler {
     }
   }
 
-  private static class OrderNodeAnalyze implements NodeAnalyze<SelectConfig> {
+  private class OrderNodeAnalyze implements NodeAnalyze<SelectConfig> {
     @Override
     public void analyze(SelectConfig config, Node node) {
       if (config.getOrder() != null) {

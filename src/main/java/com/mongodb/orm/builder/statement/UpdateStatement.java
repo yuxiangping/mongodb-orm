@@ -18,6 +18,7 @@ import com.mongodb.orm.engine.config.UpdateConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.type.TypeHandlerFactory;
+import com.mongodb.orm.executor.parser.ActionParser;
 
 /**
  * Transform SQL file for ORM, "update" node statement.
@@ -34,7 +35,7 @@ public class UpdateStatement extends BaseStatement implements StatementHandler {
    * update node analyzes.
    */
   @SuppressWarnings("serial")
-  private static final Map<String, NodeAnalyze<UpdateConfig>> analyzes = new HashMap<String, NodeAnalyze<UpdateConfig>>() {
+  private final Map<String, NodeAnalyze<UpdateConfig>> analyzes = new HashMap<String, NodeAnalyze<UpdateConfig>>() {
     {
       put(ORM.NODE_QUERY, new QueryNodeAnalyze());
       put(ORM.NODE_FIELD, new FieldNodeAnalyze());
@@ -68,7 +69,7 @@ public class UpdateStatement extends BaseStatement implements StatementHandler {
     return update;
   }
 
-  private static class QueryNodeAnalyze implements NodeAnalyze<UpdateConfig> {
+  private class QueryNodeAnalyze implements NodeAnalyze<UpdateConfig> {
     @Override
     public void analyze(UpdateConfig config, Node node) {
       if (config.getQuery() != null) {
@@ -80,7 +81,7 @@ public class UpdateStatement extends BaseStatement implements StatementHandler {
     }
   }
 
-  private static class FieldNodeAnalyze implements NodeAnalyze<UpdateConfig> {
+  private class FieldNodeAnalyze implements NodeAnalyze<UpdateConfig> {
     @Override
     public void analyze(UpdateConfig config, Node node) {
       if (config.getField() != null) {
@@ -92,7 +93,7 @@ public class UpdateStatement extends BaseStatement implements StatementHandler {
     }
   }
 
-  private static class ActionNodeAnalyze implements NodeAnalyze<UpdateConfig> {
+  private class ActionNodeAnalyze implements NodeAnalyze<UpdateConfig> {
     @Override
     public void analyze(UpdateConfig config, Node node) {
       if (config.getAction() != null) {
@@ -130,6 +131,7 @@ public class UpdateStatement extends BaseStatement implements StatementHandler {
       }
 
       NodeEntry actionEntry = new NodeEntry();
+      actionEntry.setExecutor(new ActionParser());
       actionEntry.setClazz(clazz);
       actionEntry.setNodeMappings(entrys);
       config.setAction(actionEntry);

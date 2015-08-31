@@ -46,26 +46,26 @@ public class MongoClientTemplet implements MongoTemplet {
   private MongoORMFactoryBean factory;
 
   @Override
-  public <T> T selectOne(String statement) {
-    return selectOne(statement, null, null, ReadPreference.secondaryPreferred());
+  public <T> T findOne(String statement) {
+    return findOne(statement, null, null, ReadPreference.secondaryPreferred());
   }
 
   @Override
-  public <T> T selectOne(String statement, Object parameter) {
-    return selectOne(statement, parameter, null, ReadPreference.secondaryPreferred());
+  public <T> T findOne(String statement, Object parameter) {
+    return findOne(statement, parameter, null, ReadPreference.secondaryPreferred());
   }
 
   @Override
-  public void selectOne(String statement, ResultHandler handler) {
-    selectOne(statement, null, handler, ReadPreference.secondaryPreferred());
+  public void findOne(String statement, ResultHandler handler) {
+    findOne(statement, null, handler, ReadPreference.secondaryPreferred());
   }
 
   @Override
-  public void selectOne(String statement, Object parameter, ResultHandler handler) {
-    selectOne(statement, parameter, handler, ReadPreference.secondaryPreferred());
+  public void findOne(String statement, Object parameter, ResultHandler handler) {
+    findOne(statement, parameter, handler, ReadPreference.secondaryPreferred());
   }
 
-  private <T> T selectOne(String statement, Object parameter, ResultHandler handler, ReadPreference readPreference) {
+  private <T> T findOne(String statement, Object parameter, ResultHandler handler, ReadPreference readPreference) {
     logger.debug("Execute 'selectOne' mongodb command. Statement '" + statement + "'.");
 
     SelectConfig config = (SelectConfig) factory.getConfiguration().getConfig(statement);
@@ -81,9 +81,9 @@ public class MongoClientTemplet implements MongoTemplet {
     DB db = factory.getDataSource().getDB();
 
     DBCollection coll = db.getCollection(collection);
-    Map<String, Object> q = (Map<String, Object>) ParserEngine.toQuery(query, parameter);
-    Map<String, Object> f = (Map<String, Object>) ParserEngine.toField(field, parameter);
-    Map<String, Object> o = (Map<String, Object>) ParserEngine.toOrder(order, parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
+    Map<String, Object> f = (Map<String, Object>) field.executorNode(parameter);
+    Map<String, Object> o = (Map<String, Object>) order.executorNode(parameter);
 
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'selectOne' mongodb command. Query '" + queryDbo + "'.");
@@ -97,58 +97,57 @@ public class MongoClientTemplet implements MongoTemplet {
     final DBObject resultSet = coll.findOne(queryDbo, fieldDbo, orderDbo, readPreference);
     logger.debug("Execute 'selectOne' mongodb command. Result set '" + resultSet + "'.");
 
-    if (handler == null) {
-      return (T) ParserEngine.toResult(field, resultSet);
-    }
-
-    handler.handleResult(new ResultContext() {
-      @Override
-      public Object getResultObject() {
-        return resultSet;
-      }
-
-      @Override
-      public int getResultCount() {
-        if (resultSet == null) {
-          return 0;
+    if (handler != null) {
+      handler.handleResult(new ResultContext() {
+        @Override
+        public Object getResultObject() {
+          return resultSet;
         }
-        return 1;
-      }
-    });
-    return null;
+  
+        @Override
+        public int getResultCount() {
+          if (resultSet == null) {
+            return 0;
+          }
+          return 1;
+        }
+      });
+      return null;
+    } 
+    return (T) ParserEngine.toResult(field, resultSet);
   }
 
   @Override
-  public <T> List<T> selectList(String statement) {
-    return selectList(statement, null, null, null, null, ReadPreference.secondaryPreferred());
+  public <T> List<T> find(String statement) {
+    return find(statement, null, null, null, null, ReadPreference.secondaryPreferred());
   }
 
   @Override
-  public <T> List<T> selectList(String statement, Object parameter) {
-    return selectList(statement, parameter, null, null, null, ReadPreference.secondaryPreferred());
+  public <T> List<T> find(String statement, Object parameter) {
+    return find(statement, parameter, null, null, null, ReadPreference.secondaryPreferred());
   }
 
   @Override
-  public <T> List<T> selectList(String statement, Object parameter, Integer limit, Integer skip) {
-    return selectList(statement, parameter, limit, skip, null, ReadPreference.secondaryPreferred());
+  public <T> List<T> find(String statement, Object parameter, Integer limit, Integer skip) {
+    return find(statement, parameter, limit, skip, null, ReadPreference.secondaryPreferred());
   }
 
   @Override
-  public void selectList(String statement, ResultHandler handler) {
-    selectList(statement, null, null, null, handler, ReadPreference.secondaryPreferred());
+  public void find(String statement, ResultHandler handler) {
+    find(statement, null, null, null, handler, ReadPreference.secondaryPreferred());
   }
 
   @Override
-  public void selectList(String statement, Object parameter, ResultHandler handler) {
-    selectList(statement, parameter, null, null, handler, ReadPreference.secondaryPreferred());
+  public void find(String statement, Object parameter, ResultHandler handler) {
+    find(statement, parameter, null, null, handler, ReadPreference.secondaryPreferred());
   }
 
   @Override
-  public void selectList(String statement, Object parameter, Integer limit, Integer skip, ResultHandler handler) {
-    selectList(statement, parameter, limit, skip, handler, ReadPreference.secondaryPreferred());
+  public void find(String statement, Object parameter, Integer limit, Integer skip, ResultHandler handler) {
+    find(statement, parameter, limit, skip, handler, ReadPreference.secondaryPreferred());
   }
 
-  private <T> List<T> selectList(String statement, Object parameter, Integer limit, Integer skip, ResultHandler handler,
+  private <T> List<T> find(String statement, Object parameter, Integer limit, Integer skip, ResultHandler handler,
       ReadPreference readPreference) {
     logger.debug("Execute 'selectList' mongodb command. Statement '" + statement + "'.");
 
@@ -167,10 +166,10 @@ public class MongoClientTemplet implements MongoTemplet {
     DBCollection coll = db.getCollection(collection);
     coll.setReadPreference(readPreference);
 
-    Map<String, Object> q = (Map<String, Object>) ParserEngine.toQuery(query, parameter);
-    Map<String, Object> f = (Map<String, Object>) ParserEngine.toField(field, parameter);
-    Map<String, Object> o = (Map<String, Object>) ParserEngine.toOrder(order, parameter);
-
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
+    Map<String, Object> f = (Map<String, Object>) field.executorNode(parameter);
+    Map<String, Object> o = (Map<String, Object>) order.executorNode(parameter);
+    
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'selectList' mongodb command. Query '" + queryDbo + "'.");
 
@@ -236,8 +235,8 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) ParserEngine.toQuery(query, parameter);
-
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
+    
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'count' mongodb command. Query '" + queryDbo + "'.");
 
@@ -284,8 +283,8 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) ParserEngine.toQuery(query, parameter);
-    Map<String, Object> f = (Map<String, Object>) ParserEngine.toField(field, parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
+    Map<String, Object> f = (Map<String, Object>) field.executorNode(parameter);
 
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'distinct' mongodb command. Query '" + queryDbo + "'.");
@@ -338,8 +337,8 @@ public class MongoClientTemplet implements MongoTemplet {
     DB db = factory.getDataSource().getDB();
 
     DBCollection coll = db.getCollection(collection);
-
-    Map<String, Object> doc = (Map<String, Object>) ParserEngine.toQuery(document, parameter);
+    
+    Map<String, Object> doc = (Map<String, Object>) document.executorNode(parameter);
 
     DBObject docDbo = new BasicDBObject(doc);
     logger.debug("Execute 'insert' mongodb command. Doc '" + docDbo + "'.");
@@ -378,7 +377,7 @@ public class MongoClientTemplet implements MongoTemplet {
 
     List<DBObject> docDboList = new ArrayList<DBObject>(list.size());
     for (T parameter : list) {
-      Map<String, Object> doc = (Map<String, Object>) ParserEngine.toQuery(document, parameter);
+      Map<String, Object> doc = (Map<String, Object>) document.executorNode(parameter);
       DBObject docDbo = new BasicDBObject(doc);
       docDboList.add(docDbo);
       logger.debug("Execute 'insert' mongodb command. Doc '" + docDbo + "'.");
@@ -445,10 +444,10 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) ParserEngine.toQuery(query, parameter);
-    Map<String, Object> a = (Map<String, Object>) ParserEngine.toAction(action, parameter);
-    Map<String, Object> f = (Map<String, Object>) ParserEngine.toField(field, parameter);
-
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
+    Map<String, Object> a = (Map<String, Object>) action.executorNode(parameter);
+    Map<String, Object> f = (Map<String, Object>) field.executorNode(parameter);
+    
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'findAndModify' mongodb command. Query '" + queryDbo + "'.");
 
@@ -504,9 +503,9 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) ParserEngine.toQuery(query, parameter);
-    Map<String, Object> a = (Map<String, Object>) ParserEngine.toAction(action, parameter);
-
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
+    Map<String, Object> a = (Map<String, Object>) action.executorNode(parameter);
+    
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'update' mongodb command. Query '" + queryDbo + "'.");
 
@@ -543,7 +542,7 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) ParserEngine.toQuery(query, parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
 
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'delete' mongodb command. Query '" + queryDbo + "'.");
@@ -589,7 +588,7 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DB db = factory.getDataSource().getDB();
 
-    Map<String, Object> q = (Map<String, Object>) ParserEngine.toQuery(query, parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
 
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'command' mongodb command. Query '" + queryDbo + "'.");
@@ -656,9 +655,9 @@ public class MongoClientTemplet implements MongoTemplet {
     DBCollection coll = db.getCollection(collection);
     coll.setReadPreference(readPreference);
 
-    Map<String, Object> k = (Map<String, Object>) ParserEngine.toField(key, parameter);
-    Map<String, Object> c = (Map<String, Object>) ParserEngine.toQuery(condition, parameter);
-    Map<String, Object> i = (Map<String, Object>) ParserEngine.toQuery(initial, parameter);
+    Map<String, Object> k = (Map<String, Object>) key.executorNode(parameter);
+    Map<String, Object> c = (Map<String, Object>) condition.executorNode(parameter);
+    Map<String, Object> i = (Map<String, Object>) initial.executorNode(parameter);
     String r = ParserEngine.toScript(reduce, parameter);
     String f = ParserEngine.toScript(finalize, parameter);
 
@@ -736,14 +735,14 @@ public class MongoClientTemplet implements MongoTemplet {
     coll.setReadPreference(readPreference);
 
     NodeEntry firstFunction = function.remove(0);
-    Map<String, Object> f = (Map<String, Object>) ParserEngine.toQuery(firstFunction, parameter);
+    Map<String, Object> f = (Map<String, Object>) firstFunction.executorNode(parameter);
     DBObject firstOp = new BasicDBObject(f);
     logger.debug("Execute 'aggregate' mongodb command. First Operation '" + firstOp + "'.");
 
     DBObject[] operations = new DBObject[function.size()];
     for (int i = 0; i < function.size(); i++) {
       NodeEntry ne = function.get(i);
-      Map<String, Object> op = (Map<String, Object>) ParserEngine.toQuery(ne, parameter);
+      Map<String, Object> op = (Map<String, Object>) ne.executorNode(parameter);
       DBObject operationDbo = new BasicDBObject(op);
       operations[i] = operationDbo;
       logger.debug("Execute 'aggregate' mongodb command. Operation '" + operationDbo + "'.");

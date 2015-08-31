@@ -2,6 +2,7 @@ package com.mongodb.orm.builder.statement;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -13,7 +14,9 @@ import com.mongodb.exception.StatementException;
 import com.mongodb.orm.builder.NodeletUtils;
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.AggregateConfig;
+import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
+import com.mongodb.orm.executor.parser.QueryParser;
 
 /**
  * Transform SQL file for ORM, "aggregate" node statement.
@@ -30,7 +33,7 @@ public class AggregateStatement extends BaseStatement implements StatementHandle
    * Aggregate node analyzes.
    */
   @SuppressWarnings("serial")
-  private static final Map<String, NodeAnalyze<AggregateConfig>> analyzes = new HashMap<String, NodeAnalyze<AggregateConfig>>() {
+  private final Map<String, NodeAnalyze<AggregateConfig>> analyzes = new HashMap<String, NodeAnalyze<AggregateConfig>>() {
     {
       put(ORM.NODE_FUNCTION, new FunctionNodeAnalyze());
       put(ORM.NODE_FIELD, new FieldNodeAnalyze());
@@ -64,33 +67,50 @@ public class AggregateStatement extends BaseStatement implements StatementHandle
     return aggregate;
   }
 
-  private static class FunctionNodeAnalyze implements NodeAnalyze<AggregateConfig> {
+  private class FunctionNodeAnalyze implements NodeAnalyze<AggregateConfig> {
     @Override
     public void analyze(AggregateConfig config, Node node) {
+      String id = config.getId();
       if (config.getFunction() != null) {
-        throw new StatementException("Alias name conflict occurred.  The node 'function' is already exists in '" + config.getId() + "'.");
+        throw new StatementException("Alias name conflict occurred.  The node 'function' is already exists in '" + id + "'.");
       }
-
       Properties attributes = NodeletUtils.parseAttributes(node);
-      String clzz = attributes.getProperty(ORM.ORM_CLASS);
-      String mapping = attributes.getProperty(ORM.ORM_MAPPING);
-      
-      String operate = attributes.getProperty(ORM.TAG_OPERATE);
+      String className = attributes.getProperty(ORM.ORM_CLASS);
 
+      Class<?> clazz = null;
+      try {
+        clazz = Class.forName(className);
+      } catch (ClassNotFoundException e) {
+        throw new StatementException("Class not found by name '"+className+"' for function of aggregate id '" + id + "'.");
+      }
+      
       NodeList childNodes = node.getChildNodes();
       if (childNodes.getLength() == 0) {
-        throw new StatementException("Error aggregate 'function' node. Because the node 'pipeline' not exists in '" + config.getId() + "'.");
+        throw new StatementException("Error aggregate 'function' node. Because the node 'pipeline' not exists in '" + id + "'.");
       }
 
       for (int i = 0; i < childNodes.getLength(); i++) {
         Node n = childNodes.item(i);
-
+        if(!ORM.NODE_PIPELINE.equals(n.getNodeName())) {
+          throw new StatementException("Error aggregate 'function' node. Child node must be 'pipeline' in '" + id + "'.");
+        }
+        
+        Properties attr = NodeletUtils.parseAttributes(n);
+        String operate = attr.getProperty(ORM.TAG_OPERATE);
+        
+        List<Entry> nodes = getEntry(node.getChildNodes(), clazz);
+        
+        NodeEntry entry = new NodeEntry();
+        entry.setClazz(clazz);
+        entry.setNodeMappings(nodes);
+        entry.setExecutor(new QueryParser());
+        
+        config.addFunction(operate, entry);
       }
-
     }
   }
 
-  private static class FieldNodeAnalyze implements NodeAnalyze<AggregateConfig> {
+  private class FieldNodeAnalyze implements NodeAnalyze<AggregateConfig> {
     @Override
     public void analyze(AggregateConfig config, Node node) {
       if (config.getField() != null) {

@@ -27,7 +27,7 @@ public class CommandStatement extends BaseStatement implements StatementHandler 
    * Command node analyzes.
    */
   @SuppressWarnings("serial")
-  private static final Map<String, NodeAnalyze<CommandConfig>> analyzes = new HashMap<String, NodeAnalyze<CommandConfig>>() {
+  private final Map<String, NodeAnalyze<CommandConfig>> analyzes = new HashMap<String, NodeAnalyze<CommandConfig>>() {
     {
       put(ORM.NODE_QUERY, new QueryNodeAnalyze());
       put(ORM.NODE_FIELD, new FieldNodeAnalyze());
@@ -58,7 +58,7 @@ public class CommandStatement extends BaseStatement implements StatementHandler 
     return command;
   }
 
-  private static class QueryNodeAnalyze implements NodeAnalyze<CommandConfig> {
+  private class QueryNodeAnalyze implements NodeAnalyze<CommandConfig> {
     @Override
     public void analyze(CommandConfig config, Node node) {
       if (config.getQuery() != null) {
@@ -70,7 +70,7 @@ public class CommandStatement extends BaseStatement implements StatementHandler 
     }
   }
 
-  private static class FieldNodeAnalyze implements NodeAnalyze<CommandConfig> {
+  private class FieldNodeAnalyze implements NodeAnalyze<CommandConfig> {
     @Override
     public void analyze(CommandConfig config, Node node) {
       if (config.getField() != null) {

@@ -36,8 +36,8 @@ public class NodeEntry implements Serializable {
    */
   private MqlExecutor<?> executor;
   
-  public void executorNode(Object target) {
-    executor.parser(this, target);
+  public Object executorNode(Object target) {
+    return executor.parser(this, target);
   }
   
   public String getMappingId() {

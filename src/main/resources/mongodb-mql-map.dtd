@@ -17,7 +17,7 @@
     extends IDREF #IMPLIED
 >
 
-<!ELEMENT property (value|list|text|script)?>
+<!ELEMENT property (value|list|text|script)*>
 <!ATTLIST property
 	column CDATA #IMPLIED
 	name CDATA #IMPLIED
@@ -106,41 +106,25 @@
 	collection CDATA #REQUIRED
 >
 
-<!ELEMENT group (key|initial|condition|reduce|finalize|field)+>
+<!ELEMENT group (key|keyf|initial|condition|reduce|finalize|field)+>
 <!ATTLIST group
 	id ID #REQUIRED
 	collection CDATA #REQUIRED
+	class CDATA #IMPLIED
+	mapping IDREF #IMPLIED
 >
 
 <!ELEMENT key (property)*>
-<!ATTLIST key
-	class CDATA #IMPLIED
-	mapping IDREF #IMPLIED
->
+
+<!ELEMENT keyf (#PCDATA)*>
 
 <!ELEMENT initial (property)*>
-<!ATTLIST initial
-	class CDATA #IMPLIED
-	mapping IDREF #IMPLIED
->
 
 <!ELEMENT condition (property)*>
-<!ATTLIST condition
-	class CDATA #IMPLIED
-	mapping IDREF #IMPLIED
->
 
 <!ELEMENT reduce (#PCDATA)*>
-<!ATTLIST reduce
-	class CDATA #IMPLIED
-	mapping IDREF #IMPLIED
->
 
 <!ELEMENT finalize (#PCDATA)*>
-<!ATTLIST finalize
-	class CDATA #IMPLIED
-	mapping IDREF #IMPLIED
->
 
 <!ELEMENT aggregate (function|field)+>
 <!ATTLIST aggregate

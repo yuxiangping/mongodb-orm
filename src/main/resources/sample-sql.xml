@@ -247,22 +247,22 @@
 	</command>
 
 	<!-- Group model1 -->
-	<group id="groupModel1" collection="test_sample">
-		<key class="java.util.Map">
+	<group id="groupModel1" collection="test_sample" class="java.util.Map">
+		<key>
 			<property column="name" value="true" type="boolean" />
 		</key>
-		<initial class="java.util.Map">
+		<initial>
 			<property column="counter" value="0" type="number" />
 		</initial>
 		<condition>
 			<property column="time">
-				<value class="java.util.Map">
+				<value>
 					<property operate="gte" name="start" />
 					<property operate="lte" name="end" />
 				</value>
 			</property>
 		</condition>
-		<reduce class="java.util.Map">
+		<reduce>
 			<![CDATA[
 				function(doc,prev) {
 					prev.counter++;
@@ -282,6 +282,30 @@
 			    delete prev.tags;
 			]]>
 		</finalize>
+		<field class="java.util.Map">
+			<property column="name" name="name" />
+		</field>
+	</group>
+
+	<!-- Group model2 -->
+	<group id="groupModel2" collection="test_sample" mapping="model">
+		<keyf>
+			<![CDATA[
+				function(doc) {
+					return (new Date(doc.time).getMonth()+1);
+				}
+			]]>
+		</keyf>
+		<initial>
+			<property column="counter" value="0" type="number" />
+		</initial>
+		<reduce>
+			<![CDATA[
+				function(doc,prev) {
+					prev.counter++;
+				}
+			]]>
+		</reduce>
 		<field class="java.util.Map">
 			<property column="name" name="name" />
 		</field>

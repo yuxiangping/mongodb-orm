@@ -30,7 +30,7 @@ public class DeleteStatement extends BaseStatement implements StatementHandler {
    * insert node analyzes.
    */
   @SuppressWarnings("serial")
-  private static final Map<String, NodeAnalyze<DeleteConfig>> analyzes = new HashMap<String, NodeAnalyze<DeleteConfig>>() {
+  private final Map<String, NodeAnalyze<DeleteConfig>> analyzes = new HashMap<String, NodeAnalyze<DeleteConfig>>() {
     {
       put(ORM.NODE_QUERY, new QueryNodeAnalyze());
     }
@@ -62,7 +62,7 @@ public class DeleteStatement extends BaseStatement implements StatementHandler {
     return delete;
   }
 
-  private static class QueryNodeAnalyze implements NodeAnalyze<DeleteConfig> {
+  private class QueryNodeAnalyze implements NodeAnalyze<DeleteConfig> {
     @Override
     public void analyze(DeleteConfig config, Node node) {
       if (config.getQuery() != null) {

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -14,6 +15,7 @@ import com.mongodb.orm.builder.NodeletUtils;
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.GroupConfig;
 import com.mongodb.orm.engine.entry.NodeEntry;
+import com.mongodb.orm.executor.parser.QueryParser;
 
 /**
  * Transform SQL file for ORM, "group" node statement.
@@ -24,14 +26,17 @@ import com.mongodb.orm.engine.entry.NodeEntry;
 public class GroupStatement extends BaseStatement implements StatementHandler {
 
   private String id;
+  private String mappingId;
+  private Class<?> clazz;
 
   /**
    * Group node analyzes.
    */
   @SuppressWarnings("serial")
-  private static final Map<String, NodeAnalyze<GroupConfig>> analyzes = new HashMap<String, NodeAnalyze<GroupConfig>>() {
+  private final Map<String, NodeAnalyze<GroupConfig>> analyzes = new HashMap<String, NodeAnalyze<GroupConfig>>() {
     {
       put(ORM.NODE_KEY, new KeyNodeAnalyze());
+      put(ORM.NODE_KEY_FUNCTION, new KeyFunctionNodeAnalyze());
       put(ORM.NODE_INITIAL, new InitialNodeAnalyze());
       put(ORM.NODE_CONDITION, new ConditionNodeAnalyze());
       put(ORM.NODE_REDUCE, new ReduceNodeAnalyze());
@@ -48,9 +53,20 @@ public class GroupStatement extends BaseStatement implements StatementHandler {
   public Config handler(Node node) {
     Properties attributes = NodeletUtils.parseAttributes(node);
     String collection = attributes.getProperty(ORM.TAG_DB_COLLECTION);
+    String className = attributes.getProperty(ORM.ORM_CLASS);
+    String mapping = attributes.getProperty(ORM.ORM_MAPPING);
+    
+    if(!StringUtils.isBlank(mapping)) {
+      this.mappingId = mapping;
+    } else if(!StringUtils.isBlank(className)){
+      try {
+        this.clazz = Class.forName(className);
+      } catch (ClassNotFoundException e) {
+        throw new StatementException("Class not found by name '"+className+"' for group id '" + id + "'.");
+      }
+    }
     
     GroupConfig group = new GroupConfig(id, collection);
-    
     NodeList childNodes = node.getChildNodes();
     for (int i = 0; i < childNodes.getLength(); i++) {
       Node n = childNodes.item(i);
@@ -67,57 +83,92 @@ public class GroupStatement extends BaseStatement implements StatementHandler {
     return group;
   }
 
-  private static class KeyNodeAnalyze implements NodeAnalyze<GroupConfig> {
+  private class KeyNodeAnalyze implements NodeAnalyze<GroupConfig> {
     @Override
     public void analyze(GroupConfig config, Node node) {
       if (config.getKey() != null) {
         throw new StatementException("Alias name conflict occurred.  The node 'key' is already exists in '" + config.getId() + "'.");
       }
 
+      NodeEntry entry = new NodeEntry();
+      if(mappingId != null) {
+        entry.setMappingId(mappingId);
+      } else {
+        entry.setClazz(clazz);
+        entry.setNodeMappings(getEntry(node.getChildNodes(), clazz));
+      }
+      entry.setExecutor(new QueryParser());
+      config.setKey(entry);
+    }
+  }
+  
+  private class KeyFunctionNodeAnalyze implements NodeAnalyze<GroupConfig> {
+    @Override
+    public void analyze(GroupConfig config, Node node) {
+      if (config.getKey() != null) {
+        throw new StatementException("Alias name conflict occurred.  The node 'keyf' is already exists in '" + config.getId() + "'.");
+      }
+      config.setKeyf(node.getTextContent());
     }
   }
 
-  private static class InitialNodeAnalyze implements NodeAnalyze<GroupConfig> {
+  private class InitialNodeAnalyze implements NodeAnalyze<GroupConfig> {
     @Override
     public void analyze(GroupConfig config, Node node) {
       if (config.getInitial() != null) {
         throw new StatementException("Alias name conflict occurred.  The node 'initial' is already exists in '" + config.getId() + "'.");
       }
-
+      NodeEntry entry = new NodeEntry();
+      if(mappingId != null) {
+        entry.setMappingId(mappingId);
+      } else {
+        entry.setClazz(clazz);
+        entry.setNodeMappings(getEntry(node.getChildNodes(), clazz));
+      }
+      entry.setExecutor(new QueryParser());
+      config.setInitial(entry);
     }
   }
   
-  private static class ConditionNodeAnalyze implements NodeAnalyze<GroupConfig> {
+  private class ConditionNodeAnalyze implements NodeAnalyze<GroupConfig> {
     @Override
     public void analyze(GroupConfig config, Node node) {
       if (config.getCondition() != null) {
         throw new StatementException("Alias name conflict occurred.  The node 'condition' is already exists in '" + config.getId() + "'.");
       }
-
+      NodeEntry entry = new NodeEntry();
+      if(mappingId != null) {
+        entry.setMappingId(mappingId);
+      } else {
+        entry.setClazz(clazz);
+        entry.setNodeMappings(getEntry(node.getChildNodes(), clazz));
+      }
+      entry.setExecutor(new QueryParser());
+      config.setCondition(entry);
     }
   }
   
-  private static class ReduceNodeAnalyze implements NodeAnalyze<GroupConfig> {
+  private class ReduceNodeAnalyze implements NodeAnalyze<GroupConfig> {
     @Override
     public void analyze(GroupConfig config, Node node) {
       if (config.getReduce() != null) {
         throw new StatementException("Alias name conflict occurred.  The node 'reduce' is already exists in '" + config.getId() + "'.");
       }
-
+      config.setReduce(node.getTextContent());
     }
   }
   
-  private static class FinalizeNodeAnalyze implements NodeAnalyze<GroupConfig> {
+  private class FinalizeNodeAnalyze implements NodeAnalyze<GroupConfig> {
     @Override
     public void analyze(GroupConfig config, Node node) {
       if (config.getFinalize() != null) {
         throw new StatementException("Alias name conflict occurred.  The node 'finalize' is already exists in '" + config.getId() + "'.");
       }
-
+      config.setFinalize(node.getTextContent());
     }
   }
   
-  private static class FieldNodeAnalyze implements NodeAnalyze<GroupConfig> {
+  private class FieldNodeAnalyze implements NodeAnalyze<GroupConfig> {
     @Override
     public void analyze(GroupConfig config, Node node) {
       if (config.getField() != null) {

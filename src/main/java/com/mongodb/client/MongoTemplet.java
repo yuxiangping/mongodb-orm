@@ -27,7 +27,7 @@ public interface MongoTemplet {
    * @param statement Unique identifier matching the statement to use.
    * @return Mapped object.
    */
-  <T> T selectOne(String statement);
+  <T> T findOne(String statement);
   
   /**
    * Retrieve a single row mapped from the statement key and parameter.
@@ -36,14 +36,14 @@ public interface MongoTemplet {
    * @param parameter A parameter object to pass to the statement.
    * @return Mapped object.
    */
-  <T> T selectOne(String statement, Object parameter);
+  <T> T findOne(String statement, Object parameter);
   
   /**
    * Retrieve a single row mapped from the statement key.
    * @param statement Unique identifier matching the statement to use.
    * @param handler ResultHandler that will handle each retrieved row  
    */
-  void selectOne(String statement, ResultHandler handler);
+  void findOne(String statement, ResultHandler handler);
   
   /**
    * Retrieve a single row mapped from the statement key and parameter.
@@ -51,7 +51,7 @@ public interface MongoTemplet {
    * @param parameter A parameter object to pass to the statement.
    * @param handler ResultHandler that will handle each retrieved row. 
    */
-  void selectOne(String statement, Object parameter, ResultHandler handler);
+  void findOne(String statement, Object parameter, ResultHandler handler);
   
   /**
    * Retrieve a list of mapped objects from the statement key.
@@ -59,7 +59,7 @@ public interface MongoTemplet {
    * @param statement Unique identifier matching the statement to use.
    * @return List of mapped object.
    */
-  <T> List<T> selectList(String statement);
+  <T> List<T> find(String statement);
   
   /**
    * Retrieve a list of mapped objects from the statement key and parameter.
@@ -68,7 +68,7 @@ public interface MongoTemplet {
    * @param parameter A parameter object to pass to the statement.
    * @return List of mapped object.
    */
-  <T> List<T> selectList(String statement, Object parameter);
+  <T> List<T> find(String statement, Object parameter);
 
   /**
    * Retrieve a list of mapped objects from the statement key and parameter.
@@ -78,14 +78,14 @@ public interface MongoTemplet {
    * @param skip Retrieve a list of mapped objects from skip index.
    * @return List of mapped object.
    */
-  <T> List<T> selectList(String statement, Object parameter, Integer limit, Integer skip);
+  <T> List<T> find(String statement, Object parameter, Integer limit, Integer skip);
 
   /**
    * Retrieve a list of mapped objects from the statement key.
    * @param statement Unique identifier matching the statement to use.
    * @param handler ResultHandler that will handle each retrieved row. 
    */
-  void selectList(String statement, ResultHandler handler);
+  void find(String statement, ResultHandler handler);
   
   /**
    * Retrieve a list of mapped objects from the statement key and parameter.
@@ -93,7 +93,7 @@ public interface MongoTemplet {
    * @param parameter A parameter object to pass to the statement.
    * @param handler ResultHandler that will handle each retrieved row. 
    */
-  void selectList(String statement, Object parameter, ResultHandler handler);
+  void find(String statement, Object parameter, ResultHandler handler);
 
   /**
    * Retrieve a list of mapped objects from the statement key and parameter.
@@ -102,7 +102,7 @@ public interface MongoTemplet {
    * @param skip Retrieve a list of mapped objects from skip index.
    * @param handler ResultHandler that will handle each retrieved row. 
    */
-  void selectList(String statement, Object parameter, Integer limit, Integer skip, ResultHandler handler);
+  void find(String statement, Object parameter, Integer limit, Integer skip, ResultHandler handler);
   
   /**
    * Count a list of mapped objects from the statement key.

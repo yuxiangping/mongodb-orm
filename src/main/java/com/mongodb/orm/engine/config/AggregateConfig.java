@@ -1,6 +1,8 @@
 package com.mongodb.orm.engine.config;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.entry.NodeEntry;
@@ -29,7 +31,7 @@ public class AggregateConfig implements Config {
   /**
    * Mongo db aggregate pipeline functions.
    */
-  private List<NodeEntry> function;
+  private Map<String, NodeEntry> function = new LinkedHashMap<String, NodeEntry>();
   /**
    * Mongo db aggregate field.
    */
@@ -40,12 +42,12 @@ public class AggregateConfig implements Config {
     this.collection = collection;
   }
 
-  public List<NodeEntry> getFunction() {
+  public Map<String, NodeEntry> getFunction() {
     return function;
   }
 
-  public void setFunction(List<NodeEntry> function) {
-    this.function = function;
+  public void addFunction(String operator, NodeEntry entry) {
+    this.function.put(operator, entry);
   }
 
   public NodeEntry getField() {

@@ -27,6 +27,10 @@ public class GroupConfig implements Config {
    */
   private NodeEntry key;
   /**
+   * Group keyf
+   */
+  private String keyf;
+  /**
    * Group condition.
    */
   private NodeEntry condition;
@@ -58,6 +62,14 @@ public class GroupConfig implements Config {
 
   public void setKey(NodeEntry key) {
     this.key = key;
+  }
+
+  public String getKeyf() {
+    return keyf;
+  }
+
+  public void setKeyf(String keyf) {
+    this.keyf = keyf;
   }
 
   public NodeEntry getCondition() {

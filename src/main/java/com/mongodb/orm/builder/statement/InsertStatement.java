@@ -31,7 +31,7 @@ public class InsertStatement extends BaseStatement implements StatementHandler {
    * insert node analyzes.
    */
   @SuppressWarnings("serial")
-  private static final Map<String, NodeAnalyze<InsertConfig>> analyzes = new HashMap<String, NodeAnalyze<InsertConfig>>() {
+  private final Map<String, NodeAnalyze<InsertConfig>> analyzes = new HashMap<String, NodeAnalyze<InsertConfig>>() {
     {
       put(ORM.NODE_DOCUMENT, new DocumentNodeAnalyze());
       put(ORM.NODE_SELECTKEY, new SelectKeyNodeAnalyze());
@@ -64,7 +64,7 @@ public class InsertStatement extends BaseStatement implements StatementHandler {
     return insert;
   }
 
-  private static class DocumentNodeAnalyze implements NodeAnalyze<InsertConfig> {
+  private class DocumentNodeAnalyze implements NodeAnalyze<InsertConfig> {
     @Override
     public void analyze(InsertConfig config, Node node) {
       if (config.getDocument() != null) {
@@ -76,7 +76,7 @@ public class InsertStatement extends BaseStatement implements StatementHandler {
     }
   }
 
-  private static class SelectKeyNodeAnalyze implements NodeAnalyze<InsertConfig> {
+  private class SelectKeyNodeAnalyze implements NodeAnalyze<InsertConfig> {
     @Override
     public void analyze(InsertConfig config, Node node) {
       if (config.getSelectKey() != null) {
