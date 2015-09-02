@@ -1,6 +1,8 @@
 package com.mongodb.orm.executor;
 
 import com.mongodb.orm.engine.entry.Entry;
+import com.mongodb.orm.engine.entry.NodeEntry;
+import com.mongodb.orm.executor.parser.ResultParser;
 
 /**
  * Parser engine for mql.
@@ -10,17 +12,21 @@ import com.mongodb.orm.engine.entry.Entry;
  * @data : 2014-9-18
  * @since : 1.5
  */
+@SuppressWarnings("unchecked")
 public class ParserEngine {
 
-  private ParserEngine() {}
-
+  private ResultParser resultParser = new ResultParser();
   
-  public static String toScript(String text, Object target) {
+  public <T> T toResult(NodeEntry entry, Object object) {
+    return (T) resultParser.parser(entry, object);
+  }
+  
+  public String toScript(String text, Object target) {
     // TODO
     return null;
   }
   
-  public static void setSelectKey(Entry entry, String key, Object target) {
+  public void setSelectKey(Entry entry, String key, Object target) {
     // TODO 
   }
 

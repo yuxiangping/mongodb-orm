@@ -9,10 +9,10 @@ import org.w3c.dom.Node;
 
 import com.mongodb.constant.ORM;
 import com.mongodb.exception.StatementException;
-import com.mongodb.orm.builder.NodeletUtils;
 import com.mongodb.orm.engine.entry.ColumnType;
 import com.mongodb.orm.engine.type.ColumnHandler;
 import com.mongodb.orm.engine.type.TypeHandlerFactory;
+import com.mongodb.util.NodeletUtils;
 
 /**
  * Dynamic list function.
@@ -24,7 +24,7 @@ import com.mongodb.orm.engine.type.TypeHandlerFactory;
 public class ListFunction implements Function {
 
   @Override
-  public void init(Node node, Dynamic dynamic) {
+  public void init(Node node, Class<?> clazz, Dynamic dynamic) {
     Properties attribute = NodeletUtils.parseAttributes(node);
 
     String text = node.getTextContent();

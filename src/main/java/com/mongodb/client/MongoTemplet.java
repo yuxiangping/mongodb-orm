@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mongodb.DB;
+import com.mongodb.DBObject;
 import com.mongodb.client.event.ResultHandler;
 
 /**
@@ -352,4 +353,13 @@ public interface MongoTemplet {
    * @return Database.
    */
   DB getDB(String dbName);
+  
+  /**
+   * Retrieves T affected by the mappingId from source.
+   * @param mappingId XML mapping id.
+   * @param source Mongo source
+   * @return Mapped objects affected by the mappingId.
+   */
+  <T> T parseObject(String mappingId, DBObject source);
+  
 }

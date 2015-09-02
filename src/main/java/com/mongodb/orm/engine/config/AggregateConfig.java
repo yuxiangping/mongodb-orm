@@ -1,7 +1,6 @@
 package com.mongodb.orm.engine.config;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.mongodb.orm.engine.Config;

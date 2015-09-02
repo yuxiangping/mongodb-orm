@@ -140,4 +140,12 @@ public class ORM {
    * XML file node 'pipeline'
    */
   public static final String NODE_PIPELINE = "pipeline";
+  /**
+   * XML file script params tag start
+   */
+  public static final String LABEL_SCRIPT_START = "${";
+  /**
+   * XML file script params tag end
+   */
+  public static final String LABEL_SCRIPT_END = "}";
 }

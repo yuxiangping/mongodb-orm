@@ -14,6 +14,8 @@ import net.sf.json.JSONObject;
  */
 public class JsonUtils {
 
+  private JsonUtils() {}
+  
   @SuppressWarnings("unchecked")
   public static <K,V> Map<K, V> toMap(String text) {
     JSONObject json = JSONObject.fromObject(text);

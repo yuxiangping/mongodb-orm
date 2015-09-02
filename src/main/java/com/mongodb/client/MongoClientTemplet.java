@@ -25,11 +25,13 @@ import com.mongodb.orm.engine.config.CommandConfig;
 import com.mongodb.orm.engine.config.DeleteConfig;
 import com.mongodb.orm.engine.config.GroupConfig;
 import com.mongodb.orm.engine.config.InsertConfig;
+import com.mongodb.orm.engine.config.MappingConfig;
 import com.mongodb.orm.engine.config.SelectConfig;
 import com.mongodb.orm.engine.config.UpdateConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.executor.ParserEngine;
+import com.mongodb.util.NodeletUtils;
 
 
 /**
@@ -44,6 +46,8 @@ import com.mongodb.orm.executor.ParserEngine;
 public class MongoClientTemplet implements MongoTemplet {
 
   private MongoORMFactoryBean factory;
+  
+  private ParserEngine parserEngine = new ParserEngine();
 
   @Override
   public <T> T findOne(String statement) {
@@ -114,7 +118,7 @@ public class MongoClientTemplet implements MongoTemplet {
       });
       return null;
     } 
-    return (T) ParserEngine.toResult(field, resultSet);
+    return (T) parserEngine.toResult(field, resultSet);
   }
 
   @Override
@@ -192,26 +196,26 @@ public class MongoClientTemplet implements MongoTemplet {
       resultSet.limit(limit);
     }
 
-    if (handler == null) {
-      List<T> result = new ArrayList<T>(resultSet.size());
-      while (resultSet.hasNext()) {
-        result.add((T) ParserEngine.toResult(field, resultSet.next()));
-      }
-      return result;
+    if (handler != null) {
+      handler.handleResult(new ResultContext() {
+        @Override
+        public Object getResultObject() {
+          return resultSet;
+        }
+  
+        @Override
+        public int getResultCount() {
+          return resultSet.size();
+        }
+      });
+      return null;
     }
-
-    handler.handleResult(new ResultContext() {
-      @Override
-      public Object getResultObject() {
-        return resultSet;
-      }
-
-      @Override
-      public int getResultCount() {
-        return resultSet.size();
-      }
-    });
-    return null;
+    
+    List<T> result = new ArrayList<T>(resultSet.size());
+    while (resultSet.hasNext()) {
+      result.add((T) parserEngine.toResult(field, resultSet.next()));
+    }
+    return result;
   }
 
   @Override
@@ -294,26 +298,27 @@ public class MongoClientTemplet implements MongoTemplet {
 
     final List resultSet = coll.distinct(key, queryDbo, readPreference);
     logger.debug("Execute 'distinct' mongodb command. Result set '" + resultSet + "'.");
-    if (handler == null) {
-      List<T> result = new ArrayList<T>(resultSet.size());
-      for (Iterator<Object> iter = resultSet.iterator(); iter.hasNext();) {
-        result.add((T) ParserEngine.toResult(field, iter.next()));
-      }
-      return result;
+    
+    if (handler != null) {
+      handler.handleResult(new ResultContext() {
+        @Override
+        public Object getResultObject() {
+          return resultSet;
+        }
+        
+        @Override
+        public int getResultCount() {
+          return resultSet.size();
+        }
+      });
+      return null;
     }
-
-    handler.handleResult(new ResultContext() {
-      @Override
-      public Object getResultObject() {
-        return resultSet;
-      }
-
-      @Override
-      public int getResultCount() {
-        return resultSet.size();
-      }
-    });
-    return null;
+    
+    List<T> result = new ArrayList<T>(resultSet.size());
+    for (Iterator<Object> iter = resultSet.iterator(); iter.hasNext();) {
+      result.add((T) parserEngine.toResult(field, iter.next()));
+    }
+    return result;
   }
 
   @Override
@@ -353,7 +358,7 @@ public class MongoClientTemplet implements MongoTemplet {
     logger.debug("Execute 'insert' mongodb command. ObjectId is '" + newId + "'.");
 
     if (selectKey != null) {
-      ParserEngine.setSelectKey(selectKey, newId, parameter);
+      parserEngine.setSelectKey(selectKey, newId, parameter);
     }
     return newId;
   }
@@ -400,10 +405,9 @@ public class MongoClientTemplet implements MongoTemplet {
       for (int i = 0; i < list.size(); i++) {
         T parameter = list.get(i);
         String newId = newIds.get(i);
-        ParserEngine.setSelectKey(selectKey, newId, parameter);
+        parserEngine.setSelectKey(selectKey, newId, parameter);
       }
     }
-
     return newIds;
   }
 
@@ -460,25 +464,25 @@ public class MongoClientTemplet implements MongoTemplet {
     final DBObject resultSet = coll.findAndModify(queryDbo, fieldDbo, null, false, actionDbo, returnNew, upset);
     logger.debug("Execute 'findAndModify' mongodb command. Result set '" + resultSet + "'.");
 
-    if (handler == null) {
-      return (T) ParserEngine.toResult(field, resultSet);
-    }
-
-    handler.handleResult(new ResultContext() {
-      @Override
-      public Object getResultObject() {
-        return resultSet;
-      }
-
-      @Override
-      public int getResultCount() {
-        if (resultSet == null) {
-          return 0;
+    if (handler != null) {
+      handler.handleResult(new ResultContext() {
+        @Override
+        public Object getResultObject() {
+          return resultSet;
         }
-        return 1;
-      }
-    });
-    return null;
+        
+        @Override
+        public int getResultCount() {
+          if (resultSet == null) {
+            return 0;
+          }
+          return 1;
+        }
+      });
+      return null;
+    }
+    
+    return (T) parserEngine.toResult(field, resultSet);
   }
 
   @Override
@@ -517,7 +521,6 @@ public class MongoClientTemplet implements MongoTemplet {
     if (commandResult.getException() != null) {
       throw new MongoDaoException(statement, "Execute 'update' mongodb command has exception. Cause: " + commandResult.getErrorMessage());
     }
-
     return writeResult.getN();
   }
 
@@ -596,22 +599,22 @@ public class MongoClientTemplet implements MongoTemplet {
     final CommandResult resultSet = db.command(queryDbo, 0, readPreference);
     logger.debug("Execute 'command' mongodb command. Result set '" + resultSet + "'.");
 
-    if (handler == null) {
-      return (T) ParserEngine.toResult(field, resultSet);
+    if (handler != null) {
+      handler.handleResult(new ResultContext() {
+        @Override
+        public Object getResultObject() {
+          return resultSet;
+        }
+        
+        @Override
+        public int getResultCount() {
+          return resultSet.size();
+        }
+      });
+      return null;
     }
-
-    handler.handleResult(new ResultContext() {
-      @Override
-      public Object getResultObject() {
-        return resultSet;
-      }
-
-      @Override
-      public int getResultCount() {
-        return resultSet.size();
-      }
-    });
-    return null;
+    
+    return (T) parserEngine.toResult(field, resultSet);
   }
 
   @Override
@@ -658,8 +661,8 @@ public class MongoClientTemplet implements MongoTemplet {
     Map<String, Object> k = (Map<String, Object>) key.executorNode(parameter);
     Map<String, Object> c = (Map<String, Object>) condition.executorNode(parameter);
     Map<String, Object> i = (Map<String, Object>) initial.executorNode(parameter);
-    String r = ParserEngine.toScript(reduce, parameter);
-    String f = ParserEngine.toScript(finalize, parameter);
+    String r = parserEngine.toScript(reduce, parameter);
+    String f = parserEngine.toScript(finalize, parameter);
 
     DBObject keyDbo = new BasicDBObject(k);
     logger.debug("Execute 'group' mongodb command. Key '" + keyDbo + "'.");
@@ -676,25 +679,24 @@ public class MongoClientTemplet implements MongoTemplet {
     final DBObject resultSet = coll.group(keyDbo, conditionDbo, initialDbo, r, f, readPreference);
     logger.debug("Execute 'group' mongodb command. Result set '" + resultSet + "'.");
 
-    if (handler == null) {
-      return (T) ParserEngine.toResult(field, resultSet);
-    }
-
-    handler.handleResult(new ResultContext() {
-      @Override
-      public Object getResultObject() {
-        return resultSet;
-      }
-
-      @Override
-      public int getResultCount() {
-        if (resultSet == null) {
-          return 0;
+    if (handler != null) {
+      handler.handleResult(new ResultContext() {
+        @Override
+        public Object getResultObject() {
+          return resultSet;
         }
-        return 1;
-      }
-    });
-    return null;
+        
+        @Override
+        public int getResultCount() {
+          if (resultSet == null) {
+            return 0;
+          }
+          return resultSet.toMap().size();
+        }
+      });
+      return null;
+    }
+    return (T) parserEngine.toResult(field, resultSet);
   }
 
   @Override
@@ -726,7 +728,7 @@ public class MongoClientTemplet implements MongoTemplet {
     }
 
     String collection = config.getCollection();
-    List<NodeEntry> function = config.getFunction();
+    Map<String, NodeEntry> function = config.getFunction();
     NodeEntry field = config.getField();
 
     DB db = factory.getDataSource().getDB();
@@ -752,27 +754,27 @@ public class MongoClientTemplet implements MongoTemplet {
     logger.debug("Execute 'aggregate' mongodb command. Result set '" + commandResult + "'.");
 
     final BasicDBList resultSet = (BasicDBList) commandResult.get("result");
-    if (handler == null) {
-      List<T> list = new ArrayList<T>(resultSet.size());
-      for (Iterator iter = resultSet.iterator(); iter.hasNext();) {
-        T result = (T) ParserEngine.toResult(field, iter.next());
-        list.add(result);
-      }
-      return list;
+    if (handler != null) {
+      handler.handleResult(new ResultContext() {
+        @Override
+        public Object getResultObject() {
+          return resultSet;
+        }
+        
+        @Override
+        public int getResultCount() {
+          return resultSet.size();
+        }
+      });
+      return null;
     }
-
-    handler.handleResult(new ResultContext() {
-      @Override
-      public Object getResultObject() {
-        return resultSet;
-      }
-
-      @Override
-      public int getResultCount() {
-        return resultSet.size();
-      }
-    });
-    return null;
+    
+    List<T> list = new ArrayList<T>(resultSet.size());
+    for (Iterator iter = resultSet.iterator(); iter.hasNext();) {
+      T result = (T) parserEngine.toResult(field, iter.next());
+      list.add(result);
+    }
+    return list;
   }
 
   @Override
@@ -793,6 +795,16 @@ public class MongoClientTemplet implements MongoTemplet {
     return db;
   }
 
+  @Override
+  public <T> T parseObject(String mappingId, DBObject source) {
+    MappingConfig mapping = (MappingConfig)factory.getConfiguration().getMapping(mappingId);
+    
+    NodeEntry nodeEntry = new NodeEntry();
+    nodeEntry.setClazz(mapping.getClazz());
+    nodeEntry.setNodeMappings(NodeletUtils.getMappingEntry(mapping, factory.getConfiguration()));
+    return (T) parserEngine.toResult(nodeEntry, source);
+  }
+  
   public void setFactory(MongoORMFactoryBean factory) {
     this.factory = factory;
   }

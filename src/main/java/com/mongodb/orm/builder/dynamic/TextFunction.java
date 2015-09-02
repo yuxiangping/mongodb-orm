@@ -18,7 +18,7 @@ import com.mongodb.util.JsonUtils;
 public class TextFunction implements Function {
 
   @Override
-  public void init(Node node, Dynamic dynamic) {
+  public void init(Node node, Class<?> clazz, Dynamic dynamic) {
     String text = node.getTextContent();
     if (StringUtils.isBlank(text)) {
       throw new StatementException("Error node configuration. The 'text' can't be null.");

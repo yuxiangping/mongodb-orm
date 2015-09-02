@@ -28,7 +28,6 @@ public class MappingConfig implements Config {
    * Mapping extends partent.
    */
   private String extend;
-  
   /**
    * Node children nodes.
    */

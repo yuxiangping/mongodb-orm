@@ -4,6 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Node;
 
 import com.mongodb.exception.StatementException;
+import com.mongodb.orm.engine.entry.Script;
+import com.mongodb.util.ScriptUtils;
 
 /**
  * Dynamic script function.
@@ -15,31 +17,31 @@ import com.mongodb.exception.StatementException;
 public class ScriptFunction implements Function {
 
   @Override
-  public void init(Node node, Dynamic dynamic) {
+  public void init(Node node, Class<?> clazz, Dynamic dynamic) {
     String text = node.getTextContent();
     if (StringUtils.isBlank(text)) {
       throw new StatementException("Error node configuration. The 'script' can't be null.");
     }
 
-    dynamic.addFunction(this, new ScriptData(text));
+    Script script = new Script(text);
+    
+    dynamic.addFunction(this, new ScriptData(script));
   }
 
   @Override
   public Object parser(FunctionData data, Object target) {
     ScriptData scriptData = (ScriptData) data;
-    return scriptData.text;
+    Script script = scriptData.script;
+    ScriptUtils.fillScriptParams(script, target);
+    return script.getText();
   }
 
   class ScriptData implements FunctionData {
 
-    private String text;
+    Script script;
 
-    public ScriptData(String text) {
-      this.text = text;
-    }
-
-    public String getText() {
-      return text;
+    public ScriptData(Script script) {
+      this.script = script;
     }
 
   }

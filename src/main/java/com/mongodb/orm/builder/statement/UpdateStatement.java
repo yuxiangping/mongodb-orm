@@ -12,13 +12,13 @@ import org.w3c.dom.NodeList;
 
 import com.mongodb.constant.ORM;
 import com.mongodb.exception.StatementException;
-import com.mongodb.orm.builder.NodeletUtils;
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.UpdateConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.type.TypeHandlerFactory;
 import com.mongodb.orm.executor.parser.ActionParser;
+import com.mongodb.util.NodeletUtils;
 
 /**
  * Transform SQL file for ORM, "update" node statement.

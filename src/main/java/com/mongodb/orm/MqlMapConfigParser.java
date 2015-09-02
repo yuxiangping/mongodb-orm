@@ -15,7 +15,6 @@ import org.xml.sax.SAXException;
 
 import com.mongodb.orm.builder.Nodelet;
 import com.mongodb.orm.builder.NodeletParser;
-import com.mongodb.orm.builder.NodeletUtils;
 import com.mongodb.orm.builder.statement.AggregateStatement;
 import com.mongodb.orm.builder.statement.CommandStatement;
 import com.mongodb.orm.builder.statement.DeleteStatement;
@@ -24,6 +23,7 @@ import com.mongodb.orm.builder.statement.InsertStatement;
 import com.mongodb.orm.builder.statement.MappingStatement;
 import com.mongodb.orm.builder.statement.SelectStatement;
 import com.mongodb.orm.builder.statement.UpdateStatement;
+import com.mongodb.util.NodeletUtils;
 
 /**
  * MQL map config parser

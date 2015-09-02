@@ -9,10 +9,10 @@ import org.w3c.dom.Node;
 
 import com.mongodb.constant.ORM;
 import com.mongodb.exception.StatementException;
-import com.mongodb.orm.builder.NodeletUtils;
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.MappingConfig;
 import com.mongodb.orm.engine.entry.Entry;
+import com.mongodb.util.NodeletUtils;
 
 /**
  * Transform XML file for ORM, "mapping" node statement.

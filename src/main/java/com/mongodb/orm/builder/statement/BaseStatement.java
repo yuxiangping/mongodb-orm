@@ -9,7 +9,6 @@ import org.w3c.dom.NodeList;
 
 import com.mongodb.constant.ORM;
 import com.mongodb.exception.StatementException;
-import com.mongodb.orm.builder.NodeletUtils;
 import com.mongodb.orm.builder.dynamic.Dynamic;
 import com.mongodb.orm.builder.dynamic.DynamicFactory;
 import com.mongodb.orm.engine.Config;
@@ -20,6 +19,7 @@ import com.mongodb.orm.engine.entry.Operator;
 import com.mongodb.orm.engine.type.TypeHandlerFactory;
 import com.mongodb.orm.executor.parser.FieldParser;
 import com.mongodb.orm.executor.parser.QueryParser;
+import com.mongodb.util.NodeletUtils;
 
 /**
  * Base statement handler for convenience.
@@ -62,7 +62,7 @@ public abstract class BaseStatement implements StatementHandler {
           entry.addNode(resolveChildNode(cnode, name));
         // Dynamic Function
         } else {
-          entry.setDynamic(resolveDynamic(cnode, name));
+          entry.setDynamic(resolveDynamic(cnode, name, clazz));
         }
       }
       entrys.add(entry);
@@ -170,9 +170,9 @@ public abstract class BaseStatement implements StatementHandler {
     return entry;
   }
 
-  private Dynamic resolveDynamic(Node node, String name) {
+  private Dynamic resolveDynamic(Node node, String name, Class<?> clazz) {
     try {
-      return DynamicFactory.builder(node);
+      return DynamicFactory.builder(node, clazz);
     } catch (Exception ex) {
       logger.error("Error build dynamic content for name '" + name + "'. Cause:", ex);
       throw new StatementException("Error build dynamic content for name '" + name + "'. Cause:", ex);

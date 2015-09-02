@@ -11,6 +11,8 @@ import org.apache.commons.beanutils.PropertyUtils;
  */
 public class BeanUtils {
 
+  private BeanUtils() {}
+  
   public static Object getProperty(Object target, String name) throws Exception {
     return PropertyUtils.getProperty(target, name);
   }

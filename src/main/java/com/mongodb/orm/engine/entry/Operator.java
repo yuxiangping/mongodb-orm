@@ -165,7 +165,7 @@ public enum Operator {
   private String opt;
   
   public static Operator formName(String name) {
-    if(name==null) {
+    if(name == null) {
       return null;
     }
     

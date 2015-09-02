@@ -13,40 +13,37 @@ public class DynamicFactory {
 
   private DynamicFactory() {}
 
-  public static Dynamic builder(Node node) {
+  public static Dynamic builder(Node node, Class<?> clazz) {
     String name = node.getNodeName();
-    return Creator.valueOf(name).create(node);
+    return Creator.valueOf(name).create(node, clazz);
   }
 
   private static enum Creator {
     list {
       @Override
-      Dynamic create(Node node) {
+      Dynamic create(Node node, Class<?> clazz) {
         Dynamic dynamic = new Dynamic();
-        ListFunction function = new ListFunction();
-        function.init(node, dynamic);
+        new ListFunction().init(node, clazz, dynamic);
         return dynamic;
       }
     },
     text {
       @Override
-      Dynamic create(Node node) {
+      Dynamic create(Node node, Class<?> clazz) {
         Dynamic dynamic = new Dynamic();
-        TextFunction function = new TextFunction();
-        function.init(node, dynamic);
+        new TextFunction().init(node, clazz, dynamic);
         return dynamic;
       }
     },
     script {
       @Override
-      Dynamic create(Node node) {
+      Dynamic create(Node node, Class<?> clazz) {
         Dynamic dynamic = new Dynamic();
-        ScriptFunction function = new ScriptFunction();
-        function.init(node, dynamic);
+        new ScriptFunction().init(node, clazz, dynamic);
         return dynamic;
       }
     };
-    abstract Dynamic create(Node node);
+    abstract Dynamic create(Node node, Class<?> clazz);
   }
 
 }

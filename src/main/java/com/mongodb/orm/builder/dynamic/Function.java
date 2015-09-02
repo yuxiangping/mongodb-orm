@@ -14,7 +14,7 @@ public interface Function {
   /**
    * Init the dynamic function.
    */
-  void init(Node node, Dynamic dynamic);
+  void init(Node node, Class<?> clazz, Dynamic dynamic);
 
   /**
    * Parser the target object with dynamic function.
