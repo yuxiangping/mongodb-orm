@@ -1,6 +1,5 @@
 package com.mongodb.orm.engine.entry;
 
-import com.mongodb.orm.engine.type.ColumnHandler;
 import com.mongodb.orm.engine.type.TypeHandler;
 
 /**
@@ -20,22 +19,40 @@ public class Script {
   /**
    * Getting data into, and out of a mapped statement.
    */
-  private TypeHandler<?> typeHandler;
+  private Analyer analyer;
 
   public Script(String text) {
     this.text = text;
-  }
-  
-  public TypeHandler<?> getTypeHandler() {
-    return typeHandler;
-  }
-
-  public void setTypeHandler(TypeHandler<?> typeHandler) {
-    this.typeHandler = typeHandler;
   }
 
   public String getText() {
     return text;
   }
 
+  interface Analyer {
+    String getValue(String target, Object value);
+  }
+  
+  class CustomAnalyer implements Analyer {
+    @Override
+    public String getValue(String target, Object value) {
+      return null;
+    }
+  }
+  
+  class MapAnalyer implements Analyer {
+    @Override
+    public String getValue(String target, Object value) {
+      return null;
+    }
+  }
+  
+  class ValueAnalyer implements Analyer {
+    @Override
+    public String getValue(String target, Object value) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+  }
+  
 }
