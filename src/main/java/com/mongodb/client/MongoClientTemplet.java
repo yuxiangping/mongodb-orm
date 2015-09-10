@@ -30,6 +30,7 @@ import com.mongodb.orm.engine.config.SelectConfig;
 import com.mongodb.orm.engine.config.UpdateConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
+import com.mongodb.orm.engine.entry.Script;
 import com.mongodb.orm.executor.ParserEngine;
 import com.mongodb.util.NodeletUtils;
 
@@ -649,8 +650,8 @@ public class MongoClientTemplet implements MongoTemplet {
     NodeEntry key = config.getKey();
     NodeEntry condition = config.getCondition();
     NodeEntry initial = config.getInitial();
-    String reduce = config.getReduce();
-    String finalize = config.getFinalize();
+    Script reduce = config.getReduce();
+    Script finalize = config.getFinalize();
     NodeEntry field = config.getField();
 
     DB db = factory.getDataSource().getDB();

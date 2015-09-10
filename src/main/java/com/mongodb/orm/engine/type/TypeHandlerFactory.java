@@ -151,7 +151,7 @@ public class TypeHandlerFactory {
     register(Map.class, factory = new Factory() {
       @Override
       public TypeHandler<Map<Object, Object>> create(Class<?> clazz, String name) {
-        return new MapTypeHandler();
+        return new MapTypeHandler(name);
       }
     });
 
@@ -165,7 +165,7 @@ public class TypeHandlerFactory {
     register(Enum.class, factory = new Factory() {
       @Override
       public TypeHandler<Enum<?>> create(Class<?> clazz, String name) {
-        return new EnumTypeHandler();
+        return new EnumTypeHandler(clazz);
       }
     });
 
@@ -199,11 +199,13 @@ public class TypeHandlerFactory {
       return null;
     }
 
-    if (Enum.class.isAssignableFrom(clazz)) {
-      clazz = Enum.class;
+    Factory factory;
+    if (clazz.isEnum() || Enum.class.isAssignableFrom(clazz)) {
+      factory = typeAliases.get(Enum.class);
+    } else {
+      factory = typeAliases.get(clazz);
     }
-
-    Factory factory = typeAliases.get(clazz);
+    
     if (factory == null) {
       factory = defaultHandlerFactory;
     }

@@ -2,6 +2,7 @@ package com.mongodb.orm.engine.config;
 
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.entry.NodeEntry;
+import com.mongodb.orm.engine.entry.Script;
 
 /**
  * XML Group config
@@ -29,7 +30,7 @@ public class GroupConfig implements Config {
   /**
    * Group keyf
    */
-  private String keyf;
+  private Script keyf;
   /**
    * Group condition.
    */
@@ -41,11 +42,11 @@ public class GroupConfig implements Config {
   /**
    * Group reduce.
    */
-  private String reduce;
+  private Script reduce;
   /**
    * Group finalize.
    */
-  private String finalize;
+  private Script finalize;
   /**
    * Group return field.
    */
@@ -64,11 +65,11 @@ public class GroupConfig implements Config {
     this.key = key;
   }
 
-  public String getKeyf() {
+  public Script getKeyf() {
     return keyf;
   }
 
-  public void setKeyf(String keyf) {
+  public void setKeyf(Script keyf) {
     this.keyf = keyf;
   }
 
@@ -88,19 +89,19 @@ public class GroupConfig implements Config {
     this.initial = initial;
   }
 
-  public String getReduce() {
+  public Script getReduce() {
     return reduce;
   }
 
-  public void setReduce(String reduce) {
+  public void setReduce(Script reduce) {
     this.reduce = reduce;
   }
 
-  public String getFinalize() {
+  public Script getFinalize() {
     return finalize;
   }
 
-  public void setFinalize(String finalize) {
+  public void setFinalize(Script finalize) {
     this.finalize = finalize;
   }
 

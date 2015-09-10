@@ -14,6 +14,7 @@ import com.mongodb.exception.StatementException;
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.GroupConfig;
 import com.mongodb.orm.engine.entry.NodeEntry;
+import com.mongodb.orm.engine.entry.Script;
 import com.mongodb.orm.executor.parser.QueryParser;
 import com.mongodb.util.NodeletUtils;
 
@@ -108,7 +109,7 @@ public class GroupStatement extends BaseStatement implements StatementHandler {
       if (config.getKey() != null) {
         throw new StatementException("Alias name conflict occurred.  The node 'keyf' is already exists in '" + config.getId() + "'.");
       }
-      config.setKeyf(node.getTextContent());
+      config.setKeyf(new Script(node.getTextContent(), clazz));
     }
   }
 
@@ -154,7 +155,7 @@ public class GroupStatement extends BaseStatement implements StatementHandler {
       if (config.getReduce() != null) {
         throw new StatementException("Alias name conflict occurred.  The node 'reduce' is already exists in '" + config.getId() + "'.");
       }
-      config.setReduce(node.getTextContent());
+      config.setReduce(new Script(node.getTextContent(), clazz));
     }
   }
   
@@ -164,7 +165,7 @@ public class GroupStatement extends BaseStatement implements StatementHandler {
       if (config.getFinalize() != null) {
         throw new StatementException("Alias name conflict occurred.  The node 'finalize' is already exists in '" + config.getId() + "'.");
       }
-      config.setFinalize(node.getTextContent());
+      config.setFinalize(new Script(node.getTextContent(), clazz));
     }
   }
   

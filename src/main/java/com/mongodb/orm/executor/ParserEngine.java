@@ -2,6 +2,7 @@ package com.mongodb.orm.executor;
 
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
+import com.mongodb.orm.engine.entry.Script;
 import com.mongodb.orm.executor.parser.ResultParser;
 
 /**
@@ -21,7 +22,7 @@ public class ParserEngine {
     return (T) resultParser.parser(entry, object);
   }
   
-  public String toScript(String text, Object target) {
+  public String toScript(Script script, Object target) {
     // TODO
     return null;
   }

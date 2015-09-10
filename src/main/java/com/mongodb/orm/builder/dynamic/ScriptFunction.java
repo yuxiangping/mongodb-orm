@@ -23,9 +23,7 @@ public class ScriptFunction implements Function {
       throw new StatementException("Error node configuration. The 'script' can't be null.");
     }
 
-    Script script = new Script(text);
-    
-    dynamic.addFunction(this, new ScriptData(script));
+    dynamic.addFunction(this, new ScriptData(new Script(text, clazz)));
   }
 
   @Override
@@ -37,13 +35,12 @@ public class ScriptFunction implements Function {
   }
 
   class ScriptData implements FunctionData {
-
+    
     Script script;
 
     public ScriptData(Script script) {
       this.script = script;
     }
-
   }
 
 }

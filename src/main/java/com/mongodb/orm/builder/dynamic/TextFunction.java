@@ -25,7 +25,6 @@ public class TextFunction implements Function {
     }
 
     Map<Object, Object> data = JsonUtils.toMap(text);
-
     dynamic.addFunction(this, new TextData(text, data));
   }
 

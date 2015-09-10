@@ -1,6 +1,12 @@
 package com.mongodb.orm.engine.entry;
 
-import com.mongodb.orm.engine.type.TypeHandler;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import com.mongodb.exception.MongoORMException;
+import com.mongodb.util.BeanUtils;
+
 
 /**
  * Script text entry.
@@ -21,38 +27,68 @@ public class Script {
    */
   private Analyer analyer;
 
-  public Script(String text) {
+  public Script(String text, Class<?> clazz) {
     this.text = text;
+    this.analyer = AnalyerHelper.getAnalyer(clazz);
   }
 
   public String getText() {
     return text;
   }
+  
+  public String getValue(String target, Object value) {
+    return analyer.getValue(target, value);
+  }
 
-  interface Analyer {
+  static interface Analyer {
     String getValue(String target, Object value);
   }
   
-  class CustomAnalyer implements Analyer {
+  static class CustomAnalyer implements Analyer {
     @Override
     public String getValue(String target, Object value) {
-      return null;
+      try {
+        Object property = BeanUtils.getProperty(value, target);
+        return String.valueOf(property);
+      } catch (Exception e) {
+        throw new MongoORMException("No property '"+target+"'found. Class '"+value.getClass()+"'.", e);
+      }
     }
   }
   
-  class MapAnalyer implements Analyer {
+  @SuppressWarnings("rawtypes")
+  static class MapAnalyer implements Analyer {
     @Override
     public String getValue(String target, Object value) {
-      return null;
+      return String.valueOf(((Map)value).get(target));
     }
   }
   
-  class ValueAnalyer implements Analyer {
+  static class ValueAnalyer implements Analyer {
     @Override
     public String getValue(String target, Object value) {
-      // TODO Auto-generated method stub
-      return null;
+      return String.valueOf(value);
     }
   }
   
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private static class AnalyerHelper {
+    
+    static Analyer mapAnalyer = new MapAnalyer();
+    static Analyer customAnalyer = new CustomAnalyer();
+    static Analyer valueAnalyer = new ValueAnalyer();
+    
+    static List valueClass = Arrays.asList(String.class, Integer.class, int.class, Short.class, short.class, Long.class, long.class
+        ,Boolean.class, boolean.class, Double.class, double.class, Float.class, float.class, Byte.class, byte.class, Character.class, char.class);
+    
+    public static Analyer getAnalyer(Class<?> clazz) {
+      if(clazz.equals(Map.class)) {
+        return mapAnalyer;
+      }
+      if(valueClass.contains(clazz)) {
+        return valueAnalyer;
+      }
+      return customAnalyer;
+    }
+  }
 }

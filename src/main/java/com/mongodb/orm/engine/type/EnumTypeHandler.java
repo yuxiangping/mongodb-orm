@@ -6,8 +6,15 @@ package com.mongodb.orm.engine.type;
  * @data : 2014-7-25
  * @since : 1.5
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class EnumTypeHandler implements TypeHandler<Enum<?>> {
 
+  private Class clazz;
+  
+  public EnumTypeHandler(Class clazz) {
+    this.clazz = clazz;
+  }
+  
   @Override
   public Object getParameter(Enum<?> instance) {
     return instance.toString();
@@ -15,8 +22,7 @@ public class EnumTypeHandler implements TypeHandler<Enum<?>> {
 
   @Override
   public Enum<?> getResult(Object instance, Object value) {
-    // TODO Auto-generated method stub
-    return null;
+    return Enum.valueOf(clazz, String.valueOf(value));
   }
 
 }

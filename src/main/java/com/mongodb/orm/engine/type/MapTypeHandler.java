@@ -8,18 +8,25 @@ import java.util.Map;
  * @data : 2014-7-25
  * @since : 1.5
  */
+@SuppressWarnings("unchecked")
 public class MapTypeHandler implements TypeHandler<Map<Object, Object>> {
 
+  private String name;
+  
+  public MapTypeHandler(String name) {
+    this.name = name;
+  }
+  
   @Override
   public Object getParameter(Map<Object, Object> instance) {
-    // TODO Auto-generated method stub
-    return null;
+    return instance.get(name);
   }
 
   @Override
   public Map<Object, Object> getResult(Object instance, Object value) {
-    // TODO Auto-generated method stub
-    return null;
+    Map<Object, Object> map = (Map<Object, Object>)instance;
+    map.put(name, value);
+    return map;
   }
 
 }
