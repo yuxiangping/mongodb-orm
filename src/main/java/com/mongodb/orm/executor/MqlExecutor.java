@@ -1,6 +1,7 @@
 package com.mongodb.orm.executor;
 
 import com.mongodb.exception.MongoORMException;
+import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.entry.NodeEntry;
 
 /**
@@ -11,7 +12,7 @@ import com.mongodb.orm.engine.entry.NodeEntry;
  */
 public interface MqlExecutor<T> {
     
-    public T parser(NodeEntry entry, Object target) throws MongoORMException;
+    public T parser(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException;
     
     /**
      * SqlExecutor callback 
@@ -20,7 +21,7 @@ public interface MqlExecutor<T> {
      * @since : 1.5
      */
     public static interface CallBack<T> {
-        T callBack(NodeEntry entry, Object target) throws MongoORMException;
+        T callBack(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException;
     }
     
 }

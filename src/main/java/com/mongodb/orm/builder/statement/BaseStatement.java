@@ -29,7 +29,7 @@ import com.mongodb.util.NodeletUtils;
  * @since : 1.5
  */
 public abstract class BaseStatement implements StatementHandler {
-
+  
   protected List<Entry> getEntry(NodeList nodes, Class<?> clazz) {
     List<Entry> entrys = new ArrayList<Entry>(nodes.getLength());
     for (int i = 0; i < nodes.getLength(); i++) {

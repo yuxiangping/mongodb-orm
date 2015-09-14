@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -20,6 +22,7 @@ import com.mongodb.WriteResult;
 import com.mongodb.client.event.ResultContext;
 import com.mongodb.client.event.ResultHandler;
 import com.mongodb.exception.MongoDaoException;
+import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.config.AggregateConfig;
 import com.mongodb.orm.engine.config.CommandConfig;
 import com.mongodb.orm.engine.config.DeleteConfig;
@@ -44,12 +47,19 @@ import com.mongodb.util.NodeletUtils;
  * @since : 1.5
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class MongoClientTemplet implements MongoTemplet {
+public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
   private MongoORMFactoryBean factory;
-  
-  private ParserEngine parserEngine = new ParserEngine();
+  private MqlMapConfiguration configuration;
+  private ParserEngine parserEngine;
 
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    Assert.notNull(factory, "Mongo orm factory not null.");
+    configuration = factory.getConfiguration();
+    parserEngine = new ParserEngine();
+  }
+  
   @Override
   public <T> T findOne(String statement) {
     return findOne(statement, null, null, ReadPreference.secondaryPreferred());
@@ -73,7 +83,7 @@ public class MongoClientTemplet implements MongoTemplet {
   private <T> T findOne(String statement, Object parameter, ResultHandler handler, ReadPreference readPreference) {
     logger.debug("Execute 'selectOne' mongodb command. Statement '" + statement + "'.");
 
-    SelectConfig config = (SelectConfig) factory.getConfiguration().getConfig(statement);
+    SelectConfig config = (SelectConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Query statement id '" + statement + "' not found.");
     }
@@ -86,9 +96,9 @@ public class MongoClientTemplet implements MongoTemplet {
     DB db = factory.getDataSource().getDB();
 
     DBCollection coll = db.getCollection(collection);
-    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
-    Map<String, Object> f = (Map<String, Object>) field.executorNode(parameter);
-    Map<String, Object> o = (Map<String, Object>) order.executorNode(parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
+    Map<String, Object> f = (Map<String, Object>) field.executorNode(configuration, parameter);
+    Map<String, Object> o = (Map<String, Object>) order.executorNode(configuration, parameter);
 
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'selectOne' mongodb command. Query '" + queryDbo + "'.");
@@ -119,7 +129,7 @@ public class MongoClientTemplet implements MongoTemplet {
       });
       return null;
     } 
-    return (T) parserEngine.toResult(field, resultSet);
+    return (T) parserEngine.toResult(configuration, field, resultSet);
   }
 
   @Override
@@ -156,7 +166,7 @@ public class MongoClientTemplet implements MongoTemplet {
       ReadPreference readPreference) {
     logger.debug("Execute 'selectList' mongodb command. Statement '" + statement + "'.");
 
-    SelectConfig config = (SelectConfig) factory.getConfiguration().getConfig(statement);
+    SelectConfig config = (SelectConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Query statement id '" + statement + "' not found.");
     }
@@ -171,9 +181,9 @@ public class MongoClientTemplet implements MongoTemplet {
     DBCollection coll = db.getCollection(collection);
     coll.setReadPreference(readPreference);
 
-    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
-    Map<String, Object> f = (Map<String, Object>) field.executorNode(parameter);
-    Map<String, Object> o = (Map<String, Object>) order.executorNode(parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
+    Map<String, Object> f = (Map<String, Object>) field.executorNode(configuration, parameter);
+    Map<String, Object> o = (Map<String, Object>) order.executorNode(configuration, parameter);
     
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'selectList' mongodb command. Query '" + queryDbo + "'.");
@@ -214,7 +224,7 @@ public class MongoClientTemplet implements MongoTemplet {
     
     List<T> result = new ArrayList<T>(resultSet.size());
     while (resultSet.hasNext()) {
-      result.add((T) parserEngine.toResult(field, resultSet.next()));
+      result.add((T) parserEngine.toResult(configuration, field, resultSet.next()));
     }
     return result;
   }
@@ -228,7 +238,7 @@ public class MongoClientTemplet implements MongoTemplet {
   public long count(String statement, Object parameter) {
     logger.debug("Execute 'count' mongodb command. Statement '" + statement + "'.");
 
-    SelectConfig config = (SelectConfig) factory.getConfiguration().getConfig(statement);
+    SelectConfig config = (SelectConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Count statement id '" + statement + "' not found.");
     }
@@ -240,7 +250,7 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
     
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'count' mongodb command. Query '" + queryDbo + "'.");
@@ -271,7 +281,7 @@ public class MongoClientTemplet implements MongoTemplet {
   private <T> List<T> distinct(String statement, String key, Object parameter, ResultHandler handler, ReadPreference readPreference) {
     logger.debug("Execute 'distinct' mongodb command. Statement '" + statement + "'.");
 
-    SelectConfig config = (SelectConfig) factory.getConfiguration().getConfig(statement);
+    SelectConfig config = (SelectConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Distinct statement id '" + statement + "' not found.");
     }
@@ -288,8 +298,8 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
-    Map<String, Object> f = (Map<String, Object>) field.executorNode(parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
+    Map<String, Object> f = (Map<String, Object>) field.executorNode(configuration, parameter);
 
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'distinct' mongodb command. Query '" + queryDbo + "'.");
@@ -317,7 +327,7 @@ public class MongoClientTemplet implements MongoTemplet {
     
     List<T> result = new ArrayList<T>(resultSet.size());
     for (Iterator<Object> iter = resultSet.iterator(); iter.hasNext();) {
-      result.add((T) parserEngine.toResult(field, iter.next()));
+      result.add((T) parserEngine.toResult(configuration, field, iter.next()));
     }
     return result;
   }
@@ -331,7 +341,7 @@ public class MongoClientTemplet implements MongoTemplet {
   public String insert(String statement, Object parameter) {
     logger.debug("Execute 'insert' mongodb command. Statement '" + statement + "'.");
 
-    InsertConfig config = (InsertConfig) factory.getConfiguration().getConfig(statement);
+    InsertConfig config = (InsertConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Insert statement id '" + statement + "' not found.");
     }
@@ -344,7 +354,7 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
     
-    Map<String, Object> doc = (Map<String, Object>) document.executorNode(parameter);
+    Map<String, Object> doc = (Map<String, Object>) document.executorNode(configuration, parameter);
 
     DBObject docDbo = new BasicDBObject(doc);
     logger.debug("Execute 'insert' mongodb command. Doc '" + docDbo + "'.");
@@ -368,7 +378,7 @@ public class MongoClientTemplet implements MongoTemplet {
   public <T> List<String> insertBatch(String statement, List<T> list) {
     logger.debug("Execute 'insertBatch' mongodb command. Statement '" + statement + "'.");
 
-    InsertConfig config = (InsertConfig) factory.getConfiguration().getConfig(statement);
+    InsertConfig config = (InsertConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Insert statement id '" + statement + "' not found.");
     }
@@ -383,7 +393,7 @@ public class MongoClientTemplet implements MongoTemplet {
 
     List<DBObject> docDboList = new ArrayList<DBObject>(list.size());
     for (T parameter : list) {
-      Map<String, Object> doc = (Map<String, Object>) document.executorNode(parameter);
+      Map<String, Object> doc = (Map<String, Object>) document.executorNode(configuration, parameter);
       DBObject docDbo = new BasicDBObject(doc);
       docDboList.add(docDbo);
       logger.debug("Execute 'insert' mongodb command. Doc '" + docDbo + "'.");
@@ -435,7 +445,7 @@ public class MongoClientTemplet implements MongoTemplet {
   private <T> T findAndModify(String statement, Object parameter, ResultHandler handler, boolean returnNew, boolean upset) {
     logger.debug("Execute 'findAndModify' mongodb command. Statement '" + statement + "'.");
 
-    UpdateConfig config = (UpdateConfig) factory.getConfiguration().getConfig(statement);
+    UpdateConfig config = (UpdateConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "FindAndModify statement id '" + statement + "' not found.");
     }
@@ -449,9 +459,9 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
-    Map<String, Object> a = (Map<String, Object>) action.executorNode(parameter);
-    Map<String, Object> f = (Map<String, Object>) field.executorNode(parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
+    Map<String, Object> a = (Map<String, Object>) action.executorNode(configuration, parameter);
+    Map<String, Object> f = (Map<String, Object>) field.executorNode(configuration, parameter);
     
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'findAndModify' mongodb command. Query '" + queryDbo + "'.");
@@ -483,7 +493,7 @@ public class MongoClientTemplet implements MongoTemplet {
       return null;
     }
     
-    return (T) parserEngine.toResult(field, resultSet);
+    return (T) parserEngine.toResult(configuration, field, resultSet);
   }
 
   @Override
@@ -495,7 +505,7 @@ public class MongoClientTemplet implements MongoTemplet {
   public int update(String statement, Object parameter) {
     logger.debug("Execute 'update' mongodb command. Statement '" + statement + "'.");
 
-    UpdateConfig config = (UpdateConfig) factory.getConfiguration().getConfig(statement);
+    UpdateConfig config = (UpdateConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Update statement id '" + statement + "' not found.");
     }
@@ -508,8 +518,8 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
-    Map<String, Object> a = (Map<String, Object>) action.executorNode(parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
+    Map<String, Object> a = (Map<String, Object>) action.executorNode(configuration, parameter);
     
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'update' mongodb command. Query '" + queryDbo + "'.");
@@ -534,7 +544,7 @@ public class MongoClientTemplet implements MongoTemplet {
   public int delete(String statement, Object parameter) {
     logger.debug("Execute 'delete' mongodb command. Statement '" + statement + "'.");
 
-    DeleteConfig config = (DeleteConfig) factory.getConfiguration().getConfig(statement);
+    DeleteConfig config = (DeleteConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Delete statement id '" + statement + "' not found.");
     }
@@ -546,7 +556,7 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DBCollection coll = db.getCollection(collection);
 
-    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
 
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'delete' mongodb command. Query '" + queryDbo + "'.");
@@ -582,7 +592,7 @@ public class MongoClientTemplet implements MongoTemplet {
   private <T> T command(String statement, Object parameter, ResultHandler handler, ReadPreference readPreference) {
     logger.debug("Execute 'command' mongodb command. Statement '" + statement + "'.");
 
-    CommandConfig config = (CommandConfig) factory.getConfiguration().getConfig(statement);
+    CommandConfig config = (CommandConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Command statement id '" + statement + "' not found.");
     }
@@ -592,7 +602,7 @@ public class MongoClientTemplet implements MongoTemplet {
 
     DB db = factory.getDataSource().getDB();
 
-    Map<String, Object> q = (Map<String, Object>) query.executorNode(parameter);
+    Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
 
     DBObject queryDbo = new BasicDBObject(q);
     logger.debug("Execute 'command' mongodb command. Query '" + queryDbo + "'.");
@@ -615,7 +625,7 @@ public class MongoClientTemplet implements MongoTemplet {
       return null;
     }
     
-    return (T) parserEngine.toResult(field, resultSet);
+    return (T) parserEngine.toResult(configuration, field, resultSet);
   }
 
   @Override
@@ -641,7 +651,7 @@ public class MongoClientTemplet implements MongoTemplet {
   private <T> T group(String statement, Object parameter, ResultHandler handler, ReadPreference readPreference) {
     logger.debug("Execute 'group' mongodb command. Statement '" + statement + "'.");
 
-    GroupConfig config = (GroupConfig) factory.getConfiguration().getConfig(statement);
+    GroupConfig config = (GroupConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Group statement id '" + statement + "' not found.");
     }
@@ -659,9 +669,9 @@ public class MongoClientTemplet implements MongoTemplet {
     DBCollection coll = db.getCollection(collection);
     coll.setReadPreference(readPreference);
 
-    Map<String, Object> k = (Map<String, Object>) key.executorNode(parameter);
-    Map<String, Object> c = (Map<String, Object>) condition.executorNode(parameter);
-    Map<String, Object> i = (Map<String, Object>) initial.executorNode(parameter);
+    Map<String, Object> k = (Map<String, Object>) key.executorNode(configuration, parameter);
+    Map<String, Object> c = (Map<String, Object>) condition.executorNode(configuration, parameter);
+    Map<String, Object> i = (Map<String, Object>) initial.executorNode(configuration, parameter);
     String r = parserEngine.toScript(reduce, parameter);
     String f = parserEngine.toScript(finalize, parameter);
 
@@ -697,7 +707,7 @@ public class MongoClientTemplet implements MongoTemplet {
       });
       return null;
     }
-    return (T) parserEngine.toResult(field, resultSet);
+    return (T) parserEngine.toResult(configuration, field, resultSet);
   }
 
   @Override
@@ -723,7 +733,7 @@ public class MongoClientTemplet implements MongoTemplet {
   private <T> List<T> aggregate(String statement, Object[] parameter, ResultHandler handler, ReadPreference readPreference) {
     logger.debug("Execute 'aggregate' mongodb command. Statement '" + statement + "'.");
 
-    AggregateConfig config = (AggregateConfig) factory.getConfiguration().getConfig(statement);
+    AggregateConfig config = (AggregateConfig) configuration.getConfig(statement);
     if (config == null) {
       throw new MongoDaoException(statement, "Aggregate statement id '" + statement + "' not found.");
     }
@@ -738,14 +748,14 @@ public class MongoClientTemplet implements MongoTemplet {
     coll.setReadPreference(readPreference);
 
     NodeEntry firstFunction = function.remove(0);
-    Map<String, Object> f = (Map<String, Object>) firstFunction.executorNode(parameter);
+    Map<String, Object> f = (Map<String, Object>) firstFunction.executorNode(configuration, parameter);
     DBObject firstOp = new BasicDBObject(f);
     logger.debug("Execute 'aggregate' mongodb command. First Operation '" + firstOp + "'.");
 
     DBObject[] operations = new DBObject[function.size()];
     for (int i = 0; i < function.size(); i++) {
       NodeEntry ne = function.get(i);
-      Map<String, Object> op = (Map<String, Object>) ne.executorNode(parameter);
+      Map<String, Object> op = (Map<String, Object>) ne.executorNode(configuration, parameter);
       DBObject operationDbo = new BasicDBObject(op);
       operations[i] = operationDbo;
       logger.debug("Execute 'aggregate' mongodb command. Operation '" + operationDbo + "'.");
@@ -772,7 +782,7 @@ public class MongoClientTemplet implements MongoTemplet {
     
     List<T> list = new ArrayList<T>(resultSet.size());
     for (Iterator iter = resultSet.iterator(); iter.hasNext();) {
-      T result = (T) parserEngine.toResult(field, iter.next());
+      T result = (T) parserEngine.toResult(configuration, field, iter.next());
       list.add(result);
     }
     return list;
@@ -798,12 +808,12 @@ public class MongoClientTemplet implements MongoTemplet {
 
   @Override
   public <T> T parseObject(String mappingId, DBObject source) {
-    MappingConfig mapping = (MappingConfig)factory.getConfiguration().getMapping(mappingId);
+    MappingConfig mapping = (MappingConfig)configuration.getMapping(mappingId);
     
     NodeEntry nodeEntry = new NodeEntry();
     nodeEntry.setClazz(mapping.getClazz());
-    nodeEntry.setNodeMappings(NodeletUtils.getMappingEntry(mapping, factory.getConfiguration()));
-    return (T) parserEngine.toResult(nodeEntry, source);
+    nodeEntry.setNodeMappings(NodeletUtils.getMappingEntry(mapping, configuration));
+    return (T) parserEngine.toResult(configuration, nodeEntry, source);
   }
   
   public void setFactory(MongoORMFactoryBean factory) {

@@ -1,5 +1,6 @@
 package com.mongodb.orm.executor;
 
+import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.entry.Script;
@@ -18,8 +19,8 @@ public class ParserEngine {
 
   private ResultParser resultParser = new ResultParser();
   
-  public <T> T toResult(NodeEntry entry, Object object) {
-    return (T) resultParser.parser(entry, object);
+  public <T> T toResult(MqlMapConfiguration configuration, NodeEntry entry, Object object) {
+    return (T) resultParser.parser(configuration, entry, object);
   }
   
   public String toScript(Script script, Object target) {

@@ -3,6 +3,7 @@ package com.mongodb.orm.engine.entry;
 import java.io.Serializable;
 import java.util.List;
 
+import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.executor.MqlExecutor;
 
 /**
@@ -36,8 +37,8 @@ public class NodeEntry implements Serializable {
    */
   private MqlExecutor<?> executor;
   
-  public Object executorNode(Object target) {
-    return executor.parser(this, target);
+  public Object executorNode(MqlMapConfiguration configuration, Object target) {
+    return executor.parser(configuration, this, target);
   }
   
   public String getMappingId() {
