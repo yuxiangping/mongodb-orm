@@ -1,5 +1,6 @@
 package com.mongodb.orm.engine.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mongodb.orm.engine.Config;
@@ -31,7 +32,7 @@ public class MappingConfig implements Config {
   /**
    * Node children nodes.
    */
-  private List<Entry> nodes;
+  private List<Entry> nodes = new ArrayList<Entry>();
 
   public MappingConfig(String id, Class<?> clazz, String extend, List<Entry> nodes) {
     this.id = id;

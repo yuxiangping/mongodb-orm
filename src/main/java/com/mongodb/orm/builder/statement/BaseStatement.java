@@ -17,8 +17,11 @@ import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.entry.Operator;
 import com.mongodb.orm.engine.type.TypeHandlerFactory;
-import com.mongodb.orm.executor.parser.FieldParser;
-import com.mongodb.orm.executor.parser.QueryParser;
+import com.mongodb.orm.executor.MqlExecutor;
+import com.mongodb.orm.executor.parser.ActionExecutor;
+import com.mongodb.orm.executor.parser.FieldExecutor;
+import com.mongodb.orm.executor.parser.OrderExecutor;
+import com.mongodb.orm.executor.parser.QueryExecutor;
 import com.mongodb.util.NodeletUtils;
 
 /**
@@ -29,6 +32,11 @@ import com.mongodb.util.NodeletUtils;
  * @since : 1.5
  */
 public abstract class BaseStatement implements StatementHandler {
+  
+  protected static MqlExecutor<?> queryExecutor = new QueryExecutor();
+  protected static MqlExecutor<?> fieldExecutor = new FieldExecutor();
+  protected static MqlExecutor<?> actionExecutor = new ActionExecutor();
+  protected static MqlExecutor<?> orderExecutor = new OrderExecutor();
   
   protected List<Entry> getEntry(NodeList nodes, Class<?> clazz) {
     List<Entry> entrys = new ArrayList<Entry>(nodes.getLength());
@@ -42,14 +50,16 @@ public abstract class BaseStatement implements StatementHandler {
       String operate = attributes.getProperty(ORM.TAG_OPERATE);
       String value = attributes.getProperty(ORM.TAG_VALUE);
       String type = attributes.getProperty(ORM.TAG_TYPE);
-      String isIgnoreNull = attributes.getProperty(ORM.TAG_IGNORE_NULL);
-
+      String ignoreNull = attributes.getProperty(ORM.TAG_IGNORE_NULL);
+      String ignoreEmpty = attributes.getProperty(ORM.TAG_IGNORE_EMPTY);
+      
       Entry entry = new Entry();
       entry.setColumn(column);
       entry.setName(name);
       entry.setOperate(Operator.formName(operate));
       entry.setValue(value);
-      entry.setIsIgnoreNull(isIgnoreNull == null ? null : Boolean.parseBoolean(isIgnoreNull));
+      entry.setIgnoreNull(ignoreNull == null ? false : Boolean.parseBoolean(ignoreNull));
+      entry.setIgnoreEmpty(ignoreEmpty == null ? false : Boolean.parseBoolean(ignoreEmpty));
       entry.setColumnHandler(TypeHandlerFactory.getColumnHandler(ColumnType.fromType(type)));
       entry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz, name));
 
@@ -59,7 +69,7 @@ public abstract class BaseStatement implements StatementHandler {
         String nodeName = cnode.getNodeName();
         // Child
         if (ORM.NODE_CHILD_NODE.equals(nodeName)) {
-          entry.addNode(resolveChildNode(cnode, name));
+          entry.addNode(resolveChildNode(cnode, name, clazz));
         // Dynamic Function
         } else {
           entry.setDynamic(resolveDynamic(cnode, name, clazz));
@@ -76,7 +86,7 @@ public abstract class BaseStatement implements StatementHandler {
     String mapping = attributes.getProperty(ORM.ORM_MAPPING);
 
     NodeEntry entry = new NodeEntry();
-    entry.setExecutor(new QueryParser());
+    entry.setExecutor(queryExecutor);
     if (mapping != null) {
       entry.setMappingId(mapping);
       return entry;
@@ -109,7 +119,7 @@ public abstract class BaseStatement implements StatementHandler {
     String mapping = attributes.getProperty(ORM.ORM_MAPPING);
 
     NodeEntry entry = new NodeEntry();
-    entry.setExecutor(new FieldParser());
+    entry.setExecutor(fieldExecutor);
     if (mapping != null) {
       entry.setMappingId(mapping);
       return entry;
@@ -140,23 +150,23 @@ public abstract class BaseStatement implements StatementHandler {
     void analyze(T config, Node node);
   }
 
-  private NodeEntry resolveChildNode(Node node, String name) {
+  private NodeEntry resolveChildNode(Node node, String name, Class<?> clazz) {
     Properties attribute = NodeletUtils.parseAttributes(node);
-    String clazz = attribute.getProperty(ORM.ORM_CLASS);
+    String clzz = attribute.getProperty(ORM.ORM_CLASS);
     String mapping = attribute.getProperty(ORM.ORM_MAPPING);
 
     NodeEntry entry = new NodeEntry();
     if (mapping != null) {
       entry.setMappingId(mapping);
     } else {
-      Class<?> clzz = null;
-      if (clazz != null) {
+      if (clzz != null) {
         try {
-          clzz = Class.forName(clazz);
+          clazz = Class.forName(clzz);
+          entry.setClazz(clazz);
         } catch (ClassNotFoundException e) {
-          throw new StatementException("Class not found by name '" + clazz + "' for child node '" + name + "'.", e);
+          throw new StatementException("Class not found by name '" + clzz + "' for child node '" + name + "'.", e);
         }
-        entry.setClazz(clzz);
+        entry.setClazz(clazz);
       }
 
       NodeList childNodes = node.getChildNodes();
@@ -164,7 +174,7 @@ public abstract class BaseStatement implements StatementHandler {
         throw new StatementException("Error child node '" + name + "', because child nodes not found.");
       }
 
-      List<Entry> childEntrys = getEntry(childNodes, clzz);
+      List<Entry> childEntrys = getEntry(childNodes, clazz);
       entry.setNodeMappings(childEntrys);
     }
     return entry;

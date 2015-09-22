@@ -47,6 +47,7 @@ public class MongoORMFactoryBean implements InitializingBean {
         throw new NestedIOException("Failed to parse config configuration. File name is " + configLocation.getFilename(), ex.getCause());
       }
     }
+    configParser.validateMapping();
     this.configParser = configParser;
     logger.info("Mongodb orm framework has ready.");
   }

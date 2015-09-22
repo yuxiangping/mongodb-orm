@@ -5,7 +5,7 @@ import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.executor.MqlExecutor;
 
-public class ResultParser<T> implements MqlExecutor<T> {
+public class ResultExecutor<T> implements MqlExecutor<T> {
 
   @Override
   public T parser(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {

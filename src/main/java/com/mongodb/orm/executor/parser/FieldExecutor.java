@@ -7,12 +7,11 @@ import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.executor.MqlExecutor;
 
-public class QueryParser implements MqlExecutor<Map<String, Object>> {
+public class FieldExecutor implements MqlExecutor<Map<String, Object>> {
 
   @Override
   public Map<String, Object> parser(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
-    
-    
+    // TODO Auto-generated method stub
     return null;
   }
 
@@ -22,5 +21,5 @@ public class QueryParser implements MqlExecutor<Map<String, Object>> {
       return parser(configuration, entry, target);
     }
   };
-
+  
 }

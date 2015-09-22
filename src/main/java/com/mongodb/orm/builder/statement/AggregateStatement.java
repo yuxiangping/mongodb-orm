@@ -15,7 +15,6 @@ import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.AggregateConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
-import com.mongodb.orm.executor.parser.QueryParser;
 import com.mongodb.util.NodeletUtils;
 
 /**
@@ -103,7 +102,7 @@ public class AggregateStatement extends BaseStatement implements StatementHandle
         NodeEntry entry = new NodeEntry();
         entry.setClazz(clazz);
         entry.setNodeMappings(nodes);
-        entry.setExecutor(new QueryParser());
+        entry.setExecutor(queryExecutor);
         
         config.addFunction(operate, entry);
       }

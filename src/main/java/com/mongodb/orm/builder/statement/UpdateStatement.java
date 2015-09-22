@@ -17,7 +17,6 @@ import com.mongodb.orm.engine.config.UpdateConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.type.TypeHandlerFactory;
-import com.mongodb.orm.executor.parser.ActionParser;
 import com.mongodb.util.NodeletUtils;
 
 /**
@@ -131,7 +130,7 @@ public class UpdateStatement extends BaseStatement implements StatementHandler {
       }
 
       NodeEntry actionEntry = new NodeEntry();
-      actionEntry.setExecutor(new ActionParser());
+      actionEntry.setExecutor(actionExecutor);
       actionEntry.setClazz(clazz);
       actionEntry.setNodeMappings(entrys);
       config.setAction(actionEntry);

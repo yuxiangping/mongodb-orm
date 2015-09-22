@@ -5,7 +5,7 @@ import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.entry.NodeEntry;
 
 /**
- * Sql Executor 
+ * Mql executor 
  * @author: xiangping_yu
  * @data : 2014-3-7
  * @since : 1.5

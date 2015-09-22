@@ -50,7 +50,10 @@ public class ORM {
    * XML file 'ignoreNull' tag
    */
   public static final String TAG_IGNORE_NULL = "ignoreNull";
-
+  /**
+   * XML file 'ignoreEmpty' tag
+   */
+  public static final String TAG_IGNORE_EMPTY = "ignoreEmpty";
   /**
    * XML file orm class tag
    */
@@ -148,4 +151,8 @@ public class ORM {
    * XML file script params tag end
    */
   public static final String LABEL_SCRIPT_END = "}";
+  /**
+   * XML file 'value' label. Example <property column="name" value="${value}" />
+   */
+  public static final String LABEL_VALUE = LABEL_SCRIPT_START + "value" + LABEL_SCRIPT_END;
 }

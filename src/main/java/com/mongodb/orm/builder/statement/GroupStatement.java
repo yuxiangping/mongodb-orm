@@ -15,7 +15,6 @@ import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.GroupConfig;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.entry.Script;
-import com.mongodb.orm.executor.parser.QueryParser;
 import com.mongodb.util.NodeletUtils;
 
 /**
@@ -98,7 +97,7 @@ public class GroupStatement extends BaseStatement implements StatementHandler {
         entry.setClazz(clazz);
         entry.setNodeMappings(getEntry(node.getChildNodes(), clazz));
       }
-      entry.setExecutor(new QueryParser());
+      entry.setExecutor(queryExecutor);
       config.setKey(entry);
     }
   }
@@ -126,7 +125,7 @@ public class GroupStatement extends BaseStatement implements StatementHandler {
         entry.setClazz(clazz);
         entry.setNodeMappings(getEntry(node.getChildNodes(), clazz));
       }
-      entry.setExecutor(new QueryParser());
+      entry.setExecutor(queryExecutor);
       config.setInitial(entry);
     }
   }
@@ -144,7 +143,7 @@ public class GroupStatement extends BaseStatement implements StatementHandler {
         entry.setClazz(clazz);
         entry.setNodeMappings(getEntry(node.getChildNodes(), clazz));
       }
-      entry.setExecutor(new QueryParser());
+      entry.setExecutor(queryExecutor);
       config.setCondition(entry);
     }
   }

@@ -3,6 +3,7 @@ package com.mongodb.orm;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.mongodb.exception.StatementException;
 import com.mongodb.orm.engine.Config;
 
 /**
@@ -35,7 +36,7 @@ public class MqlMapConfiguration {
 
   public MqlMapConfiguration addConfig(String key, Config value) {
     if (configs.containsKey(key)) {
-      throw new RuntimeException("Alias name conflict occurred.  This mql '"+key+"' is already exists."); 
+      throw new StatementException("Alias name conflict occurred.  This mql '"+key+"' is already exists."); 
     }
     configs.put(key, value);
     return this;
@@ -47,10 +48,18 @@ public class MqlMapConfiguration {
 
   public MqlMapConfiguration addMapping(String key, Config value) {
     if (mappings.containsKey(key)) {
-      throw new RuntimeException("Alias name conflict occurred.  This mapping '"+key+"' is already exists.");
+      throw new StatementException("Alias name conflict occurred.  This mapping '"+key+"' is already exists.");
     }
     mappings.put(key, value);
     return this;
   }
 
+  public Map<String, Config> getConfigs() {
+    return configs;
+  }
+
+  public Map<String, Config> getMappings() {
+    return mappings;
+  }
+  
 }

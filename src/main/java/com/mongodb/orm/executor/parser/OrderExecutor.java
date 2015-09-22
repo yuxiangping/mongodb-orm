@@ -7,7 +7,7 @@ import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.executor.MqlExecutor;
 
-public class FieldParser implements MqlExecutor<Map<String, Object>> {
+public class  OrderExecutor implements MqlExecutor<Map<String, Object>> {
 
   @Override
   public Map<String, Object> parser(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
@@ -15,11 +15,4 @@ public class FieldParser implements MqlExecutor<Map<String, Object>> {
     return null;
   }
 
-  CallBack<Map<String, Object>> callBack = new CallBack<Map<String, Object>>() {
-    @Override
-    public Map<String, Object> callBack(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
-      return parser(configuration, entry, target);
-    }
-  };
-  
 }

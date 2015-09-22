@@ -17,7 +17,6 @@ import com.mongodb.orm.engine.config.SelectConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.type.TypeHandlerFactory;
-import com.mongodb.orm.executor.parser.OrderParser;
 import com.mongodb.util.NodeletUtils;
 
 /**
@@ -132,7 +131,7 @@ public class SelectStatement extends BaseStatement implements StatementHandler {
       }
 
       NodeEntry orderEntry = new NodeEntry();
-      orderEntry.setExecutor(new OrderParser());
+      orderEntry.setExecutor(orderExecutor);
       orderEntry.setClazz(clazz);
       orderEntry.setNodeMappings(entrys);
       config.setOrder(orderEntry);

@@ -25,6 +25,7 @@
 	type (string|number|double|boolean|objectid|regex|date|byte) #IMPLIED
 	value CDATA #IMPLIED
 	ignoreNull (true|false) #IMPLIED
+	ignoreEmpty (true|false) #IMPLIED
 >
 
 <!ELEMENT value (property)*>

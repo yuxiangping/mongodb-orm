@@ -4,7 +4,7 @@ import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.entry.Script;
-import com.mongodb.orm.executor.parser.ResultParser;
+import com.mongodb.orm.executor.parser.ResultExecutor;
 
 /**
  * Parser engine for mql.
@@ -17,10 +17,10 @@ import com.mongodb.orm.executor.parser.ResultParser;
 @SuppressWarnings("unchecked")
 public class ParserEngine {
 
-  private ResultParser resultParser = new ResultParser();
+  private ResultExecutor resultExecutor = new ResultExecutor();
   
   public <T> T toResult(MqlMapConfiguration configuration, NodeEntry entry, Object object) {
-    return (T) resultParser.parser(configuration, entry, object);
+    return (T) resultExecutor.parser(configuration, entry, object);
   }
   
   public String toScript(Script script, Object target) {

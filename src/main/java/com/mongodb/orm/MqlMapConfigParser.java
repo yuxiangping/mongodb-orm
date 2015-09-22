@@ -13,6 +13,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.mongodb.exception.StatementException;
 import com.mongodb.orm.builder.Nodelet;
 import com.mongodb.orm.builder.NodeletParser;
 import com.mongodb.orm.builder.statement.AggregateStatement;
@@ -23,6 +24,8 @@ import com.mongodb.orm.builder.statement.InsertStatement;
 import com.mongodb.orm.builder.statement.MappingStatement;
 import com.mongodb.orm.builder.statement.SelectStatement;
 import com.mongodb.orm.builder.statement.UpdateStatement;
+import com.mongodb.orm.engine.Config;
+import com.mongodb.orm.engine.config.MappingConfig;
 import com.mongodb.util.NodeletUtils;
 
 /**
@@ -65,12 +68,26 @@ public class MqlMapConfigParser {
   }
 
   /**
+   * Validate mql mapping configuration.
+   */
+  public void validateMapping() {
+    Map<String, Config> mappings = configuration.getMappings();
+    for(Map.Entry<String, Config> entry : mappings.entrySet()) {
+      MappingConfig value = (MappingConfig)entry.getValue();
+      getMappingExtendsNode(value);
+      if(value.getNodes().isEmpty()) {
+        throw new StatementException("MQL mapping config can not empty property. Mapping id '"+value.getId()+"'");
+      }
+    }
+  }
+  
+  /**
    * Return the mql configuration.
    */
   public MqlMapConfiguration getConfiguration() {
     return configuration;
   }
-
+  
   private void addMapNodelets() {
     parser.addNodelet("/mql/mapping", new Nodelet() {
       @Override
@@ -173,6 +190,22 @@ public class MqlMapConfigParser {
         logger.debug("Mql configuration load [aggregate] '" + id + "' has finished.");
       }
     });
+  }
+  
+  private void getMappingExtendsNode(MappingConfig target) {
+    String extend = target.getExtend();
+    if(extend != null && target.getNodes().size()>0) {
+      MappingConfig mc = (MappingConfig)configuration.getMapping(extend);
+      if(mc == null) {
+        throw new StatementException("This extends mapping '"+extend+"' not found. Mapping id '"+target.getId()+"'");
+      }
+      
+      if(mc.getId().equals(target.getId())) {
+        throw new StatementException("This extends mapping can not inherit their own. Mapping id '"+target.getId()+"'");
+      }
+      getMappingExtendsNode(mc);
+      target.getNodes().addAll(mc.getNodes());
+    }
   }
 
   /**

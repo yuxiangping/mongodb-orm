@@ -49,7 +49,11 @@ public class Entry implements Serializable {
   /**
    * Whether to ignore null.
    */
-  private Boolean isIgnoreNull;
+  private Boolean ignoreNull;
+  /**
+   * Whether to ignore empty.
+   */
+  private Boolean ignoreEmpty;
   /**
    * Dynamic node
    */
@@ -107,12 +111,20 @@ public class Entry implements Serializable {
     this.operate = operate;
   }
 
-  public Boolean getIsIgnoreNull() {
-    return isIgnoreNull;
+  public boolean isIgnoreNull() {
+    return (ignoreNull==null) ? false: ignoreNull;
+  }
+  
+  public void setIgnoreNull(Boolean ignoreNull) {
+    this.ignoreNull = ignoreNull;
   }
 
-  public void setIsIgnoreNull(Boolean isIgnoreNull) {
-    this.isIgnoreNull = isIgnoreNull;
+  public boolean isIgnoreEmpty() {
+    return (ignoreEmpty==null) ? false: ignoreEmpty;
+  }
+  
+  public void setIgnoreEmpty(Boolean ignoreEmpty) {
+    this.ignoreEmpty = ignoreEmpty;
   }
 
   public Dynamic getDynamic() {
