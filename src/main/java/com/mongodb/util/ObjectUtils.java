@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.mongodb.orm.engine.entry.Entry;
+
 /**
  * Utils for object.
  * 
@@ -30,6 +32,22 @@ public class ObjectUtils {
       return ((Map<?,?>)value).isEmpty();
     }
     return false;
+  }
+  
+  public static boolean checkValueNull(Object value, Entry entry) {
+    if(!isEmpty(value)) {
+      return false;
+    }
+    
+    if(entry.isIgnoreNull()) {
+      return false;
+    }
+    
+    if(value!=null && entry.isIgnoreEmpty()) {
+      return false;
+    }
+    
+    return true;
   }
   
 }

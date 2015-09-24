@@ -21,7 +21,6 @@ public class DefaultStrategy implements Strategy {
       Object parameter = typeHandler.getParameter(context.getTarget());
       context.setValue(parameter);
     }
-    
     chain.doStrategy(configuration, context);
   }
 

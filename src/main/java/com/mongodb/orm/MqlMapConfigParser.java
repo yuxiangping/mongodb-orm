@@ -27,6 +27,7 @@ import com.mongodb.orm.builder.statement.UpdateStatement;
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.MappingConfig;
 import com.mongodb.util.NodeletUtils;
+import com.mongodb.util.ObjectUtils;
 
 /**
  * MQL map config parser
@@ -194,7 +195,7 @@ public class MqlMapConfigParser {
   
   private void getMappingExtendsNode(MappingConfig target) {
     String extend = target.getExtend();
-    if(extend != null && target.getNodes().size()>0) {
+    if(extend != null && !ObjectUtils.isEmpty(target.getNodes().size()>0)) {
       MappingConfig mc = (MappingConfig)configuration.getMapping(extend);
       if(mc == null) {
         throw new StatementException("This extends mapping '"+extend+"' not found. Mapping id '"+target.getId()+"'");

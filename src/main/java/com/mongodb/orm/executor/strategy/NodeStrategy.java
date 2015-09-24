@@ -21,9 +21,17 @@ public class NodeStrategy implements Strategy {
     Entry entry = context.getEntry();
     List<NodeEntry> nodes = entry.getNodes();
     if(!ObjectUtils.isEmpty(nodes)) {
+      int count = nodes.size();
+      Object[] array = new Object[count];
       CallBack<?> callback = context.getCallback();
-      for(NodeEntry node : nodes) {
-        callback.callBack(configuration, node, context.getTarget());
+      for(int i=0; i<count; i++) {
+        array[i] = callback.callBack(configuration, nodes.get(i), context.getTarget());
+      }
+      
+      if(count == 1) {
+        context.setValue(array[0]);
+      } else {
+        context.setValue(array);
       }
     }
     chain.doStrategy(configuration, context);
