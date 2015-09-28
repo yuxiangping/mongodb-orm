@@ -23,11 +23,9 @@ public class ScriptUtils {
     
     Matcher matcher = pattern.matcher(text);
     while(matcher.find()) {
-      text = text.replace(matcher.group(), matcher.group(1));  //FIXME
+      text = text.replace(matcher.group(), script.getValue(matcher.group(1), object));
     }
     return text;
   }
-  
-  
   
 }

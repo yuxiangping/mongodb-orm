@@ -16,6 +16,19 @@ import com.mongodb.orm.executor.strategy.StrategyChain;
 import com.mongodb.orm.executor.strategy.StrategyContext;
 import com.mongodb.util.ObjectUtils;
 
+/**
+ * Mongodb MQL action executor.
+ * 
+ * <update>
+ *     <action>
+ *         ......
+ *     </action>
+ * </update> 
+ * 
+ * @author: xiangping_yu
+ * @data : 2015-09-28
+ * @since : 1.5
+ */
 public class ActionExecutor implements MqlExecutor<Map<String, Object>> {
 
   @Override

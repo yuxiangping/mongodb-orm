@@ -30,8 +30,7 @@ public class ScriptFunction implements Function {
   public Object parser(FunctionData data, Object target) {
     ScriptData scriptData = (ScriptData) data;
     Script script = scriptData.script;
-    ScriptUtils.fillScriptParams(script, target);
-    return script.getText();
+    return ScriptUtils.fillScriptParams(script, target);
   }
 
   class ScriptData implements FunctionData {

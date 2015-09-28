@@ -5,7 +5,7 @@ import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.type.ColumnHandler;
 
 /**
- * Default strategy  
+ * Column strategy  
  * @author: xiangping_yu
  * @data : 2015-9-16
  * @since : 1.5

@@ -175,7 +175,7 @@
 	<!-- Add model1 -->
 	<insert id="addModel1" collection="test_sample">
 		<document mapping="model" />
-		<selectKey column="_id" name="id" />
+		<selectKey name="id" />
 	</insert>
 
 	<!-- 笔记版本 -->

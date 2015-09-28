@@ -124,7 +124,7 @@ public class SelectStatement extends BaseStatement implements StatementHandler {
         Entry entry = new Entry();
         entry.setColumn(column);
         entry.setName(name);
-        entry.setValue(value == null ? null : config.getOrder(column, value));
+        entry.setValue(value == null ? 1 : config.getOrder(column, value));
         entry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz, name));
 
         entrys.add(entry);

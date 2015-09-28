@@ -162,12 +162,11 @@ public abstract class BaseStatement implements StatementHandler {
       if (clzz != null) {
         try {
           clazz = Class.forName(clzz);
-          entry.setClazz(clazz);
         } catch (ClassNotFoundException e) {
           throw new StatementException("Class not found by name '" + clzz + "' for child node '" + name + "'.", e);
         }
-        entry.setClazz(clazz);
       }
+      entry.setClazz(clazz);
 
       NodeList childNodes = node.getChildNodes();
       if (childNodes.getLength() == 0) {

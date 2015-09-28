@@ -22,6 +22,7 @@ import com.mongodb.WriteResult;
 import com.mongodb.client.event.ResultContext;
 import com.mongodb.client.event.ResultHandler;
 import com.mongodb.exception.MongoDaoException;
+import com.mongodb.exception.MongoORMException;
 import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.config.AggregateConfig;
 import com.mongodb.orm.engine.config.CommandConfig;
@@ -34,9 +35,10 @@ import com.mongodb.orm.engine.config.UpdateConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
 import com.mongodb.orm.engine.entry.Script;
-import com.mongodb.orm.executor.ParserEngine;
+import com.mongodb.orm.executor.parser.ResultExecutor;
+import com.mongodb.util.BeanUtils;
 import com.mongodb.util.NodeletUtils;
-
+import com.mongodb.util.ScriptUtils;
 
 /**
  * The primary Java interface implement for working with NoSqlOrm.
@@ -51,13 +53,13 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
   private MongoORMFactoryBean factory;
   private MqlMapConfiguration configuration;
-  private ParserEngine parserEngine;
+  private ResultHelper helper;
 
   @Override
   public void afterPropertiesSet() throws Exception {
     Assert.notNull(factory, "Mongo orm factory not null.");
     configuration = factory.getConfiguration();
-    parserEngine = new ParserEngine();
+    helper = new ResultHelper();
   }
   
   @Override
@@ -129,7 +131,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
       });
       return null;
     } 
-    return (T) parserEngine.toResult(configuration, field, resultSet);
+    return (T) helper.toResult(field, resultSet);
   }
 
   @Override
@@ -224,7 +226,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     
     List<T> result = new ArrayList<T>(resultSet.size());
     while (resultSet.hasNext()) {
-      result.add((T) parserEngine.toResult(configuration, field, resultSet.next()));
+      result.add((T) helper.toResult(field, resultSet.next()));
     }
     return result;
   }
@@ -327,7 +329,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     
     List<T> result = new ArrayList<T>(resultSet.size());
     for (Iterator<Object> iter = resultSet.iterator(); iter.hasNext();) {
-      result.add((T) parserEngine.toResult(configuration, field, iter.next()));
+      result.add((T) helper.toResult(field, iter.next()));
     }
     return result;
   }
@@ -369,7 +371,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     logger.debug("Execute 'insert' mongodb command. ObjectId is '" + newId + "'.");
 
     if (selectKey != null) {
-      parserEngine.setSelectKey(selectKey, newId, parameter);
+      helper.setSelectKey(selectKey, newId, parameter);
     }
     return newId;
   }
@@ -416,7 +418,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
       for (int i = 0; i < list.size(); i++) {
         T parameter = list.get(i);
         String newId = newIds.get(i);
-        parserEngine.setSelectKey(selectKey, newId, parameter);
+        helper.setSelectKey(selectKey, newId, parameter);
       }
     }
     return newIds;
@@ -493,7 +495,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
       return null;
     }
     
-    return (T) parserEngine.toResult(configuration, field, resultSet);
+    return (T) helper.toResult(field, resultSet);
   }
 
   @Override
@@ -625,7 +627,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
       return null;
     }
     
-    return (T) parserEngine.toResult(configuration, field, resultSet);
+    return (T) helper.toResult(field, resultSet);
   }
 
   @Override
@@ -658,6 +660,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
     String collection = config.getCollection();
     NodeEntry key = config.getKey();
+    Script keyf = config.getKeyf();
     NodeEntry condition = config.getCondition();
     NodeEntry initial = config.getInitial();
     Script reduce = config.getReduce();
@@ -672,8 +675,9 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     Map<String, Object> k = (Map<String, Object>) key.executorNode(configuration, parameter);
     Map<String, Object> c = (Map<String, Object>) condition.executorNode(configuration, parameter);
     Map<String, Object> i = (Map<String, Object>) initial.executorNode(configuration, parameter);
-    String r = parserEngine.toScript(reduce, parameter);
-    String f = parserEngine.toScript(finalize, parameter);
+    String kf = ScriptUtils.fillScriptParams(keyf, parameter);  // TODO not used for sdk
+    String r = ScriptUtils.fillScriptParams(reduce, parameter);
+    String f = ScriptUtils.fillScriptParams(finalize, parameter);
 
     DBObject keyDbo = new BasicDBObject(k);
     logger.debug("Execute 'group' mongodb command. Key '" + keyDbo + "'.");
@@ -684,6 +688,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     DBObject initialDbo = new BasicDBObject(i);
     logger.debug("Execute 'group' mongodb command. Initial '" + initialDbo + "'.");
 
+    logger.debug("Execute 'group' mongodb command. Keyf '" + kf + "'.");
     logger.debug("Execute 'group' mongodb command. Reduce '" + r + "'.");
     logger.debug("Execute 'group' mongodb command. Finalize '" + f + "'.");
 
@@ -707,7 +712,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
       });
       return null;
     }
-    return (T) parserEngine.toResult(configuration, field, resultSet);
+    return (T) helper.toResult(field, resultSet);
   }
 
   @Override
@@ -782,7 +787,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     
     List<T> list = new ArrayList<T>(resultSet.size());
     for (Iterator iter = resultSet.iterator(); iter.hasNext();) {
-      T result = (T) parserEngine.toResult(configuration, field, iter.next());
+      T result = (T) helper.toResult(field, iter.next());
       list.add(result);
     }
     return list;
@@ -813,7 +818,34 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     NodeEntry nodeEntry = new NodeEntry();
     nodeEntry.setClazz(mapping.getClazz());
     nodeEntry.setNodeMappings(NodeletUtils.getMappingEntry(mapping, configuration));
-    return (T) parserEngine.toResult(configuration, nodeEntry, source);
+    return (T) helper.toResult(nodeEntry, source);
+  }
+  
+  /**
+   * Helper for mongodb result. 
+   */
+  private class ResultHelper {
+    private ResultExecutor resultExecutor;
+    
+    public ResultHelper() {
+      resultExecutor = new ResultExecutor();
+    }
+    
+    public Object toResult(NodeEntry entry, Object object) {
+      return resultExecutor.parser(configuration, entry, object);
+    }
+    
+    public void setSelectKey(Entry entry, String key, Object target) {
+      if(target instanceof Map) {
+        ((Map) target).put(entry.getName(), key);
+      } else {
+        try {
+          BeanUtils.setProperty(target, entry.getColumn(), key);
+        } catch (Exception e) {
+          throw new MongoORMException("No selectKey property '"+entry.getColumn()+"'found. Class '"+target.getClass()+"'.", e);
+        }
+      }
+    }
   }
   
   public void setFactory(MongoORMFactoryBean factory) {

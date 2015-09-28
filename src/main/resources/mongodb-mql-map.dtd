@@ -91,7 +91,6 @@
 
 <!ELEMENT selectKey EMPTY>
 <!ATTLIST selectKey
-	column CDATA #REQUIRED
 	name CDATA #REQUIRED
 >
 
