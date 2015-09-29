@@ -60,7 +60,7 @@ public class SelectConfig implements Config {
   }
 
   private static enum Order {
-    ASC("asc", 1), DESC("desc", 0);
+    ASC("asc", -1), DESC("desc", 1);
 
     private String order;
     private int value;

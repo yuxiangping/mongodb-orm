@@ -122,13 +122,6 @@ public class TypeHandlerFactory {
       }
     });
 
-    register(Object.class, factory = new Factory() {
-      @Override
-      public TypeHandler<Object> create(Class<?> clazz) {
-        return new ObjectTypeHandler();
-      }
-    });
-
     register(Date.class, factory = new Factory() {
       @Override
       public TypeHandler<Date> create(Class<?> clazz) {

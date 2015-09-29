@@ -1,8 +1,8 @@
 # mongodb-orm简介
+
 * Mongodb ORM是基于java的ORM框架，简化了SDK的使用，使代码变得更清晰、简单。 </br>
 * 与Ibatis类似，将查询、执行语句封装在xml中，与代码隔离。简称MQL。 </br>
 
-***
 
 # 项目中使用
 
@@ -100,7 +100,7 @@
 * update/findAndModify
 
 ```xml
-<update id="updateModel1" collection="test_sample">
+<update id="updateModel" collection="test_sample">
 	<query class="test.mongodborm.Model$Child">
 		<property column="name" name="name" ignoreNull="true" />
 		<property column="time" operate="gte" value="0" type="number" />
@@ -155,11 +155,25 @@
 </select>
 ```
 
-> 更多的使用方法参见  [sample.xml]
+#### Templet用法
 
-***
+```java
+Model model = mongoTemplet.findOne("queryModelList", "yuxiangping");
 
-#资料
+List<Model> list = mongoTemplet.findOne("queryModelList", "");
 
-> Wiki
-> Issues
+Model model = new Model();
+model.setTime(1L);
+Map<String, String> action = new HashMap<String, String>();
+action.put("name", "yuxiangping-update");
+int update = mongoT emplet.update("updateModel", model, action);
+```
+
+> 更多的使用方法参见  [sample.xml](https://github.com/yuxiangping/mongodb-orm/blob/master/src/main/resources/sample-sql.xml)
+
+
+# 资料
+
+ [Wiki](https://github.com/yuxiangping/mongodb-orm/wiki)
+
+ [Issues](https://github.com/yuxiangping/mongodb-orm/issues)
