@@ -100,7 +100,7 @@
 * update/findAndModify
 
 ```xml
-<update id="updateModel1" collection="test_sample">
+<update id="updateModel" collection="test_sample">
 	<query class="test.mongodborm.Model$Child">
 		<property column="name" name="name" ignoreNull="true" />
 		<property column="time" operate="gte" value="0" type="number" />
@@ -153,6 +153,20 @@
 		<property column="time" name="time" value="desc" />
 	</order>
 </select>
+```
+
+#### Templet用法
+
+```java
+Model model = mongoTemplet.findOne("queryModelList", "yuxiangping");
+
+List<Model> list = mongoTemplet.findOne("queryModelList", "");
+
+Model model = new Model();
+model.setTime(1L);
+Map<String, String> action = new HashMap<String, String>();
+action.put("name", "yuxiangping-update");
+int update = mongoT emplet.update("updateModel", model, action);
 ```
 
 > 更多的使用方法参见  [sample.xml](https://github.com/yuxiangping/mongodb-orm/blob/master/src/main/resources/sample-sql.xml)
