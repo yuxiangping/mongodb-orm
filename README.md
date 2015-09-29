@@ -162,6 +162,6 @@
 
 # 资料
 
-> Wiki
+> [Wiki]: https://github.com/yuxiangping/mongodb-orm/wiki
 
-> Issues
+> [Issues]: https://github.com/yuxiangping/mongodb-orm/issues
