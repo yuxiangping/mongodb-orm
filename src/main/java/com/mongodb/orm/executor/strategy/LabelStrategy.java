@@ -16,10 +16,8 @@ public class LabelStrategy implements Strategy {
   public void doStrategy(MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain) {
     Entry entry = context.getEntry();
     Object value = entry.getValue();
-    if(value != null && value instanceof String) {
-       if(ORM.LABEL_VALUE.equals(value)) {
-         context.setValue(context.getTarget());
-       }
+    if(value != null && ORM.LABEL_VALUE.equals(value)) {
+      context.setValue(context.getTarget());
     }
     chain.doStrategy(configuration, context);
   }
