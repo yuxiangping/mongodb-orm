@@ -1,6 +1,7 @@
 package com.mongodb.orm.executor.strategy;
 
 import com.mongodb.orm.engine.entry.Entry;
+import com.mongodb.orm.engine.type.TypeHandler;
 import com.mongodb.orm.executor.MqlExecutor.CallBack;
 
 /**
@@ -15,6 +16,7 @@ public class StrategyContext {
   private Object target;
   private Object value;
   private CallBack<?> callback;
+  private TypeHandler<?> typeHandler;
   
   public StrategyContext(Entry entry, Object target) {
     this.entry = entry;
@@ -47,6 +49,14 @@ public class StrategyContext {
 
   public CallBack<?> getCallback() {
     return callback;
+  }
+
+  public TypeHandler<?> getTypeHandler() {
+    return typeHandler;
+  }
+
+  public void setTypeHandler(TypeHandler<?> typeHandler) {
+    this.typeHandler = typeHandler;
   }
   
 }

@@ -17,12 +17,12 @@ import com.mongodb.exception.StatementException;
 public class ByteArrayTypeHandler implements TypeHandler<byte[]> {
 
   @Override
-  public byte[] getParameter(byte[] instance) {
+  public byte[] getParameter(String name, byte[] instance) {
     return instance;
   }
 
   @Override
-  public byte[] getResult(Object instance, Object value) {
+  public byte[] getResult(String name, Object instance, Object value) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ObjectOutput out = null;
     try {

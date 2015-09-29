@@ -1,6 +1,8 @@
 package com.mongodb.orm;
 
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -27,7 +29,6 @@ import com.mongodb.orm.builder.statement.UpdateStatement;
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.MappingConfig;
 import com.mongodb.util.NodeletUtils;
-import com.mongodb.util.ObjectUtils;
 
 /**
  * MQL map config parser
@@ -195,7 +196,7 @@ public class MqlMapConfigParser {
   
   private void getMappingExtendsNode(MappingConfig target) {
     String extend = target.getExtend();
-    if(extend != null && !ObjectUtils.isEmpty(target.getNodes().size()>0)) {
+    if(extend != null) {
       MappingConfig mc = (MappingConfig)configuration.getMapping(extend);
       if(mc == null) {
         throw new StatementException("This extends mapping '"+extend+"' not found. Mapping id '"+target.getId()+"'");
@@ -205,7 +206,10 @@ public class MqlMapConfigParser {
         throw new StatementException("This extends mapping can not inherit their own. Mapping id '"+target.getId()+"'");
       }
       getMappingExtendsNode(mc);
-      target.getNodes().addAll(mc.getNodes());
+      target.merge(mc.getNodes());
+      if(target.getTypeHandler() == null) {
+        target.setTypeHandler(mc.getTypeHandler());
+      }
     }
   }
 
@@ -214,12 +218,12 @@ public class MqlMapConfigParser {
    */
   private static class MqlMapEntityResolver implements EntityResolver {
 
-    private static final String MQL_MAP_DTD = "mongodb-mql-map.dtd";
+    private static final String MQL_MAP_DTD = "http://7d9ju8.com1.z0.glb.clouddn.com/mongodb-mql.dtd";
 
     private static final Map<String, String> doctypeMap = new HashMap<String, String>(2);
 
     static {
-      doctypeMap.put("mongodb-mql-map.dtd".toUpperCase(), MQL_MAP_DTD);
+      doctypeMap.put("mongodb-mql.dtd".toUpperCase(), MQL_MAP_DTD);
       doctypeMap.put("-//eason.xp.yu@gmail.com//DTD MONGODB QL Config 1.0//zh-CN".toUpperCase(), MQL_MAP_DTD);
     }
 
@@ -249,16 +253,23 @@ public class MqlMapConfigParser {
           source = getInputSource(path, source);
         }
       } catch (Exception e) {
-        throw new SAXException(e.toString());
+        throw new SAXException("Resolve entiry error. PID:"+publicId+", SID:"+systemId, e);
       }
       return source;
     }
 
-    private InputSource getInputSource(String path, InputSource source) {
+    private InputSource getInputSource(String path, InputSource source) throws Exception {
       if (path != null) {
         InputStream in = ClassLoader.getSystemResourceAsStream(path);
         source = new InputSource(in);
       }
+      
+      if(source.getByteStream() == null) {
+        URL location = new URL(path);
+        URLConnection connect = location.openConnection();
+        source = new InputSource(connect.getInputStream());
+      }
+      
       return source;
     }
   }

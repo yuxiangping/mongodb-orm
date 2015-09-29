@@ -10,12 +10,12 @@ package com.mongodb.orm.engine.type;
 public class FloatTypeHandler implements TypeHandler<Float> {
 
   @Override
-  public Object getParameter(Float instance) {
+  public Object getParameter(String name, Float instance) {
     return instance;
   }
 
   @Override
-  public Float getResult(Object instance, Object value) {
+  public Float getResult(String name, Object instance, Object value) {
     if (value instanceof Float) {
       return (Float) value;
     }

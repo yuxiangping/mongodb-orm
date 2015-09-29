@@ -9,12 +9,12 @@ package com.mongodb.orm.engine.type;
 public class IntegerTypeHandler implements TypeHandler<Integer> {
 
   @Override
-  public Object getParameter(Integer instance) {
+  public Object getParameter(String name, Integer instance) {
     return instance;
   }
 
   @Override
-  public Integer getResult(Object instance, Object value) {
+  public Integer getResult(String name, Object instance, Object value) {
     if(value instanceof Integer) {
       return (Integer)value;
     }

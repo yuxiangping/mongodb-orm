@@ -16,12 +16,12 @@ import com.mongodb.exception.MongoORMException;
 public class ByteTypeHandler implements TypeHandler<byte[]>, ColumnHandler<byte[]> {
 
   @Override
-  public Object getParameter(byte[] instance) {
+  public Object getParameter(String name, byte[] instance) {
     return instance;
   }
 
   @Override
-  public byte[] getResult(Object instance, Object value) {
+  public byte[] getResult(String name, Object instance, Object value) {
     if (value instanceof byte[]) {
       return (byte[]) value;
     }

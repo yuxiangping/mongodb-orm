@@ -9,12 +9,12 @@ package com.mongodb.orm.engine.type;
 public class LongTypeHandler implements TypeHandler<Long>, ColumnHandler<Long> {
 
   @Override
-  public Object getParameter(Long instance) {
+  public Object getParameter(String name, Long instance) {
     return instance;
   }
 
   @Override
-  public Long getResult(Object instance, Object value) {
+  public Long getResult(String name, Object instance, Object value) {
     if(value instanceof Long) {
       return (Long) value;
     }

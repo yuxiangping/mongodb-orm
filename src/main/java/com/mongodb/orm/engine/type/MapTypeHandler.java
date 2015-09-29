@@ -10,20 +10,14 @@ import java.util.Map;
  */
 @SuppressWarnings("unchecked")
 public class MapTypeHandler implements TypeHandler<Map<Object, Object>> {
-
-  private String name;
-  
-  public MapTypeHandler(String name) {
-    this.name = name;
-  }
   
   @Override
-  public Object getParameter(Map<Object, Object> instance) {
+  public Object getParameter(String name, Map<Object, Object> instance) {
     return instance.get(name);
   }
 
   @Override
-  public Map<Object, Object> getResult(Object instance, Object value) {
+  public Map<Object, Object> getResult(String name, Object instance, Object value) {
     Map<Object, Object> map = (Map<Object, Object>)instance;
     map.put(name, value);
     return map;

@@ -10,12 +10,12 @@ package com.mongodb.orm.engine.type;
 public class DoubleTypeHandler implements TypeHandler<Double>, ColumnHandler<Double> {
 
   @Override
-  public Object getParameter(Double instance) {
+  public Object getParameter(String name, Double instance) {
     return instance;
   }
 
   @Override
-  public Double getResult(Object instance, Object value) {
+  public Double getResult(String name, Object instance, Object value) {
     if (value instanceof Double) {
       return (Double) value;
     }

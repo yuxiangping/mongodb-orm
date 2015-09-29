@@ -29,7 +29,9 @@ public class Script {
 
   public Script(String text, Class<?> clazz) {
     this.text = text;
-    this.analyer = AnalyerHelper.getAnalyer(clazz);
+    if(clazz != null) {
+      this.analyer = AnalyerHelper.getAnalyer(clazz);
+    }
   }
 
   public String getText() {
@@ -37,19 +39,21 @@ public class Script {
   }
   
   public String getValue(String target, Object value) {
-    return analyer.getValue(target, value);
+    if(analyer == null) {
+      analyer = AnalyerHelper.getAnalyer(value.getClass());
+    }
+    return String.valueOf(analyer.getValue(target, value));
   }
 
   static interface Analyer {
-    String getValue(String target, Object value);
+    Object getValue(String target, Object value);
   }
   
   static class CustomAnalyer implements Analyer {
     @Override
-    public String getValue(String target, Object value) {
+    public Object getValue(String target, Object value) {
       try {
-        Object property = BeanUtils.getProperty(value, target);
-        return String.valueOf(property);
+        return BeanUtils.getProperty(value, target);
       } catch (Exception e) {
         throw new MongoORMException("No property '"+target+"'found. Class '"+value.getClass()+"'.", e);
       }
@@ -59,15 +63,15 @@ public class Script {
   @SuppressWarnings("rawtypes")
   static class MapAnalyer implements Analyer {
     @Override
-    public String getValue(String target, Object value) {
-      return String.valueOf(((Map)value).get(target));
+    public Object getValue(String target, Object value) {
+      return ((Map)value).get(target);
     }
   }
   
   static class ValueAnalyer implements Analyer {
     @Override
-    public String getValue(String target, Object value) {
-      return String.valueOf(value);
+    public Object getValue(String target, Object value) {
+      return value;
     }
   }
   

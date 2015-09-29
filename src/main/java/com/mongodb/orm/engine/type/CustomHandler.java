@@ -12,45 +12,32 @@ import com.mongodb.util.BeanUtils;
  */
 public class CustomHandler implements TypeHandler<Object> {
 
-  private Class<?> type;
+  private Class<?> clazz;
 
-  private TypeHandler<?> typeHandler;
-
-  private String property;
-
-  public CustomHandler(Class<?> clazz, String name) {
-    this.property = name;
-
-    try {
-      type = BeanUtils.getPropertyType(clazz, name);
-    } catch (Exception e) {
-      throw new StatementException("Resolve target class '" + clazz + "'. Unknow property '"+name+"' return type.", e);
-    }
-    
-    if (TypeHandlerFactory.has(type)) {
-      typeHandler = TypeHandlerFactory.getTypeHandler(type, property);
-    }
+  public CustomHandler(Class<?> clazz) {
+    this.clazz = clazz;
   }
 
   @Override
-  public Object getResult(Object target, Object value) {
+  public Object getResult(String name, Object target, Object value) {
     try {
-      if (typeHandler != null) {
-        value = typeHandler.getResult(null, value);
+      Class<?> typeClass = BeanUtils.getPropertyType(clazz, name);
+      if (TypeHandlerFactory.has(typeClass)) {
+        value = TypeHandlerFactory.getTypeHandler(typeClass).getResult(name, target, value);
       }
-      BeanUtils.setProperty(target, property, value);
+      BeanUtils.setProperty(target, name, value);
     } catch (Exception e) {
-      throw new StatementException("Invoke target method by '" + type + "', instance '" + target + "' error.", e);
+      throw new StatementException("Resolve target class '" + clazz + "'. Unknow property '" + name + "' return type.", e);
     }
     return value;
   }
 
   @Override
-  public Object getParameter(Object target) {
+  public Object getParameter(String name, Object target) {
     try {
-      return BeanUtils.getProperty(target, property);
+      return BeanUtils.getProperty(target, name);
     } catch (Exception e) {
-      throw new StatementException("Invoke target method by '" + type + "', instance '" + target + "' error.", e);
+      throw new StatementException("Invoke target method by '" + clazz + "', instance '" + target + "' error.", e);
     }
   }
 

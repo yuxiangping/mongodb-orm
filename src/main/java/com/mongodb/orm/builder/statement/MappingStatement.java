@@ -12,6 +12,7 @@ import com.mongodb.exception.StatementException;
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.MappingConfig;
 import com.mongodb.orm.engine.entry.Entry;
+import com.mongodb.orm.engine.type.TypeHandlerFactory;
 import com.mongodb.util.NodeletUtils;
 
 /**
@@ -47,8 +48,11 @@ public class MappingStatement extends BaseStatement implements StatementHandler 
     
     List<Entry> nodes = getEntry(node.getChildNodes(), clazz);
     
+    MappingConfig config = new MappingConfig(id, clazz, extend, nodes);
+    config.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz));
+    
     logger.info("Mongodb orm inited mapping config with mapping id '"+id+"'.");
-    return new MappingConfig(id, clazz, extend, nodes);
+    return config;
   }
   
 }

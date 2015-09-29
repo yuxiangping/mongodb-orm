@@ -166,7 +166,7 @@ public class NodeletParser {
 
     InputSource input = new InputSource(inputStream);
     input.setEncoding("UTF-8");
-    return builder.parse(new InputSource(inputStream));
+    return builder.parse(input);
   }
   
   public void setValidation(boolean validation) {

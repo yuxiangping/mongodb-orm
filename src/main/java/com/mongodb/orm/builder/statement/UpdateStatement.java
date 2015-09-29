@@ -124,13 +124,13 @@ public class UpdateStatement extends BaseStatement implements StatementHandler {
         entry.setColumn(column);
         entry.setName(name);
         entry.setValue(value);
-        entry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz, name));
 
         entrys.add(entry);
       }
 
       NodeEntry actionEntry = new NodeEntry();
       actionEntry.setExecutor(actionExecutor);
+      actionEntry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz));
       actionEntry.setClazz(clazz);
       actionEntry.setNodeMappings(entrys);
       config.setAction(actionEntry);

@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.mongodb.exception.StatementException;
 import com.mongodb.orm.engine.entry.ColumnType;
 
@@ -32,11 +30,8 @@ public class TypeHandlerFactory {
 
   private static Factory defaultHandlerFactory = new Factory() {
     @Override
-    public TypeHandler<?> create(Class<?> clazz, String name) {
-      if (StringUtils.isBlank(name)) {
-        return null;
-      }
-      return new CustomHandler(clazz, name);
+    public TypeHandler<?> create(Class<?> clazz) {
+      return new CustomHandler(clazz);
     }
   };
 
@@ -45,7 +40,7 @@ public class TypeHandlerFactory {
 
     factory = new Factory() {
       @Override
-      public TypeHandler<Boolean> create(Class<?> clazz, String name) {
+      public TypeHandler<Boolean> create(Class<?> clazz) {
         return new BooleanTypeHandler();
       }
     };
@@ -54,7 +49,7 @@ public class TypeHandlerFactory {
 
     factory = new Factory() {
       @Override
-      public TypeHandler<byte[]> create(Class<?> clazz, String name) {
+      public TypeHandler<byte[]> create(Class<?> clazz) {
         return new ByteTypeHandler();
       }
     };
@@ -63,7 +58,7 @@ public class TypeHandlerFactory {
 
     factory = new Factory() {
       @Override
-      public TypeHandler<Short> create(Class<?> clazz, String name) {
+      public TypeHandler<Short> create(Class<?> clazz) {
         return new ShortTypeHandler();
       }
     };
@@ -72,7 +67,7 @@ public class TypeHandlerFactory {
 
     factory = new Factory() {
       @Override
-      public TypeHandler<Integer> create(Class<?> clazz, String name) {
+      public TypeHandler<Integer> create(Class<?> clazz) {
         return new IntegerTypeHandler();
       }
     };
@@ -81,7 +76,7 @@ public class TypeHandlerFactory {
 
     factory = new Factory() {
       @Override
-      public TypeHandler<Long> create(Class<?> clazz, String name) {
+      public TypeHandler<Long> create(Class<?> clazz) {
         return new LongTypeHandler();
       }
     };
@@ -90,7 +85,7 @@ public class TypeHandlerFactory {
 
     factory = new Factory() {
       @Override
-      public TypeHandler<Float> create(Class<?> clazz, String name) {
+      public TypeHandler<Float> create(Class<?> clazz) {
         return new FloatTypeHandler();
       }
     };
@@ -99,7 +94,7 @@ public class TypeHandlerFactory {
 
     factory = new Factory() {
       @Override
-      public TypeHandler<Double> create(Class<?> clazz, String name) {
+      public TypeHandler<Double> create(Class<?> clazz) {
         return new DoubleTypeHandler();
       }
     };
@@ -108,63 +103,63 @@ public class TypeHandlerFactory {
 
     register(String.class, factory = new Factory() {
       @Override
-      public TypeHandler<String> create(Class<?> clazz, String name) {
+      public TypeHandler<String> create(Class<?> clazz) {
         return new StringTypeHandler();
       }
     });
 
     register(BigDecimal.class, factory = new Factory() {
       @Override
-      public TypeHandler<BigDecimal> create(Class<?> clazz, String name) {
+      public TypeHandler<BigDecimal> create(Class<?> clazz) {
         return new BigDecimalTypeHandler();
       }
     });
 
     register(byte[].class, factory = new Factory() {
       @Override
-      public TypeHandler<byte[]> create(Class<?> clazz, String name) {
+      public TypeHandler<byte[]> create(Class<?> clazz) {
         return new ByteArrayTypeHandler();
       }
     });
 
     register(Object.class, factory = new Factory() {
       @Override
-      public TypeHandler<Object> create(Class<?> clazz, String name) {
+      public TypeHandler<Object> create(Class<?> clazz) {
         return new ObjectTypeHandler();
       }
     });
 
     register(Date.class, factory = new Factory() {
       @Override
-      public TypeHandler<Date> create(Class<?> clazz, String name) {
+      public TypeHandler<Date> create(Class<?> clazz) {
         return new DateTypeHandler();
       }
     });
 
     register(Collection.class, factory = new Factory() {
       @Override
-      public TypeHandler<Collection<?>> create(Class<?> clazz, String name) {
-        return new CollectionTypeHandler();
+      public TypeHandler<Collection<?>> create(Class<?> clazz) {
+        return new CollectionTypeHandler(clazz);
       }
     });
 
     register(Map.class, factory = new Factory() {
       @Override
-      public TypeHandler<Map<Object, Object>> create(Class<?> clazz, String name) {
-        return new MapTypeHandler(name);
+      public TypeHandler<Map<Object, Object>> create(Class<?> clazz) {
+        return new MapTypeHandler();
       }
     });
 
     register(Iterator.class, factory = new Factory() {
       @Override
-      public TypeHandler<Iterator<?>> create(Class<?> clazz, String name) {
+      public TypeHandler<Iterator<?>> create(Class<?> clazz) {
         return new IteratorTypeHandler();
       }
     });
 
     register(Enum.class, factory = new Factory() {
       @Override
-      public TypeHandler<Enum<?>> create(Class<?> clazz, String name) {
+      public TypeHandler<Enum<?>> create(Class<?> clazz) {
         return new EnumTypeHandler(clazz);
       }
     });
@@ -194,7 +189,7 @@ public class TypeHandlerFactory {
     return handler;
   }
 
-  public static TypeHandler<?> getTypeHandler(Class<?> clazz, String name) {
+  public static TypeHandler<?> getTypeHandler(Class<?> clazz) {
     if (clazz == null) {
       return null;
     }
@@ -203,13 +198,13 @@ public class TypeHandlerFactory {
     if (clazz.isEnum() || Enum.class.isAssignableFrom(clazz)) {
       factory = typeAliases.get(Enum.class);
     } else {
-      factory = typeAliases.get(clazz);
+      factory = findFactory(clazz);
     }
     
     if (factory == null) {
       factory = defaultHandlerFactory;
     }
-    return factory.create(clazz, name);
+    return factory.create(clazz);
   }
 
   public static boolean has(Class<?> clazz) {
@@ -239,9 +234,23 @@ public class TypeHandlerFactory {
   private static void putTypeAlias(ColumnType columnType, ColumnHandler<?> handler) {
     typeHandlers.put(columnType, handler);
   }
+  
+  private static Factory findFactory(Class<?> clazz) {
+    Factory factory = typeAliases.get(clazz);
+    if(factory != null) {
+      return factory;
+    }
+    
+    for(Map.Entry<Class<?>, Factory> entry: typeAliases.entrySet()) {
+      if(entry.getKey().isAssignableFrom(clazz)) {
+        return entry.getValue();
+      }
+    }
+    return null;
+  }
 
   private interface Factory {
-    public TypeHandler<?> create(Class<?> clazz, String name);
+    public TypeHandler<?> create(Class<?> clazz);
   }
 
 }

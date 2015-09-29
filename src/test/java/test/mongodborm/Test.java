@@ -17,7 +17,7 @@ public class Test {
       factory.setConfigLocations(new Resource[]{resource});
       
       factory.afterPropertiesSet();
-      
+      System.out.println("test is finished.");
     } catch(Exception e) {
       e.printStackTrace();
     }

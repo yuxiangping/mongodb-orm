@@ -30,7 +30,7 @@ public class AggregateConfig implements Config {
   /**
    * Mongo db aggregate pipeline functions.
    */
-  private Map<String, NodeEntry> function = new LinkedHashMap<String, NodeEntry>();
+  private Map<String, NodeEntry> function;
   /**
    * Mongo db aggregate field.
    */
@@ -46,6 +46,9 @@ public class AggregateConfig implements Config {
   }
 
   public void addFunction(String operator, NodeEntry entry) {
+    if(function == null) {
+      function = new LinkedHashMap<String, NodeEntry>();
+    }
     this.function.put(operator, entry);
   }
 

@@ -15,6 +15,7 @@ import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.config.AggregateConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
+import com.mongodb.orm.engine.type.TypeHandlerFactory;
 import com.mongodb.util.NodeletUtils;
 
 /**
@@ -97,12 +98,13 @@ public class AggregateStatement extends BaseStatement implements StatementHandle
         Properties attr = NodeletUtils.parseAttributes(n);
         String operate = attr.getProperty(ORM.TAG_OPERATE);
         
-        List<Entry> nodes = getEntry(node.getChildNodes(), clazz);
+        List<Entry> nodes = getEntry(n.getChildNodes(), clazz);
         
         NodeEntry entry = new NodeEntry();
         entry.setClazz(clazz);
         entry.setNodeMappings(nodes);
         entry.setExecutor(queryExecutor);
+        entry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz));
         
         config.addFunction(operate, entry);
       }

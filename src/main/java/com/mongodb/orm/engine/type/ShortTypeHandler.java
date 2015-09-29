@@ -10,12 +10,12 @@ package com.mongodb.orm.engine.type;
 public class ShortTypeHandler implements TypeHandler<Short>, ColumnHandler<Short> {
 
   @Override
-  public Object getParameter(Short instance) {
+  public Object getParameter(String name, Short instance) {
     return instance;
   }
 
   @Override
-  public Short getResult(Object instance, Object value) {
+  public Short getResult(String name, Object instance, Object value) {
     if (value instanceof Short) {
       return (Short) value;
     }

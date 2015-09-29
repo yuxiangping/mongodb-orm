@@ -125,13 +125,13 @@ public class SelectStatement extends BaseStatement implements StatementHandler {
         entry.setColumn(column);
         entry.setName(name);
         entry.setValue(value == null ? 1 : config.getOrder(column, value));
-        entry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz, name));
 
         entrys.add(entry);
       }
 
       NodeEntry orderEntry = new NodeEntry();
       orderEntry.setExecutor(orderExecutor);
+      orderEntry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz));
       orderEntry.setClazz(clazz);
       orderEntry.setNodeMappings(entrys);
       config.setOrder(orderEntry);

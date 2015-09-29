@@ -16,12 +16,12 @@ public class EnumTypeHandler implements TypeHandler<Enum<?>> {
   }
   
   @Override
-  public Object getParameter(Enum<?> instance) {
+  public Object getParameter(String name, Enum<?> instance) {
     return instance.toString();
   }
 
   @Override
-  public Enum<?> getResult(Object instance, Object value) {
+  public Enum<?> getResult(String name, Object instance, Object value) {
     return Enum.valueOf(clazz, String.valueOf(value));
   }
 

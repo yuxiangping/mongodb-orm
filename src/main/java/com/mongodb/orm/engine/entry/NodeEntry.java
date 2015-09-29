@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.mongodb.orm.MqlMapConfiguration;
+import com.mongodb.orm.engine.type.TypeHandler;
 import com.mongodb.orm.executor.MqlExecutor;
 
 /**
@@ -31,7 +32,10 @@ public class NodeEntry implements Serializable {
    * Node elements mapping entry.
    */
   private List<Entry> nodeMappings;
-
+  /**
+   * Getting data into, and out of a mapped statement.
+   */
+  private TypeHandler<?> typeHandler;
   /**
    * Mql node executor
    */
@@ -63,6 +67,14 @@ public class NodeEntry implements Serializable {
 
   public void setNodeMappings(List<Entry> nodeMappings) {
     this.nodeMappings = nodeMappings;
+  }
+
+  public TypeHandler<?> getTypeHandler() {
+    return typeHandler;
+  }
+
+  public void setTypeHandler(TypeHandler<?> typeHandler) {
+    this.typeHandler = typeHandler;
   }
 
   public void setExecutor(MqlExecutor<?> executor) {

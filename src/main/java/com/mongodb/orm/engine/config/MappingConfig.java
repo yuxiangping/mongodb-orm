@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.entry.Entry;
+import com.mongodb.orm.engine.type.TypeHandler;
 
 /**
  * XML Mapping config
@@ -33,6 +34,14 @@ public class MappingConfig implements Config {
    * Node children nodes.
    */
   private List<Entry> nodes = new ArrayList<Entry>();
+  /**
+   * Getting data into, and out of a mapped statement.
+   */
+  private TypeHandler<?> typeHandler;
+  /**
+   * Has merge extend mapping.
+   */
+  private boolean hasMerge;
 
   public MappingConfig(String id, Class<?> clazz, String extend, List<Entry> nodes) {
     this.id = id;
@@ -41,6 +50,15 @@ public class MappingConfig implements Config {
     this.nodes = nodes;
   }
 
+  public boolean merge(List<Entry> nodes) {
+    if(hasMerge) {
+      return false;
+    }
+    this.nodes.addAll(nodes);
+    this.hasMerge = true;
+    return true;
+  }
+  
   public String getId() {
     return id;
   }
@@ -55,6 +73,14 @@ public class MappingConfig implements Config {
 
   public List<Entry> getNodes() {
     return nodes;
+  }
+
+  public TypeHandler<?> getTypeHandler() {
+    return typeHandler;
+  }
+
+  public void setTypeHandler(TypeHandler<?> typeHandler) {
+    this.typeHandler = typeHandler;
   }
 
 }

@@ -16,10 +16,12 @@ public class ValueStrategy implements Strategy {
   @Override
   public void doStrategy(MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain) {
     Entry entry = context.getEntry();
-    TypeHandler<Object> typeHandler = (TypeHandler<Object>)entry.getTypeHandler();
+    TypeHandler<Object> typeHandler = (TypeHandler<Object>)context.getTypeHandler();
     if(typeHandler != null) {
-      Object parameter = typeHandler.getParameter(context.getTarget());
-      context.setValue(parameter);
+      Object parameter = typeHandler.getParameter(entry.getName(), context.getTarget());
+      if(parameter != null) {
+        context.setValue(parameter);
+      }
     }
     chain.doStrategy(configuration, context);
   }

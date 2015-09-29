@@ -1,6 +1,9 @@
 package com.mongodb.orm.engine.type;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Iterator implementation of TypeHandler
@@ -11,15 +14,24 @@ import java.util.Iterator;
 public class IteratorTypeHandler implements TypeHandler<Iterator<?>> {
 
   @Override
-  public Object getParameter(Iterator<?> instance) {
-    // TODO Auto-generated method stub
-    return null;
+  public Object getParameter(String name, Iterator<?> instance) {
+    return instance;
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
-  public Iterator<?> getResult(Object instance, Object value) {
-    // TODO Auto-generated method stub
-    return null;
+  public Iterator<?> getResult(String name, Object instance, Object value) {
+    if(value instanceof Iterator) {
+      return (Iterator<?>)value;
+    }
+    
+    if(value instanceof Collection) {
+      return ((Collection<?>)value).iterator();
+    }
+    
+    List list = new ArrayList();
+    list.add(value);
+    return list.iterator();
   }
 
 }

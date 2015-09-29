@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mql PUBLIC "-//eason.xp.yu@gmail.com//DTD MONGODB QL Config 1.0//zh-CN" "mongodb-mql-map.dtd">
+<!DOCTYPE mql PUBLIC "-//eason.xp.yu@gmail.com//DTD MONGODB QL Config 1.0//zh-CN" "http://7d9ju8.com1.z0.glb.clouddn.com/mongodb-mql.dtd">
 <mql>
 	<!--  对象映射 -->
 	<mapping id="model" class="test.mongodborm.Model">
@@ -55,7 +55,6 @@
 			<property column="childrens" operate="elemMatch" name="search_key">
 				<value class="java.lang.String">
 					<property column="name" value="${value}" />
-					<property column="time" operate="lt" value="${systime}" />
 				</value>
 			</property>
 		</query>

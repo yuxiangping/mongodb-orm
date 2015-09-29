@@ -15,16 +15,18 @@ public interface TypeHandler<T> {
   
   /**
    * Gets a column from a result set.
+   * @param name Property name
    * @param instance Result instance.
    * @param value Database filed value
    * @return Result value.
    */
-  T getResult(Object instance, Object value);
+  T getResult(String name, Object instance, Object value);
 
   /**
    * Get a parameter on a prepared statement.
+   * @param name Property name
    * @param instance Parameter instance.
    * @return Statement value.
    */
-  Object getParameter(T instance);
+  Object getParameter(String name, T instance);
 }

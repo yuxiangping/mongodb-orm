@@ -10,12 +10,12 @@ package com.mongodb.orm.engine.type;
 public class BooleanTypeHandler implements TypeHandler<Boolean>, ColumnHandler<Boolean> {
 
   @Override
-  public Boolean getParameter(Boolean instance) {
+  public Boolean getParameter(String name, Boolean instance) {
     return instance;
   }
 
   @Override
-  public Boolean getResult(Object instance, Object value) {
+  public Boolean getResult(String name, Object instance, Object value) {
     if (value instanceof Boolean) {
       return (Boolean) value;
     }

@@ -9,12 +9,12 @@ package com.mongodb.orm.engine.type;
 public class StringTypeHandler implements TypeHandler<String>, ColumnHandler<String> {
 
   @Override
-  public Object getParameter(String instance) {
+  public Object getParameter(String name, String instance) {
     return instance;
   }
 
   @Override
-  public String getResult(Object instance, Object value) {
+  public String getResult(String name, Object instance, Object value) {
     return value.toString();
   }
 

@@ -2,6 +2,8 @@ package com.mongodb.orm.engine.type;
 
 import java.util.Collection;
 
+import com.mongodb.exception.MongoORMException;
+
 /**
  * Collection implementation of TypeHandler
  * @author: xiangping_yu
@@ -10,16 +12,31 @@ import java.util.Collection;
  */
 public class CollectionTypeHandler implements TypeHandler<Collection<?>> {
 
+  private Class<?> clazz;
+  
+  public CollectionTypeHandler(Class<?> clazz) {
+    this.clazz = clazz;
+  }
+  
   @Override
-  public Object getParameter(Collection<?> instance) {
-    // TODO
-    return null;
+  public Object getParameter(String name, Collection<?> instance) {
+    return instance;
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
-  public Collection<?> getResult(Object instance, Object value) {
-    // TODO Auto-generated method stub
-    return null;
+  public Collection<?> getResult(String name, Object instance, Object value) {
+    try {
+      Collection result = (Collection)clazz.newInstance();
+      if (value instanceof Collection) {
+        result.addAll((Collection)value);
+      } else {
+        result.add(value);
+      }
+      return result;
+    } catch (Exception ex) {
+      throw new MongoORMException("Get result from "+instance.getClass()+" has error. Target property is "+name, ex);
+    }
   }
 
 }

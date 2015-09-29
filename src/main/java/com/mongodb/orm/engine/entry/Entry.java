@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.mongodb.orm.builder.dynamic.Dynamic;
 import com.mongodb.orm.engine.type.ColumnHandler;
-import com.mongodb.orm.engine.type.TypeHandler;
 
 /**
  * Element base entry.
@@ -31,10 +30,6 @@ public class Entry implements Serializable {
    * Default value.
    */
   private Object value;
-  /**
-   * Getting data into, and out of a mapped statement.
-   */
-  private TypeHandler<?> typeHandler;
   /**
    * Resovler a available column type for mongodb.
    */
@@ -85,14 +80,6 @@ public class Entry implements Serializable {
 
   public void setValue(Object value) {
     this.value = value;
-  }
-
-  public TypeHandler<?> getTypeHandler() {
-    return typeHandler;
-  }
-
-  public void setTypeHandler(TypeHandler<?> typeHandler) {
-    this.typeHandler = typeHandler;
   }
 
   public ColumnHandler<?> getColumnHandler() {

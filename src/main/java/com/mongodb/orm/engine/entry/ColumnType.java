@@ -31,7 +31,7 @@ public enum ColumnType {
   
   public static ColumnType fromType(String type) {
     if(StringUtils.isBlank(type)) {
-      return string;
+      return null;
     }
     
     for(ColumnType ct : values()) {

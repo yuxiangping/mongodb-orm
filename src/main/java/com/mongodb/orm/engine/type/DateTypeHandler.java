@@ -18,12 +18,12 @@ public class DateTypeHandler implements TypeHandler<Date>, ColumnHandler<Date> {
   private static final String DATE_FROMAT = "yyyy-MM-dd HH:mm:ss";
 
   @Override
-  public Object getParameter(Date instance) {
+  public Object getParameter(String name, Date instance) {
     return instance;
   }
 
   @Override
-  public Date getResult(Object instance, Object value) {
+  public Date getResult(String name, Object instance, Object value) {
     if (value instanceof Number) {
       return new Date(((Number) value).longValue());
     }

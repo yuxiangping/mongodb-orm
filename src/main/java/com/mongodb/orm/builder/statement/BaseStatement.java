@@ -61,7 +61,6 @@ public abstract class BaseStatement implements StatementHandler {
       entry.setIgnoreNull(ignoreNull == null ? false : Boolean.parseBoolean(ignoreNull));
       entry.setIgnoreEmpty(ignoreEmpty == null ? false : Boolean.parseBoolean(ignoreEmpty));
       entry.setColumnHandler(TypeHandlerFactory.getColumnHandler(ColumnType.fromType(type)));
-      entry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz, name));
 
       NodeList childNodes = node.getChildNodes();
       for (int j = 0; j < childNodes.getLength(); j++) {
@@ -101,6 +100,7 @@ public abstract class BaseStatement implements StatementHandler {
       }
       entry.setClazz(clazz);
     }
+    entry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz));
 
     NodeList childNodes = node.getChildNodes();
     if (childNodes.getLength() == 0) {
@@ -134,6 +134,7 @@ public abstract class BaseStatement implements StatementHandler {
       }
       entry.setClazz(clazz);
     }
+    entry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz));
 
     NodeList childNodes = node.getChildNodes();
     if (childNodes.getLength() == 0) {
@@ -167,6 +168,7 @@ public abstract class BaseStatement implements StatementHandler {
         }
       }
       entry.setClazz(clazz);
+      entry.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz));
 
       NodeList childNodes = node.getChildNodes();
       if (childNodes.getLength() == 0) {

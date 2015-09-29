@@ -33,13 +33,17 @@ public class ResultExecutor implements MqlExecutor<Object> {
   @Override
   public Object parser(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
     List<Entry> entrys = entry.getNodeMappings();
+    Class<?> clazz = entry.getClazz();
+    TypeHandler<?> typeHandler = entry.getTypeHandler();
     String mappingId = entry.getMappingId();
     if (mappingId != null) {
       MappingConfig mapping = (MappingConfig) configuration.getMapping(mappingId);
       entrys = mapping.getNodes();
+      clazz = mapping.getClazz();
+      typeHandler = mapping.getTypeHandler();
     }
     
-    Object instance = buildInstance(entry, target);
+    Object instance = buildInstance(clazz, target);
     if(instance == null) {
       return null;
     }
@@ -47,20 +51,19 @@ public class ResultExecutor implements MqlExecutor<Object> {
     if(target instanceof List) {
       List<Object> list = new ArrayList<Object>();
       for(Object result : (List<Map<String, Object>>)target) {
-        list.add(getResult(configuration, entry, entrys, result));
+        list.add(getResult(configuration, typeHandler, clazz, entrys, result));
       }
       return list;
     } else {
-      return getResult(configuration, entry, entrys, target);
+      return getResult(configuration, typeHandler, clazz, entrys, target);
     }
   }
 
-  private Object buildInstance(NodeEntry entry, Object target) {
+  private Object buildInstance(Class<?> clazz, Object target) {
     if(ObjectUtils.isEmpty(target)) {
       return null;
     }
     
-    Class<?> clazz = entry.getClass();
     if(clazz.equals(Map.class)) {
       return new LinkedHashMap<String, Object>();
     }
@@ -72,11 +75,10 @@ public class ResultExecutor implements MqlExecutor<Object> {
     }
   }
   
-  private Object getResult(MqlMapConfiguration configuration, NodeEntry entry, List<Entry> entryNodes, Object target) {
-    Object instance = buildInstance(entry, target);
+  private Object getResult(MqlMapConfiguration configuration, TypeHandler<?> handler, Class<?> clazz, List<Entry> entryNodes, Object target) {
+    Object instance = buildInstance(clazz, target);
     Map<String, Object> resultSet = (Map<String, Object>)target;
     for (Entry ety : entryNodes) {
-      TypeHandler<?> handler = ety.getTypeHandler();
       List<NodeEntry> nodes = ety.getNodes();
       Object value = resultSet.get(ety.getColumn());
       if(!ObjectUtils.isEmpty(nodes)) {
@@ -86,12 +88,12 @@ public class ResultExecutor implements MqlExecutor<Object> {
         }
         
         if(array.size() == 1) {
-          instance = handler.getResult(instance, array.get(0));
+          instance = handler.getResult(ety.getName(), instance, array.get(0));
         } else {
-          instance = handler.getResult(instance, array);
+          instance = handler.getResult(ety.getName(), instance, array);
         }
       } else {
-        instance = handler.getResult(instance, value);
+        instance = handler.getResult(ety.getName(), instance, value);
       }
     }
     return instance;
