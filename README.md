@@ -3,7 +3,6 @@
 * Mongodb ORM是基于java的ORM框架，简化了SDK的使用，使代码变得更清晰、简单。 </br>
 * 与Ibatis类似，将查询、执行语句封装在xml中，与代码隔离。简称MQL。 </br>
 
-***
 
 # 项目中使用
 
@@ -156,9 +155,8 @@
 </select>
 ```
 
-> 更多的使用方法参见  [sample.xml]
+> 更多的使用方法参见  [sample.xml](https://github.com/yuxiangping/mongodb-orm/blob/master/src/main/resources/sample-sql.xml)
 
-***
 
 # 资料
 
