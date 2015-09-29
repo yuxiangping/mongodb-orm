@@ -36,6 +36,10 @@ public class MongoORMFactoryBean implements InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    init();
+  }
+
+  public void init() throws Exception {
     MqlMapConfigParser configParser = new MqlMapConfigParser();
     for (Resource configLocation : configLocations) {
       InputStream is = configLocation.getInputStream();
@@ -51,7 +55,7 @@ public class MongoORMFactoryBean implements InitializingBean {
     this.configParser = configParser;
     logger.info("Mongodb orm framework has ready.");
   }
-
+  
   public MqlMapConfiguration getConfiguration() {
     return configParser.getConfiguration();
   }

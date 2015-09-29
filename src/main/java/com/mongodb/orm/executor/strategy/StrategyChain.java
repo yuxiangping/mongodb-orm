@@ -14,16 +14,10 @@ import com.mongodb.orm.MqlMapConfiguration;
  */
 public class StrategyChain {
   
-  private static StrategyChain instance = new StrategyChain();
-  
-  private List<Strategy> strategys;
   private Iterator<Strategy> iterator;
+  private static List<Strategy> strategys;
   
-  public static StrategyChain getInstance() {
-    return instance;
-  }
-  
-  private StrategyChain() {
+  static {
     strategys = new ArrayList<Strategy>();
     strategys.add(new DefaultStrategy());
     strategys.add(new ValueStrategy());
@@ -31,7 +25,9 @@ public class StrategyChain {
     strategys.add(new DynamicStrategy());
     strategys.add(new NodeStrategy());
     strategys.add(new ColumnStrategy());
-    
+  }
+  
+  public StrategyChain() {
     iterator = strategys.iterator();
   }
   

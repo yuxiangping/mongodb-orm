@@ -57,6 +57,10 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    init();
+  }
+  
+  public void init() {
     Assert.notNull(factory, "Mongo orm factory not null.");
     configuration = factory.getConfiguration();
     helper = new ResultHelper();

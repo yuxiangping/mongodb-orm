@@ -1,67 +1,75 @@
 # mongodb-orm简介
-===========
-Mongodb ORM是基于java的ORM框架，简化了SDK的使用，使代码变得更清晰、简单。 </br>
+* Mongodb ORM是基于java的ORM框架，简化了SDK的使用，使代码变得更清晰、简单。 </br>
+* 与Ibatis类似，将查询、执行语句封装在xml中，与代码隔离。简称MQL。 </br>
 
-Mongodb提供的SDK相当于JDBC，而Mongodb ORM则扮演了ibatis的角色。 </br>
+***
 
-现在已经有一些Mongodb的ORM框架，如morphia，为什么我还要写这个框架来重复造轮子呢？
+# 项目中使用
 
-先看原生的写法
-<查询>
-```java
-MongoClient  client = new MongoClient(host, port );
-DB db = client.getDB(dbName);
-DBCollection collection = db.getCollection(collectionName);
+#### 加入mongodb orm的支持包
 
-BasicDBObject query = new BasicDBObject();
+* 1. 添加jar包或maven支持
 
-query.put(key1, value1);
-query.put(key2, value2);
-
-DBCursor cursor = collection.find(query)
-while(cursor.hasNext()) {
-    // do something
-}
+```
+<dependency>
+	<groupId>com.mongodborm</groupId>
+  	<artifactId>mongodb-orm</artifactId>
+  	<version>0.0.1-RELEASE</version>
+</dependency>
 ```
 
-```java
-BasicDBObject query = new BasicDBObject();
-query.put(key1, value1);
-query.put(key2, value2);
+* 2. 初始化mongodb templet
 
-BasicDBObject subQuery = new BasicDBObject();
-subQuery.put(subKey1, subValue1);
-subQuery.put(subKey2, subValue2);
+> spring中初始化
 
-query.put("$or", subQuery);
+```xml
+<bean id="mongoTemplet" class="com.mongodb.client.MongoClientTemplet">
+    <property name="factory">
+        <bean class="com.mongodb.client.MongoORMFactoryBean">
+            <property name="dataSource">
+                <bean class="com.mongodb.client.MongoDataSource">
+                    <property name="nodeList" value="127.0.0.1:27017" />
+					<property name="dbName" value="your db name" />
+					<property name="userName" value="user name" />
+					<property name="passWord" value="password" />
+					<!-- 可使用默认值 -->
+					<property name="connectionsPerHost" value="" />
+					<property name="threadsAllowedToBlock" value="" />
+					<property name="connectionTimeOut" value="" />
+					<property name="maxRetryTime" value="" />
+					<property name="socketTimeOut" value="" />
+                </bean>
+            </property>
+            <property name="configLocations">
+                <list>
+					<value>classpath:mql/mongo-mql.xml</value>
+				</list>
+            </property>
+        </bean>
+    </property>
+</bean>
 ```
 
--------------------
+> 代码初始化
 
-Morphia的写法 类似hibernate，如果用过hibernate会比较容易上手
 ```java
-Mongo mongo = new Mongo(); 
-Morphia morphia = new Morphia(); 
-EntryDAO dao = new EntryDAO(morphia, mongo); 
-QueryResults<Entry> res=dao.find(); 
-Query<Entry> q = dao.createQuery(); 
-List<Entry> list=q.field("name").equal("name1").asList(); 
-for (Entry entry : list) { 
-    // do something
-} 
+	try {
+      Resource resource =  new ClassPathResource("sample-sql.xml");    
+      MongoORMFactoryBean factory = new MongoORMFactoryBean();
+      factory.setConfigLocations(new Resource[]{resource});
+      factory.init();   
+      MongoClientTemplet templet = new MongoClientTemplet();
+      templet.setFactory(factory);
+      templet.init();
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
 ```
 
---------------
+#### 编写MQL
 
-Mongodb ORM的写法
-```java
-List<Model> list = mongoTemplet.queryOne("queryModelList", "eason");
-for (Model model : list) {
-    // do something
-}
-```
+* Mapping
 
-* BUT  这里很重要 ORM的精华所在
 ```xml
 <mapping id="model" class="test.mongodborm.Model">
 		<property column="_id" name="id" />
@@ -73,7 +81,11 @@ for (Model model : list) {
 <mapping id="extendModel" class="test.mongodborm.Model" extends="model">
 	<property column="newProperty" name="newProperty" />
 </mapping>
-	
+```
+
+* select
+
+```xml
 <select id="queryModelList" collection="test_sample">
 	<query class="java.lang.String">
 		<property column="name" name="${value}" />
@@ -83,8 +95,11 @@ for (Model model : list) {
 		<property column="time" value="desc" />
 	</order>
 </select>
+```
 
-<!-- Update model1 -->
+* update/findAndModify
+
+```xml
 <update id="updateModel1" collection="test_sample">
 	<query class="test.mongodborm.Model$Child">
 		<property column="name" name="name" ignoreNull="true" />
@@ -98,9 +113,11 @@ for (Model model : list) {
 		<property column="status" operate="set" />
 	</action>
 </update>
+```
 
-	
-<!-- 当然 根据你的查询的复杂度  你也可以这样  Model List3 -->
+* 有嵌套的查询	
+
+```xml
 <select id="queryModelList3" collection="test_sample">
 	<query class="java.lang.String">
 		<property column="_id" value="${value}" />
@@ -138,14 +155,11 @@ for (Model model : list) {
 </select>
 ```
 
+> 更多的使用方法参见  [sample.xml]
 
-* 更多的使用方法参见  [sample.xml]
+***
 
+#资料
 
-
-### 更多的信息请访问这里
-
-* Wiki
-* Issues
- 
-* 欢迎成为commiter，共同完善该项目
+> Wiki
+> Issues

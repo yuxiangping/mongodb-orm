@@ -43,11 +43,10 @@ public class  OrderExecutor implements MqlExecutor<Map<String, Object>> {
     
     Map<String, Object> order = new LinkedHashMap<String, Object>();
     for (Entry ety : entrys) {
-      StrategyChain chain = StrategyChain.getInstance();
       StrategyContext context = new StrategyContext(ety, target, callback);
       context.setTypeHandler(typeHandler);
-      
-      chain.doStrategy(configuration, context);
+
+      new StrategyChain().doStrategy(configuration, context);
 
       Object value = context.getValue();
       if(!ObjectUtils.checkValueNull(value, ety)) {
