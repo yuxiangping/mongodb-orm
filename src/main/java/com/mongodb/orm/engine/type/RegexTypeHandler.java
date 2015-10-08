@@ -16,4 +16,9 @@ public class RegexTypeHandler implements ColumnHandler<Pattern> {
     return Pattern.compile(value.toString());
   }
 
+  @Override
+  public Object resovleValue(Pattern target) {
+    return target.toString();
+  }
+
 }

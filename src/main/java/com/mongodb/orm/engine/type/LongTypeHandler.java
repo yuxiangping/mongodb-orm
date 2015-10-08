@@ -15,18 +15,23 @@ public class LongTypeHandler implements TypeHandler<Long>, ColumnHandler<Long> {
 
   @Override
   public Long getResult(String name, Object instance, Object value) {
-    if(value instanceof Long) {
-      return (Long) value;
+    if(value instanceof Number) {
+      return ((Number) value).longValue();
     }
-    return Long.parseLong(value.toString());
+    return Long.parseLong(String.valueOf(value));
   }
 
   @Override
   public Long resovleColumn(Object value) {
-    if(value instanceof Long) {
-      return (Long) value;
+    if(value instanceof Number) {
+      return ((Number) value).longValue();
     }
-    return Long.parseLong(value.toString());
+    return Long.parseLong(String.valueOf(value));
+  }
+
+  @Override
+  public Object resovleValue(Long target) {
+    return target;
   }
 
 }

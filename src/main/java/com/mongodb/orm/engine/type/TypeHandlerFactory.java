@@ -1,11 +1,12 @@
 package com.mongodb.orm.engine.type;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.mongodb.exception.StatementException;
 import com.mongodb.orm.engine.entry.ColumnType;
@@ -129,10 +130,17 @@ public class TypeHandlerFactory {
       }
     });
 
-    register(Collection.class, factory = new Factory() {
+    register(List.class, factory = new Factory() {
       @Override
-      public TypeHandler<Collection<?>> create(Class<?> clazz) {
-        return new CollectionTypeHandler(clazz);
+      public TypeHandler<List<?>> create(Class<?> clazz) {
+        return new ListTypeHandler(clazz);
+      }
+    });
+    
+    register(Set.class, factory = new Factory() {
+      @Override
+      public TypeHandler<Set<?>> create(Class<?> clazz) {
+        return new SetTypeHandler(clazz);
       }
     });
 
@@ -187,13 +195,7 @@ public class TypeHandlerFactory {
       return null;
     }
 
-    Factory factory;
-    if (clazz.isEnum() || Enum.class.isAssignableFrom(clazz)) {
-      factory = typeAliases.get(Enum.class);
-    } else {
-      factory = findFactory(clazz);
-    }
-    
+    Factory factory = findFactory(clazz);
     if (factory == null) {
       factory = defaultHandlerFactory;
     }
@@ -204,7 +206,11 @@ public class TypeHandlerFactory {
     if (clazz == null) {
       return false;
     }
-    return typeAliases.containsKey(clazz);
+    
+    if(findFactory(clazz) != null) {
+      return true;
+    }
+    return false;
   }
 
   public static boolean hasColumnType(ColumnType type) {
@@ -245,5 +251,5 @@ public class TypeHandlerFactory {
   private interface Factory {
     public TypeHandler<?> create(Class<?> clazz);
   }
-
+  
 }

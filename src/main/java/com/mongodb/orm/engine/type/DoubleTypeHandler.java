@@ -16,18 +16,23 @@ public class DoubleTypeHandler implements TypeHandler<Double>, ColumnHandler<Dou
 
   @Override
   public Double getResult(String name, Object instance, Object value) {
-    if (value instanceof Double) {
-      return (Double) value;
+    if (value instanceof Number) {
+      return ((Number) value).doubleValue();
     }
-    return Double.parseDouble(value.toString());
+    return Double.parseDouble(String.valueOf(value));
   }
 
   @Override
   public Double resovleColumn(Object value) {
-    if (value instanceof Double) {
-      return (Double) value;
+    if (value instanceof Number) {
+      return ((Number) value).doubleValue();
     }
-    return Double.parseDouble(value.toString());
+    return Double.parseDouble(String.valueOf(value));
+  }
+
+  @Override
+  public Object resovleValue(Double target) {
+    return target;
   }
 
 }

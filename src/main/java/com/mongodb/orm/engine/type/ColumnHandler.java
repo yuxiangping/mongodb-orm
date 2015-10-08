@@ -10,4 +10,6 @@ public interface ColumnHandler<T> {
   
   T resovleColumn(Object value);
   
+  Object resovleValue(T target);
+  
 }

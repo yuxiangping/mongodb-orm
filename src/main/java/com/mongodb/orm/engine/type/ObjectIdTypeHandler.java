@@ -15,4 +15,9 @@ public class ObjectIdTypeHandler implements ColumnHandler<ObjectId> {
     return new ObjectId(value.toString());
   }
 
+  @Override
+  public Object resovleValue(ObjectId target) {
+    return target.toString();
+  }
+
 }

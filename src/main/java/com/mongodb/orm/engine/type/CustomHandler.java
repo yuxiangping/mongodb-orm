@@ -29,7 +29,7 @@ public class CustomHandler implements TypeHandler<Object> {
     } catch (Exception e) {
       throw new StatementException("Resolve target class '" + clazz + "'. Unknow property '" + name + "' return type.", e);
     }
-    return value;
+    return target;
   }
 
   @Override

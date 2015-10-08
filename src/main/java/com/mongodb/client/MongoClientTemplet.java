@@ -87,7 +87,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
   }
 
   private <T> T findOne(String statement, Object parameter, ResultHandler handler, ReadPreference readPreference) {
-    logger.debug("Execute 'selectOne' mongodb command. Statement '" + statement + "'.");
+    logger.debug("Execute 'findOne' mongodb command. Statement '" + statement + "'.");
 
     SelectConfig config = (SelectConfig) configuration.getConfig(statement);
     if (config == null) {
@@ -107,16 +107,16 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     Map<String, Object> o = (Map<String, Object>) order.executorNode(configuration, parameter);
 
     DBObject queryDbo = new BasicDBObject(q);
-    logger.debug("Execute 'selectOne' mongodb command. Query '" + queryDbo + "'.");
+    logger.debug("Execute 'findOne' mongodb command. Query '" + queryDbo + "'.");
 
     DBObject fieldDbo = (f == null) ? null : new BasicDBObject(f);
-    logger.debug("Execute 'selectOne' mongodb command. Field '" + fieldDbo + "'.");
+    logger.debug("Execute 'findOne' mongodb command. Field '" + fieldDbo + "'.");
 
     DBObject orderDbo = (o == null) ? null : new BasicDBObject(o);
-    logger.debug("Execute 'selectOne' mongodb command. Order '" + orderDbo + "'.");
+    logger.debug("Execute 'findOne' mongodb command. Order '" + orderDbo + "'.");
 
     final DBObject resultSet = coll.findOne(queryDbo, fieldDbo, orderDbo, readPreference);
-    logger.debug("Execute 'selectOne' mongodb command. Result set '" + resultSet + "'.");
+    logger.debug("Execute 'findOne' mongodb command. Result set '" + resultSet + "'.");
 
     if (handler != null) {
       handler.handleResult(new ResultContext() {
@@ -170,7 +170,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
   private <T> List<T> find(String statement, Object parameter, Integer limit, Integer skip, ResultHandler handler,
       ReadPreference readPreference) {
-    logger.debug("Execute 'selectList' mongodb command. Statement '" + statement + "'.");
+    logger.debug("Execute 'find' mongodb command. Statement '" + statement + "'.");
 
     SelectConfig config = (SelectConfig) configuration.getConfig(statement);
     if (config == null) {
@@ -192,16 +192,16 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     Map<String, Object> o = (Map<String, Object>) order.executorNode(configuration, parameter);
     
     DBObject queryDbo = new BasicDBObject(q);
-    logger.debug("Execute 'selectList' mongodb command. Query '" + queryDbo + "'.");
+    logger.debug("Execute 'find' mongodb command. Query '" + queryDbo + "'.");
 
     DBObject fieldDbo = (f == null) ? null : new BasicDBObject(f);
-    logger.debug("Execute 'selectList' mongodb command. Field '" + fieldDbo + "'.");
+    logger.debug("Execute 'find' mongodb command. Field '" + fieldDbo + "'.");
 
     DBObject orderDbo = (o == null) ? null : new BasicDBObject(o);
-    logger.debug("Execute 'selectList' mongodb command. Order '" + orderDbo + "'.");
+    logger.debug("Execute 'find' mongodb command. Order '" + orderDbo + "'.");
 
     final DBCursor resultSet = coll.find(queryDbo, fieldDbo);
-    logger.debug("Execute 'selectList' mongodb command. Result set '" + resultSet + "'.");
+    logger.debug("Execute 'find' mongodb command. Result set '" + resultSet + "'.");
 
     if (orderDbo != null) {
       resultSet.sort(orderDbo);

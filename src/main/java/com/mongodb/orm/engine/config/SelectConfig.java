@@ -2,6 +2,7 @@ package com.mongodb.orm.engine.config;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.mongodb.constant.MongoConstant;
 import com.mongodb.exception.StatementException;
 import com.mongodb.orm.engine.Config;
 import com.mongodb.orm.engine.entry.NodeEntry;
@@ -60,7 +61,7 @@ public class SelectConfig implements Config {
   }
 
   private static enum Order {
-    ASC("asc", -1), DESC("desc", 1);
+    ASC("asc", MongoConstant.ORDER_ASC), DESC("desc", MongoConstant.ORDER_DESC);
 
     private String order;
     private int value;

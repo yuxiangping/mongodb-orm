@@ -59,4 +59,9 @@ public class ByteTypeHandler implements TypeHandler<byte[]>, ColumnHandler<byte[
     }
   }
 
+  @Override
+  public Object resovleValue(byte[] target) {
+    return target;
+  }
+
 }

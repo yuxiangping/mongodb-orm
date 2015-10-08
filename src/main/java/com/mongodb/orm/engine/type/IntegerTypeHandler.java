@@ -15,10 +15,10 @@ public class IntegerTypeHandler implements TypeHandler<Integer> {
 
   @Override
   public Integer getResult(String name, Object instance, Object value) {
-    if(value instanceof Integer) {
-      return (Integer)value;
+    if(value instanceof Number) {
+      return ((Number) value).intValue();
     }
-    return Integer.parseInt(value.toString());
+    return Integer.parseInt(String.valueOf(value));
   }
 
 }

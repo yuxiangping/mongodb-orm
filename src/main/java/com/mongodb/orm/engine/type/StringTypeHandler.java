@@ -23,4 +23,9 @@ public class StringTypeHandler implements TypeHandler<String>, ColumnHandler<Str
     return value.toString();
   }
 
+  @Override
+  public Object resovleValue(String target) {
+    return target;
+  }
+
 }

@@ -10,6 +10,7 @@ import com.mongodb.orm.MqlMapConfiguration;
 import com.mongodb.orm.engine.config.MappingConfig;
 import com.mongodb.orm.engine.entry.Entry;
 import com.mongodb.orm.engine.entry.NodeEntry;
+import com.mongodb.orm.engine.type.ColumnHandler;
 import com.mongodb.orm.engine.type.TypeHandler;
 import com.mongodb.orm.executor.MqlExecutor;
 import com.mongodb.util.ObjectUtils;
@@ -79,24 +80,43 @@ public class ResultExecutor implements MqlExecutor<Object> {
     Object instance = buildInstance(clazz, target);
     Map<String, Object> resultSet = (Map<String, Object>)target;
     for (Entry ety : entryNodes) {
-      List<NodeEntry> nodes = ety.getNodes();
+      String name = (ety.getName()==null) ? ety.getColumn() : ety.getName();
       Object value = resultSet.get(ety.getColumn());
-      if(!ObjectUtils.isEmpty(nodes)) {
-        List<Object> array = new ArrayList<Object>();
-        for(NodeEntry node : nodes) {
-          array.add(callback.callBack(configuration, node, value));
-        }
-        
-        if(array.size() == 1) {
-          instance = handler.getResult(ety.getName(), instance, array.get(0));
-        } else {
-          instance = handler.getResult(ety.getName(), instance, array);
-        }
+      ColumnHandler<Object> columnHandler = (ColumnHandler<Object>)ety.getColumnHandler();
+      
+      if(value instanceof List) {
+        List<Object> result = new ArrayList<Object>();
+        for(Object _value : (List<Object>)value) {
+          result.add(getValue(_value, columnHandler, ety, configuration));
+        } 
+        value = result;
       } else {
-        instance = handler.getResult(ety.getName(), instance, value);
+        value = getValue(value, columnHandler, ety, configuration);
       }
+      instance = handler.getResult(name, instance, value);
     }
     return instance;
+  }
+  
+  private Object getValue(Object value, ColumnHandler<Object> columnHandler, Entry ety, MqlMapConfiguration configuration) {
+    if(columnHandler != null) {
+      value = columnHandler.resovleValue(value);
+    }
+    
+    List<NodeEntry> nodes = ety.getNodes();
+    if(!ObjectUtils.isEmpty(nodes)) {
+      List<Object> array = new ArrayList<Object>();
+      for(NodeEntry node : nodes) {
+        array.add(callback.callBack(configuration, node, value));
+      }
+      
+      if(nodes.size() == 1) {
+        value = array.get(0);
+      } else {
+        value = array;
+      }
+    }
+    return value;
   }
   
   CallBack<Object> callback = new CallBack<Object>() {

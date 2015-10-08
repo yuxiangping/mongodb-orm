@@ -25,11 +25,11 @@ public class MongoConstant {
   /**
    * Query order by 'asc'.
    */
-  public static final String ORDER_ASC = "asc";
+  public static final int ORDER_ASC = -1;
   
   /**
    * Query order by 'desc'.
    */
-  public static final String ORDER_DESC = "desc";
+  public static final int ORDER_DESC = 1;
   
 }

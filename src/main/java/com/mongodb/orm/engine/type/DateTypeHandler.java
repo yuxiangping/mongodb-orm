@@ -58,4 +58,9 @@ public class DateTypeHandler implements TypeHandler<Date>, ColumnHandler<Date> {
     }
   }
 
+  @Override
+  public Object resovleValue(Date target) {
+    return target;
+  }
+
 }

@@ -1,33 +1,41 @@
 package com.mongodb.orm.engine.type;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.mongodb.exception.MongoORMException;
 
 /**
- * Collection implementation of TypeHandler
+ * List implementation of TypeHandler
  * @author: xiangping_yu
  * @data : 2014-7-25
  * @since : 1.5
  */
-public class CollectionTypeHandler implements TypeHandler<Collection<?>> {
+public class ListTypeHandler implements TypeHandler<List<?>> {
 
   private Class<?> clazz;
   
-  public CollectionTypeHandler(Class<?> clazz) {
+  public ListTypeHandler(Class<?> clazz) {
     this.clazz = clazz;
   }
   
   @Override
-  public Object getParameter(String name, Collection<?> instance) {
+  public Object getParameter(String name, List<?> instance) {
     return instance;
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
-  public Collection<?> getResult(String name, Object instance, Object value) {
+  public List<?> getResult(String name, Object instance, Object value) {
     try {
-      Collection result = (Collection)clazz.newInstance();
+      List result = null;
+      if(clazz.isInterface()) {
+        result = new ArrayList<Object>();  
+      } else {
+        result = (List)clazz.newInstance();
+      }
+
       if (value instanceof Collection) {
         result.addAll((Collection)value);
       } else {
@@ -38,5 +46,5 @@ public class CollectionTypeHandler implements TypeHandler<Collection<?>> {
       throw new MongoORMException("Get result from "+instance.getClass()+" has error. Target property is "+name, ex);
     }
   }
-
+  
 }

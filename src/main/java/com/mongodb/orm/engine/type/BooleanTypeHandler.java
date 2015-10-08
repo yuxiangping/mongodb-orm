@@ -30,4 +30,9 @@ public class BooleanTypeHandler implements TypeHandler<Boolean>, ColumnHandler<B
     return Boolean.parseBoolean(value.toString());
   }
 
+  @Override
+  public Object resovleValue(Boolean target) {
+    return target;
+  }
+
 }

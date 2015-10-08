@@ -16,10 +16,10 @@ public class FloatTypeHandler implements TypeHandler<Float> {
 
   @Override
   public Float getResult(String name, Object instance, Object value) {
-    if (value instanceof Float) {
-      return (Float) value;
+    if (value instanceof Number) {
+      return ((Number) value).floatValue();
     }
-    return Float.parseFloat(value.toString());
+    return Float.parseFloat(String.valueOf(value));
   }
 
 }
