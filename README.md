@@ -54,7 +54,7 @@
 
 ```java
 	try {
-      Resource resource =  new ClassPathResource("sample-sql.xml");    
+      Resource resource =  new ClassPathResource("mongo-mql.xml");    
       MongoORMFactoryBean factory = new MongoORMFactoryBean();
       factory.setConfigLocations(new Resource[]{resource});
       factory.init();   
