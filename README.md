@@ -174,6 +174,6 @@ int update = mongoT emplet.update("updateModel", model, action);
 
 # 资料
 
- [Wiki](https://github.com/yuxiangping/mongodb-orm/wiki)
+ [使用教程](https://github.com/yuxiangping/mongodb-orm/wiki)
 
  [Issues](https://github.com/yuxiangping/mongodb-orm/issues)
