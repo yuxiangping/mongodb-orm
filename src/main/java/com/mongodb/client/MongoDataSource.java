@@ -54,12 +54,12 @@ public class MongoDataSource implements InitializingBean {
   /**
    * Mongo database connection per host.
    */
-  private Integer connectionsPerHost;
+  private int connectionsPerHost = MongoConstant.CONNECTION_PER_HOST;
 
   /**
    * Mongo database threads allowed to block.
    */
-  private Integer threadsAllowedToBlock;
+  private int threadsAllowedToBlock = MongoConstant.THREADS_ALLOWED_TO_BLOCK;
 
   /**
    * Mongo database connection time out.
@@ -91,13 +91,17 @@ public class MongoDataSource implements InitializingBean {
   
   @Override
   public void afterPropertiesSet() throws Exception {
+    init();
+    logger.info("The mongo client is ready.");
+  }
+  
+  private void init() {
     Assert.hasLength(nodeList, "Couldn't get available mongo server address.");
     Assert.hasLength(userName, "Property 'userName' is note null.");
     Assert.hasLength(dbName, "Property 'dbName' is note null.");
     Assert.hasLength(passWord, "Property 'passWord' is note null.");
 
     initClient();
-    logger.info("The mongo client is ready.");
   }
 
   /**
@@ -106,7 +110,7 @@ public class MongoDataSource implements InitializingBean {
   private void initClient() {
     MongoClientOptions.Builder builder = MongoClientOptions.builder().connectionsPerHost(connectionsPerHost)
             .threadsAllowedToBlockForConnectionMultiplier(threadsAllowedToBlock).connectTimeout(connectionTimeOut)
-            .socketTimeout(socketTimeOut).autoConnectRetry(true).maxAutoConnectRetryTime(maxRetryTime);
+            .socketTimeout(socketTimeOut).autoConnectRetry(MongoConstant.AUTO_CONNECT_RETRY).maxAutoConnectRetryTime(maxRetryTime);
 
     MongoCredential credential = MongoCredential.createMongoCRCredential(userName, dbName, passWord.toCharArray());
 
