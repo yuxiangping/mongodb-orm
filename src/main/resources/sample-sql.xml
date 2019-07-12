@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mql PUBLIC "-//eason.xp.yu@gmail.com//DTD MONGODB QL Config 1.0//zh-CN" "http://7d9ju8.com1.z0.glb.clouddn.com/mongodb-mql.dtd">
+<!DOCTYPE mql PUBLIC "-//eason.xp.yu@gmail.com//DTD MONGODB QL Config 1.0//zh-CN" "https://raw.githubusercontent.com/yuxiangping/repository/master/mongodb-mql.dtd">
 <mql>
 	<!--  对象映射 -->
 	<mapping id="model" class="test.mongodborm.Model">
