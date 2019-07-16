@@ -6,15 +6,17 @@ import org.yy.mongodb.orm.engine.entry.NodeEntry;
 
 /**
  * XML Insert config
- * 
- * @author: xiangping_yu
- * @data : 2014-3-6
- * @since : 1.5
+ * @author yy
  */
 public class InsertConfig implements Config {
 
   private static final long serialVersionUID = -5813468518730252909L;
 
+  /**
+   * ORM config namespace.
+   */
+  private String namespace;
+  
   /**
    * ORM insert config id.
    */

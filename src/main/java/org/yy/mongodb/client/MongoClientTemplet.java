@@ -1,18 +1,15 @@
 package org.yy.mongodb.client;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.mongodb.MongoDatabaseUtils;
 import org.springframework.data.mongodb.SessionSynchronization;
 import org.springframework.util.Assert;
-
 import org.yy.mongodb.client.event.ResultContext;
 import org.yy.mongodb.client.event.ResultHandler;
 import org.yy.mongodb.exception.MongoDaoException;
@@ -23,6 +20,7 @@ import org.yy.mongodb.orm.engine.config.CommandConfig;
 import org.yy.mongodb.orm.engine.config.DeleteConfig;
 import org.yy.mongodb.orm.engine.config.GroupConfig;
 import org.yy.mongodb.orm.engine.config.InsertConfig;
+import org.yy.mongodb.orm.engine.config.MapReduceConfig;
 import org.yy.mongodb.orm.engine.config.MappingConfig;
 import org.yy.mongodb.orm.engine.config.SelectConfig;
 import org.yy.mongodb.orm.engine.config.UpdateConfig;
@@ -34,25 +32,30 @@ import org.yy.mongodb.util.BeanUtils;
 import org.yy.mongodb.util.NodeletUtils;
 import org.yy.mongodb.util.ScriptUtils;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DBCursor;
+import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MapReduceIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 
 /**
  * Templet for MongoDB. The primary Java interface implement for working with NoSql ORM.
  * 
  * @author yy
+ * @since 1.8   mongodb  3.4
  */
+@SuppressWarnings({"unchecked", "deprecation"})
 public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
   private MongoFactoryBean factory;
@@ -63,18 +66,18 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
    * Mongo session synchronization.
    */
   private SessionSynchronization sessionSynchronization = SessionSynchronization.ON_ACTUAL_TRANSACTION;
-  
+
   @Override
   public void afterPropertiesSet() throws Exception {
     init();
   }
-  
+
   public void init() {
     Assert.notNull(factory, "Mongo orm factory not null.");
     configuration = factory.getConfiguration();
     helper = new ResultHelper();
   }
-  
+
   @Override
   public <T> T findOne(String statement) {
     return findOne(statement, null, null, ReadPreference.secondaryPreferred());
@@ -112,7 +115,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
     MongoDatabase db = getDatabase();
     MongoCollection<Document> coll = db.getCollection(collection).withReadPreference(readPreference);
-    
+
     Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
     Map<String, Object> f = (Map<String, Object>) field.executorNode(configuration, parameter);
     Map<String, Object> o = (Map<String, Object>) order.executorNode(configuration, parameter);
@@ -120,13 +123,12 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     Document find = new Document(q);
     Document filter = (f == null) ? null : new Document(f);
     Document sort = (o == null) ? null : new Document(o);
-    
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'findOne' mongodb command. Query '" + find + "'.");
       logger.debug("Execute 'findOne' mongodb command. Field '" + filter + "'.");
       logger.debug("Execute 'findOne' mongodb command. Order '" + sort + "'.");
     }
-    
+
     Document doc = coll.find(find).filter(filter).sort(sort).first();
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'findOne' mongodb command. Result is '" + doc + "'.");
@@ -138,7 +140,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
         public Object getResultObject() {
           return doc;
         }
-  
+
         @Override
         public int getResultCount() {
           if (doc == null) {
@@ -148,7 +150,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
         }
       });
       return null;
-    } 
+    }
     return (T) helper.toResult(field, doc);
   }
 
@@ -207,13 +209,12 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     Document find = new Document(q);
     Document filter = (f == null) ? null : new Document(f);
     Document sort = (o == null) ? null : new Document(o);
-    
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'find' mongodb command. Query '" + find + "'.");
       logger.debug("Execute 'find' mongodb command. Field '" + filter + "'.");
       logger.debug("Execute 'find' mongodb command. Order '" + sort + "'.");
     }
-    
+
     FindIterable<Document> iterable = coll.find(find).filter(filter).sort(sort);
     if (skip != null) {
       iterable.skip(skip);
@@ -224,21 +225,21 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
     List<Document> list = new ArrayList<Document>();
     MongoCursor<Document> iterator = iterable.iterator();
-    while(iterator.hasNext()) {
+    while (iterator.hasNext()) {
       list.add(iterator.next());
     }
-    
+
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'find' mongodb command. Result set is '" + list + "'.");
     }
-    
+
     if (handler != null) {
       handler.handleResult(new ResultContext() {
         @Override
         public Object getResultObject() {
           return list;
         }
-  
+
         @Override
         public int getResultCount() {
           return list.size();
@@ -246,7 +247,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
       });
       return null;
     }
-    
+
     List<T> result = new ArrayList<T>(list.size());
     list.forEach(item -> {
       result.add((T) helper.toResult(field, item));
@@ -277,7 +278,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     MongoCollection<Document> coll = db.getCollection(collection).withReadPreference(ReadPreference.secondaryPreferred());
 
     Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
-    
+
     Document count = new Document(q);
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'count' mongodb command. Query '" + count + "'.");
@@ -335,26 +336,26 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
       logger.debug("Execute 'distinct' mongodb command. Query '" + distinct + "'.");
       logger.debug("Execute 'distinct' mongodb command. Field '" + filter + "'.");
     }
-    
+
     DistinctIterable<Document> iterable = coll.distinct(key, distinct, Document.class);
-    
+
     List<Document> list = new ArrayList<Document>();
     MongoCursor<Document> iterator = iterable.iterator();
-    while(iterator.hasNext()) {
+    while (iterator.hasNext()) {
       list.add(iterator.next());
     }
-    
+
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'distinct' mongodb command. Result set '" + list + "'.");
     }
-    
+
     if (handler != null) {
       handler.handleResult(new ResultContext() {
         @Override
         public Object getResultObject() {
           return list;
         }
-        
+
         @Override
         public int getResultCount() {
           return list.size();
@@ -362,7 +363,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
       });
       return null;
     }
-    
+
     List<T> result = new ArrayList<T>(list.size());
     list.forEach(item -> {
       result.add((T) helper.toResult(field, item));
@@ -392,20 +393,20 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
     MongoDatabase db = getDatabase();
     MongoCollection<Document> coll = db.getCollection(collection).withWriteConcern(WriteConcern.ACKNOWLEDGED);
-    
+
     Map<String, Object> doc = (Map<String, Object>) document.executorNode(configuration, parameter);
 
     Document insert = new Document(doc);
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'insert' mongodb command. Doc '" + insert + "'.");
     }
-    
+
     try {
       coll.insertOne(insert);
     } catch (Exception e) {
       throw new MongoDaoException(statement, "Execute 'insert' mongodb command has exception. The write was unacknowledged.", e);
     }
-    
+
     String newId = insert.getObjectId("_id").toString();
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'insert' mongodb command. ObjectId is '" + newId + "'.");
@@ -471,25 +472,25 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
   @Override
   public <T> T findAndModify(String statement) {
-    return findAndModify(statement, null, null, false, false);
+    return findAndModify(statement, null, null, false);
   }
 
   @Override
   public <T> T findAndModify(String statement, Object parameter) {
-    return findAndModify(statement, parameter, null, false, false);
+    return findAndModify(statement, parameter, null, false);
   }
 
   @Override
   public void findAndModify(String statement, ResultHandler handler) {
-    findAndModify(statement, null, handler, false, false);
+    findAndModify(statement, null, handler, false);
   }
 
   @Override
   public void findAndModify(String statement, Object parameter, ResultHandler handler) {
-    findAndModify(statement, parameter, handler, false, false);
+    findAndModify(statement, null, handler, false);
   }
 
-  private <T> T findAndModify(String statement, Object parameter, ResultHandler handler, boolean returnNew, boolean upset) {
+  private <T> T findAndModify(String statement, Object parameter, ResultHandler handler, boolean upsert) {
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'findAndModify' mongodb command. Statement '" + statement + "'.");
     }
@@ -510,34 +511,32 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
     Map<String, Object> a = (Map<String, Object>) action.executorNode(configuration, parameter);
     Map<String, Object> f = (Map<String, Object>) field.executorNode(configuration, parameter);
-    
-    Document queryDbo = new Document(q);
-    Document actionDbo = (a == null) ? null : new Document(a);
+
+    Document filter = new Document(q);
+    Document update = (a == null) ? null : new Document(a);
     Document fieldDbo = (f == null) ? null : new Document(f);
-    
+
     if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'findAndModify' mongodb command. Query '" + queryDbo + "'.");
-      logger.debug("Execute 'findAndModify' mongodb command. Action '" + actionDbo + "'.");
+      logger.debug("Execute 'findAndModify' mongodb command. Query '" + filter + "'.");
+      logger.debug("Execute 'findAndModify' mongodb command. Action '" + update + "'.");
       logger.debug("Execute 'findAndModify' mongodb command. Field '" + fieldDbo + "'.");
     }
-    
-    Document document = coll.findOneAndUpdate(queryDbo, actionDbo);
 
-    final DBObject resultSet = coll.findAndModify(queryDbo, fieldDbo, null, false, actionDbo, returnNew, upset);
+    Document document = coll.findOneAndUpdate(filter, update, new FindOneAndUpdateOptions().upsert(upsert));
     if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'findAndModify' mongodb command. Result set '" + resultSet + "'.");
+      logger.debug("Execute 'findAndModify' mongodb command. Result is '" + document + "'.");
     }
 
     if (handler != null) {
       handler.handleResult(new ResultContext() {
         @Override
         public Object getResultObject() {
-          return resultSet;
+          return document;
         }
-        
+
         @Override
         public int getResultCount() {
-          if (resultSet == null) {
+          if (document == null) {
             return 0;
           }
           return 1;
@@ -545,16 +544,16 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
       });
       return null;
     }
-    return (T) helper.toResult(field, resultSet);
+    return (T) helper.toResult(field, document);
   }
 
   @Override
-  public int update(String statement) {
+  public long update(String statement) {
     return update(statement, null);
   }
 
   @Override
-  public int update(String statement, Object parameter) {
+  public long update(String statement, Object parameter) {
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'update' mongodb command. Statement '" + statement + "'.");
     }
@@ -569,33 +568,32 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     NodeEntry action = config.getAction();
 
     MongoDatabase db = getDatabase();
-    MongoCollection coll = db.getCollection(collection);
+    MongoCollection<Document> coll = db.getCollection(collection).withWriteConcern(WriteConcern.ACKNOWLEDGED);
 
     Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
     Map<String, Object> a = (Map<String, Object>) action.executorNode(configuration, parameter);
-    
-    DBObject queryDbo = new BasicDBObject(q);
-    DBObject actionDbo = (a == null) ? null : new BasicDBObject(a);
-    
+
+    Document filter = new Document(q);
+    Document update = (a == null) ? null : new Document(a);
     if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'update' mongodb command. Query '" + queryDbo + "'.");
-      logger.debug("Execute 'update' mongodb command. Action '" + actionDbo + "'.");
+      logger.debug("Execute 'update' mongodb command. Query '" + filter + "'.");
+      logger.debug("Execute 'update' mongodb command. Action '" + update + "'.");
     }
 
-    WriteResult writeResult = coll.update(queryDbo, actionDbo, false, true, WriteConcern.ACKNOWLEDGED);
-    if (!writeResult.wasAcknowledged()) {
+    UpdateResult result = coll.updateMany(filter, update, new UpdateOptions().upsert(false));
+    if (!result.wasAcknowledged()) {
       throw new MongoDaoException(statement, "Execute 'update' mongodb command has exception. The write was unacknowledged.");
     }
-    return writeResult.getN();
+    return result.getModifiedCount();
   }
 
   @Override
-  public int delete(String statement) {
+  public long delete(String statement) {
     return delete(statement, null);
   }
 
   @Override
-  public int delete(String statement, Object parameter) {
+  public long delete(String statement, Object parameter) {
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'delete' mongodb command. Statement '" + statement + "'.");
     }
@@ -609,20 +607,20 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     NodeEntry query = config.getQuery();
 
     MongoDatabase db = getDatabase();
-    MongoCollection coll = db.getCollection(collection);
+    MongoCollection<Document> coll = db.getCollection(collection).withWriteConcern(WriteConcern.ACKNOWLEDGED);
 
     Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
 
-    DBObject queryDbo = new BasicDBObject(q);
+    Document filter = new Document(q);
     if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'delete' mongodb command. Query '" + queryDbo + "'.");
+      logger.debug("Execute 'delete' mongodb command. Query '" + filter + "'.");
     }
 
-    WriteResult writeResult = coll.remove(queryDbo, WriteConcern.ACKNOWLEDGED);
-    if (!writeResult.wasAcknowledged()) {
+    DeleteResult result = coll.deleteMany(filter);
+    if (!result.wasAcknowledged()) {
       throw new MongoDaoException(statement, "Execute 'delete' mongodb command has exception. The write was unacknowledged.");
     }
-    return writeResult.getN();
+    return result.getDeletedCount();
   }
 
   @Override
@@ -662,31 +660,34 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
     Map<String, Object> q = (Map<String, Object>) query.executorNode(configuration, parameter);
 
-    DBObject queryDbo = new BasicDBObject(q);
+    Document command = new Document(q);
     if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'command' mongodb command. Query '" + queryDbo + "'.");
+      logger.debug("Execute 'command' mongodb command. Query '" + command + "'.");
     }
 
-    final CommandResult resultSet = db.command(queryDbo, readPreference);
+    Document result = db.runCommand(command, readPreference);
     if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'command' mongodb command. Result set '" + resultSet + "'.");
+      logger.debug("Execute 'command' mongodb command. Result set '" + result + "'.");
     }
 
     if (handler != null) {
       handler.handleResult(new ResultContext() {
         @Override
         public Object getResultObject() {
-          return resultSet;
+          return result;
         }
-        
+
         @Override
         public int getResultCount() {
-          return resultSet.size();
+          if (result == null) {
+            return 0;
+          }
+          return 1;
         }
       });
       return null;
     }
-    return (T) helper.toResult(field, resultSet);
+    return (T) helper.toResult(field, result);
   }
 
   @Override
@@ -728,52 +729,49 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     Script finalize = config.getFinalize();
     NodeEntry field = config.getField();
 
-    MongoDatabase db = getDatabase();
-    MongoCollection coll = db.getCollection(collection).withReadPreference(readPreference);
-
     Map<String, Object> k = (Map<String, Object>) key.executorNode(configuration, parameter);
     Map<String, Object> c = (Map<String, Object>) condition.executorNode(configuration, parameter);
     Map<String, Object> i = (Map<String, Object>) initial.executorNode(configuration, parameter);
-    String kf = ScriptUtils.fillScriptParams(keyf, parameter);  // TODO not used for sdk
+    String kf = ScriptUtils.fillScriptParams(keyf, parameter);
     String r = ScriptUtils.fillScriptParams(reduce, parameter);
     String f = ScriptUtils.fillScriptParams(finalize, parameter);
 
-    DBObject keyDbo = new BasicDBObject(k);
-    DBObject conditionDbo = new BasicDBObject(c);
-    DBObject initialDbo = new BasicDBObject(i);
-
+    DBObject keys = new BasicDBObject(k);
+    DBObject condi = new BasicDBObject(c);
+    DBObject initi = new BasicDBObject(i);
     if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'group' mongodb command. Key '" + keyDbo + "'.");
-      logger.debug("Execute 'group' mongodb command. Condition '" + conditionDbo + "'.");
-      logger.debug("Execute 'group' mongodb command. Initial '" + initialDbo + "'.");
+      logger.debug("Execute 'group' mongodb command. Key '" + keys + "'.");
+      logger.debug("Execute 'group' mongodb command. Condition '" + condi + "'.");
+      logger.debug("Execute 'group' mongodb command. Initial '" + initi + "'.");
       logger.debug("Execute 'group' mongodb command. Keyf '" + kf + "'.");
       logger.debug("Execute 'group' mongodb command. Reduce '" + r + "'.");
       logger.debug("Execute 'group' mongodb command. Finalize '" + f + "'.");
     }
 
-    final DBObject resultSet = coll.group(keyDbo, conditionDbo, initialDbo, r, f, readPreference);
+    DB legacyDb = factory.getLegacyDb();
+    DBObject result = legacyDb.getCollection(collection).group(keys, condi, initi, r, f, readPreference);
     if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'group' mongodb command. Result set '" + resultSet + "'.");
+      logger.debug("Execute 'group' mongodb command. Result set '" + result + "'.");
     }
 
     if (handler != null) {
       handler.handleResult(new ResultContext() {
         @Override
         public Object getResultObject() {
-          return resultSet;
+          return result;
         }
-        
+
         @Override
         public int getResultCount() {
-          if (resultSet == null) {
+          if (result == null) {
             return 0;
           }
-          return resultSet.toMap().size();
+          return 1;
         }
       });
       return null;
     }
-    return (T) helper.toResult(field, resultSet);
+    return (T) helper.toResult(field, result);
   }
 
   @Override
@@ -782,7 +780,7 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
   }
 
   @Override
-  public <T> List<T> aggregate(String statement, Object[] parameter) {
+  public <T> List<T> aggregate(String statement, Object parameter) {
     return aggregate(statement, parameter, null, ReadPreference.secondaryPreferred());
   }
 
@@ -792,11 +790,11 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
   }
 
   @Override
-  public void aggregate(String statement, Object[] parameter, ResultHandler handler) {
+  public void aggregate(String statement, Object parameter, ResultHandler handler) {
     aggregate(statement, parameter, handler, ReadPreference.secondaryPreferred());
   }
 
-  private <T> List<T> aggregate(String statement, Object[] parameter, ResultHandler handler, ReadPreference readPreference) {
+  private <T> List<T> aggregate(String statement, Object parameter, ResultHandler handler, ReadPreference readPreference) {
     if (logger.isDebugEnabled()) {
       logger.debug("Execute 'aggregate' mongodb command. Statement '" + statement + "'.");
     }
@@ -811,55 +809,130 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
     NodeEntry field = config.getField();
 
     MongoDatabase db = getDatabase();
-    MongoCollection coll = db.getCollection(collection).withReadPreference(readPreference);
+    MongoCollection<Document> coll = db.getCollection(collection).withReadPreference(readPreference);
 
-    NodeEntry firstFunction = function.remove(0); // FIXME confire remove or get
-    Map<String, Object> f = (Map<String, Object>) firstFunction.executorNode(configuration, parameter);
-    DBObject firstOp = new BasicDBObject(f);
-    if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'aggregate' mongodb command. First Operation '" + firstOp + "'.");
-    }
-
-    DBObject[] operations = new DBObject[function.size()];
-    for (int i = 0; i < function.size(); i++) {
-      NodeEntry ne = function.get(i);
+    List<Document> operations = new ArrayList<Document>(function.size());
+    for (Map.Entry<String, NodeEntry> entry : function.entrySet()) {
+      NodeEntry ne = entry.getValue();
       Map<String, Object> op = (Map<String, Object>) ne.executorNode(configuration, parameter);
-      DBObject operationDbo = new BasicDBObject(op);
-      operations[i] = operationDbo;
+      Document operation = new Document(op);
+      operations.add(operation);
       if (logger.isDebugEnabled()) {
-        logger.debug("Execute 'aggregate' mongodb command. Operation '" + operationDbo + "'.");
+        logger.debug("Execute 'aggregate' mongodb command. Operation '" + operation + "'.");
       }
     }
 
-    CommandResult commandResult = coll.aggregate(firstOp, operations).getCommandResult();
-    if (logger.isDebugEnabled()) {
-      logger.debug("Execute 'aggregate' mongodb command. Result set '" + commandResult + "'.");
+    AggregateIterable<Document> iterable = coll.aggregate(operations);
+
+    List<Document> list = new ArrayList<Document>();
+    MongoCursor<Document> iterator = iterable.iterator();
+    while (iterator.hasNext()) {
+      list.add(iterator.next());
     }
 
-    final BasicDBList resultSet = (BasicDBList) commandResult.get("result");
+    if (logger.isDebugEnabled()) {
+      logger.debug("Execute 'aggregate' mongodb command. Result set '" + list + "'.");
+    }
+
     if (handler != null) {
       handler.handleResult(new ResultContext() {
         @Override
         public Object getResultObject() {
-          return resultSet;
+          return list;
         }
-        
+
         @Override
         public int getResultCount() {
-          return resultSet.size();
+          return list.size();
         }
       });
       return null;
     }
-    
-    List<T> list = new ArrayList<T>(resultSet.size());
-    for (Iterator iter = resultSet.iterator(); iter.hasNext();) {
-      T result = (T) helper.toResult(field, iter.next());
-      list.add(result);
+
+    List<T> result = new ArrayList<T>(list.size());
+    for (Document doc : list) {
+      T t = (T) helper.toResult(field, doc);
+      result.add(t);
     }
-    return list;
+    return result;
   }
 
+  @Override
+  public <T> List<T> mapReduce(String statement) {
+    return mapReduce(statement, null, null, ReadPreference.secondaryPreferred());
+  }
+
+  @Override
+  public <T> List<T> mapReduce(String statement, Object parameter) {
+    return mapReduce(statement, parameter, null, ReadPreference.secondaryPreferred());
+  }
+
+  @Override
+  public void mapReduce(String statement, ResultHandler handler) {
+    mapReduce(statement, null, handler, ReadPreference.secondaryPreferred());
+  }
+
+  @Override
+  public void mapReduce(String statement, Object parameter, ResultHandler handler) {
+    mapReduce(statement, parameter, handler, ReadPreference.secondaryPreferred());
+  }
+  
+  private <T> List<T> mapReduce(String statement, Object parameter, ResultHandler handler, ReadPreference readPreference) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Execute 'mapReduce' mongodb command. Statement '" + statement + "'.");
+    }
+
+    MapReduceConfig config = (MapReduceConfig) configuration.getConfig(statement);
+    if (config == null) {
+      throw new MongoDaoException(statement, "MapReduce statement id '" + statement + "' not found.");
+    }
+
+    String collection = config.getCollection();
+    Script map = config.getMap();
+    Script reduce = config.getReduce();
+    NodeEntry field = config.getField();
+    
+    String m = ScriptUtils.fillScriptParams(map, parameter);
+    String r = ScriptUtils.fillScriptParams(reduce, parameter);
+    
+    MongoDatabase db = getDatabase();
+    MongoCollection<Document> coll = db.getCollection(collection).withReadPreference(readPreference);
+
+    MapReduceIterable<Document> iterable = coll.mapReduce(m, r);
+    
+    List<Document> list = new ArrayList<Document>();
+    MongoCursor<Document> iterator = iterable.iterator();
+    while (iterator.hasNext()) {
+      list.add(iterator.next());
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Execute 'mapReduce' mongodb command. Result set '" + list + "'.");
+    }
+
+    if (handler != null) {
+      handler.handleResult(new ResultContext() {
+        @Override
+        public Object getResultObject() {
+          return list;
+        }
+
+        @Override
+        public int getResultCount() {
+          return list.size();
+        }
+      });
+      return null;
+    }
+
+    List<T> result = new ArrayList<T>(list.size());
+    for (Document doc : list) {
+      T t = (T) helper.toResult(field, doc);
+      result.add(t);
+    }
+    return result;
+  }
+  
   @Override
   public MongoDatabase getDatabase() {
     return MongoDatabaseUtils.getDatabase(factory, sessionSynchronization);
@@ -875,42 +948,42 @@ public class MongoClientTemplet implements MongoTemplet, InitializingBean {
 
   @Override
   public <T> T parseObject(String mappingId, Document source) {
-    MappingConfig mapping = (MappingConfig)configuration.getMapping(mappingId);
-    
+    MappingConfig mapping = (MappingConfig) configuration.getMapping(mappingId);
+
     NodeEntry nodeEntry = new NodeEntry();
     nodeEntry.setClazz(mapping.getClazz());
     nodeEntry.setNodeMappings(NodeletUtils.getMappingEntry(mapping, configuration));
     return (T) helper.toResult(nodeEntry, source);
   }
-  
+
   /**
-   * Helper for mongodb result. 
+   * Helper for mongodb result.
    */
   private class ResultHelper {
-    
+
     private ResultExecutor resultExecutor;
-    
+
     public ResultHelper() {
       resultExecutor = new ResultExecutor();
     }
-    
+
     public Object toResult(NodeEntry entry, Object object) {
       return resultExecutor.parser(configuration, entry, object);
     }
-    
+
     public void setSelectKey(Entry entry, String key, Object target) {
-      if(target instanceof Map) {
-        ((Map) target).put(entry.getName(), key);
+      if (target instanceof Map) {
+        ((Map<Object, Object>) target).put(entry.getName(), key);
       } else {
         try {
           BeanUtils.setProperty(target, entry.getColumn(), key);
         } catch (Exception e) {
-          throw new MongoORMException("No selectKey property '"+entry.getColumn()+"'found. Class '"+target.getClass()+"'.", e);
+          throw new MongoORMException("No selectKey property '" + entry.getColumn() + "'found. Class '" + target.getClass() + "'.", e);
         }
       }
     }
   }
-  
+
   public void setFactory(MongoFactoryBean factory) {
     this.factory = factory;
   }

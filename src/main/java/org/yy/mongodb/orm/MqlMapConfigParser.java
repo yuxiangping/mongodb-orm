@@ -20,6 +20,7 @@ import org.yy.mongodb.orm.builder.statement.CommandStatement;
 import org.yy.mongodb.orm.builder.statement.DeleteStatement;
 import org.yy.mongodb.orm.builder.statement.GroupStatement;
 import org.yy.mongodb.orm.builder.statement.InsertStatement;
+import org.yy.mongodb.orm.builder.statement.MapReduceStatement;
 import org.yy.mongodb.orm.builder.statement.MappingStatement;
 import org.yy.mongodb.orm.builder.statement.SelectStatement;
 import org.yy.mongodb.orm.builder.statement.UpdateStatement;
@@ -29,10 +30,7 @@ import org.yy.mongodb.util.NodeletUtils;
 
 /**
  * MQL map config parser
- * 
- * @author: xiangping_yu
- * @data : 2014-7-11
- * @since : 1.5
+ * @author yy
  */
 public class MqlMapConfigParser {
 
@@ -52,6 +50,7 @@ public class MqlMapConfigParser {
     addCommandNodelets();
     addGroupNodelets();
     addAggregateNodelets();
+    addMapReduceNodelets();
   }
 
   /**
@@ -88,7 +87,7 @@ public class MqlMapConfigParser {
   private void addMapNodelets() {
     parser.addNodelet("/mql/mapping", new Nodelet() {
       @Override
-      public void process(Node node) throws Exception {
+      public void process(String namespace, Node node) throws Exception {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
@@ -103,7 +102,7 @@ public class MqlMapConfigParser {
   private void addSelectNodelets() {
     parser.addNodelet("/mql/select", new Nodelet() {
       @Override
-      public void process(Node node) throws Exception {
+      public void process(String namespace, Node node) throws Exception {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
@@ -118,7 +117,7 @@ public class MqlMapConfigParser {
   private void addUpdateNodelets() {
     parser.addNodelet("/mql/update", new Nodelet() {
       @Override
-      public void process(Node node) throws Exception {
+      public void process(String namespace, Node node) throws Exception {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
@@ -133,7 +132,7 @@ public class MqlMapConfigParser {
   private void addInsertNodelets() {
     parser.addNodelet("/mql/insert", new Nodelet() {
       @Override
-      public void process(Node node) throws Exception {
+      public void process(String namespace, Node node) throws Exception {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
@@ -148,7 +147,7 @@ public class MqlMapConfigParser {
   private void addDeleteNodelets() {
     parser.addNodelet("/mql/delete", new Nodelet() {
       @Override
-      public void process(Node node) throws Exception {
+      public void process(String namespace, Node node) throws Exception {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
@@ -163,7 +162,7 @@ public class MqlMapConfigParser {
   private void addCommandNodelets() {
     parser.addNodelet("/mql/command", new Nodelet() {
       @Override
-      public void process(Node node) throws Exception {
+      public void process(String namespace, Node node) throws Exception {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
@@ -178,7 +177,7 @@ public class MqlMapConfigParser {
   private void addGroupNodelets() {
     parser.addNodelet("/mql/group", new Nodelet() {
       @Override
-      public void process(Node node) throws Exception {
+      public void process(String namespace, Node node) throws Exception {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
@@ -193,13 +192,28 @@ public class MqlMapConfigParser {
   private void addAggregateNodelets() {
     parser.addNodelet("/mql/aggregate", new Nodelet() {
       @Override
-      public void process(Node node) throws Exception {
+      public void process(String namespace, Node node) throws Exception {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
         configuration.addConfig(id, new AggregateStatement(id).handler(node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [aggregate] '" + id + "' has finished.");
+        }
+      }
+    });
+  }
+  
+  private void addMapReduceNodelets() {
+    parser.addNodelet("/mql/mapreduce", new Nodelet() {
+      @Override
+      public void process(String namespace, Node node) throws Exception {
+        Properties attributes = NodeletUtils.parseAttributes(node);
+        String id = attributes.getProperty("id");
+
+        configuration.addConfig(id, new MapReduceStatement(id).handler(node));
+        if (logger.isDebugEnabled()) {
+          logger.debug("Mql configuration load [mapreduce] '" + id + "' has finished.");
         }
       }
     });

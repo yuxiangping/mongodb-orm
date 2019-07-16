@@ -4,10 +4,7 @@ import java.util.regex.Pattern;
 
 /**
  * Regex implementation of TypeHandler
- * 
- * @author: xiangping_yu
- * @data : 2014-7-25
- * @since : 1.5
+ * @author yy
  */
 public class RegexTypeHandler implements ColumnHandler<Pattern> {
 

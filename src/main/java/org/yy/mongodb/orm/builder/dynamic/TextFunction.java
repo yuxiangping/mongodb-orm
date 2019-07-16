@@ -9,10 +9,7 @@ import org.yy.mongodb.util.JsonUtils;
 
 /**
  * Dynamic text function.
- * 
- * @author: xiangping_yu
- * @data : 2013-6-8
- * @since : 1.5
+ * @author yy
  */
 public class TextFunction implements Function {
 

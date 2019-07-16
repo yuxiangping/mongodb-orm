@@ -8,15 +8,17 @@ import org.yy.mongodb.orm.engine.entry.NodeEntry;
 
 /**
  * XML Aggregate config
- * 
- * @author: xiangping_yu
- * @data : 2014-3-6
- * @since : 1.5
+ * @author yy
  */
 public class AggregateConfig implements Config {
 
   private static final long serialVersionUID = 1289646863161628083L;
 
+  /**
+   * ORM config namespace.
+   */
+  private String namespace;
+  
   /**
    * ORM aggregate config id.
    */
@@ -31,6 +33,7 @@ public class AggregateConfig implements Config {
    * Mongo db aggregate pipeline functions.
    */
   private Map<String, NodeEntry> function;
+  
   /**
    * Mongo db aggregate field.
    */

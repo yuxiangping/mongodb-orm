@@ -5,9 +5,7 @@ import org.yy.mongodb.orm.engine.entry.Entry;
 
 /**
  * Default strategy  
- * @author: xiangping_yu
- * @data : 2015-9-16
- * @since : 1.5
+ * @author yy
  */
 public class DefaultStrategy implements Strategy {
 

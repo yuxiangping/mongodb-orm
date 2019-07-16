@@ -8,10 +8,7 @@ import org.yy.mongodb.orm.engine.Config;
 
 /**
  * Mongo QL configuration. Transfer xml config.
- * 
- * @author: xiangping_yu
- * @data : 2013-6-4
- * @since : 1.5
+ * @author yy
  */
 public class MqlMapConfiguration {
 
@@ -29,6 +26,8 @@ public class MqlMapConfiguration {
     configs = new HashMap<String, Config>();
     mappings = new HashMap<String, Config>();
   }
+  
+  
   
   public Config getConfig(String key) {
     return configs.get(key);

@@ -8,10 +8,7 @@ import org.yy.mongodb.util.ScriptUtils;
 
 /**
  * Dynamic script function.
- * 
- * @author: xiangping_yu
- * @data : 2013-6-8
- * @since : 1.5
+ * @author yy
  */
 public class ScriptFunction implements Function {
 

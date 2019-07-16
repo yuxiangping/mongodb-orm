@@ -15,10 +15,7 @@ import org.yy.mongodb.util.NodeletUtils;
 
 /**
  * Dynamic list function.
- * 
- * @author: xiangping_yu
- * @data : 2013-6-8
- * @since : 1.5
+ * @author yy
  */
 public class ListFunction implements Function {
 

@@ -8,9 +8,7 @@ import org.yy.mongodb.exception.MongoORMException;
 
 /**
  * List implementation of TypeHandler
- * @author: xiangping_yu
- * @data : 2014-7-25
- * @since : 1.5
+ * @author yy
  */
 public class ListTypeHandler implements TypeHandler<List<?>> {
 

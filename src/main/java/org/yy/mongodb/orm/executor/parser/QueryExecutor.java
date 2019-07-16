@@ -9,7 +9,6 @@ import org.yy.mongodb.orm.MqlMapConfiguration;
 import org.yy.mongodb.orm.engine.config.MappingConfig;
 import org.yy.mongodb.orm.engine.entry.Entry;
 import org.yy.mongodb.orm.engine.entry.NodeEntry;
-import org.yy.mongodb.orm.engine.entry.Operator;
 import org.yy.mongodb.orm.engine.type.TypeHandler;
 import org.yy.mongodb.orm.executor.MqlExecutor;
 import org.yy.mongodb.orm.executor.strategy.StrategyChain;
@@ -25,9 +24,7 @@ import org.yy.mongodb.util.ObjectUtils;
  *     </query>
  * </select> 
  * 
- * @author: xiangping_yu
- * @data : 2015-09-28
- * @since : 1.5
+ * @author yy
  */
 public class QueryExecutor implements MqlExecutor<Map<String, Object>> {
 
@@ -52,16 +49,16 @@ public class QueryExecutor implements MqlExecutor<Map<String, Object>> {
       Object value = context.getValue();
       if(!ObjectUtils.checkValueNull(value, ety)) {
         String column = ety.getColumn();
-        Operator operate = ety.getOperate();
+        String operate = ety.getOperate();
         
         if(operate == null) {
           query.put(column, value);
         } else {
           if(column == null) {
-            query.put(operate.getOpt(), value);
+            query.put(operate, value);
           } else {
             Map<String, Object> qNode = new LinkedHashMap<String, Object>();
-            qNode.put(operate.getOpt(), value); 
+            qNode.put(operate, value); 
             query.put(column, qNode);
           }
         }

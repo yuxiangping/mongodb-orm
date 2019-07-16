@@ -10,7 +10,6 @@ import org.yy.mongodb.orm.MqlMapConfiguration;
 import org.yy.mongodb.orm.engine.config.MappingConfig;
 import org.yy.mongodb.orm.engine.entry.Entry;
 import org.yy.mongodb.orm.engine.entry.NodeEntry;
-import org.yy.mongodb.orm.engine.entry.Operator;
 import org.yy.mongodb.orm.engine.type.TypeHandler;
 import org.yy.mongodb.orm.executor.MqlExecutor;
 import org.yy.mongodb.orm.executor.strategy.StrategyChain;
@@ -26,9 +25,7 @@ import org.yy.mongodb.util.ObjectUtils;
  *     </action>
  * </update> 
  * 
- * @author: xiangping_yu
- * @data : 2015-09-28
- * @since : 1.5
+ * @author yy
  */
 public class ActionExecutor implements MqlExecutor<Map<String, Object>> {
 
@@ -55,13 +52,13 @@ public class ActionExecutor implements MqlExecutor<Map<String, Object>> {
       if(!ObjectUtils.checkValueNull(value, ety)) {
         String column = ety.getColumn();
         String name = ety.getName();
-        Operator operate = ety.getOperate();
+        String operate = ety.getOperate();
         
         if(operate != null) {
           if(name != null) {
-            action.put(operate.getOpt(), value);
+            action.put(operate, value);
           } else {
-            optSet.addOpt(operate.getOpt(), column, value);
+            optSet.addOpt(operate, column, value);
           }
         } else {
           action.put(column, value);

@@ -8,7 +8,10 @@
 	"mongodb-mql.dtd">
 -->
 
-<!ELEMENT mql (mapping|select|update|insert|delete|command|group|aggregate)+>
+<!ELEMENT mql (mapping|select|update|insert|delete|command|group|aggregate|mapreduce)+>
+<!ATTLIST mql
+    namespace ID #REQUIRED
+>
 
 <!ELEMENT mapping (property)+>
 <!ATTLIST mapping
@@ -141,3 +144,11 @@
 <!ATTLIST pipeline
 	operate CDATA #IMPLIED
 >
+
+<!ELEMENT mapreduce (map|reduce|field)+>
+<!ATTLIST mapreduce
+	id ID #REQUIRED
+	collection CDATA #REQUIRED
+>
+
+<!ELEMENT map (#PCDATA)*>

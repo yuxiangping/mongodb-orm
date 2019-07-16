@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mql PUBLIC "-//eason.xp.yu@gmail.com//DTD MONGODB QL Config 1.0//zh-CN" "https://raw.githubusercontent.com/yuxiangping/repository/master/mongodb-mql.dtd">
-<mql>
+<mql namespace="test">
 	<!--  对象映射 -->
 	<mapping id="model" class="test.mongodborm.Model">
 		<property column="_id" name="id" />
@@ -345,4 +345,22 @@
 			<property column="total" name="count" />
 		</field>
 	</aggregate>
+	
+	<mapreduce id="mapreduceModel" collection="test_sample">
+		<map>
+			<![CDATA[
+				function(doc,prev) {
+					prev.counter++;
+				}
+			]]>
+		</map>
+		<reduce>
+			<![CDATA[
+				function(doc,prev) {
+					prev.counter++;
+				}
+			]]>
+		</reduce>
+		<field></field>
+	</mapreduce>
 </mql>

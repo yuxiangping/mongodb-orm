@@ -14,9 +14,7 @@ import org.yy.mongodb.orm.engine.entry.NodeEntry;
 
 /**
  * Transform SQL file for ORM, "command" node statement.
- * @author: xiangping_yu
- * @data  : 2014-1-22
- * @since : 1.5
+ * @author yy
  */
 public class CommandStatement extends BaseStatement implements StatementHandler {
 

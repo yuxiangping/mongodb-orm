@@ -10,10 +10,7 @@ import org.yy.mongodb.exception.StatementException;
  * <p>
  *  String, Number, Long, Double, ObjectId ...
  * </p>
- * 
- * @author: xiangping_yu
- * @data : 2014-7-18
- * @since : 1.5
+ * @author yy
  */
 public enum ColumnType {
   

@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Interface for getting data into, and out of a mapped statement.
- * @author: xiangping_yu
- * @data : 2014-7-25
- * @since : 1.5
+ * @author yy
  */
 public interface TypeHandler<T> {
 

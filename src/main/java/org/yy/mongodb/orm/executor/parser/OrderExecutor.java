@@ -24,9 +24,7 @@ import org.yy.mongodb.util.ObjectUtils;
  *     </order>
  * </select> 
  * 
- * @author: xiangping_yu
- * @data : 2015-09-28
- * @since : 1.5
+ * @author yy
  */
 public class  OrderExecutor implements MqlExecutor<Map<String, Object>> {
 

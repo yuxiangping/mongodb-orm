@@ -2,9 +2,7 @@ package org.yy.mongodb.orm.engine.type;
 
 /**
  * Interface for getting available column type.
- * @author: xiangping_yu
- * @data : 2014-7-30
- * @since : 1.5
+ * @author yy
  */
 public interface ColumnHandler<T> {
   

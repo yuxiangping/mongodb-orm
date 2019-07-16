@@ -16,9 +16,7 @@ import org.yy.mongodb.util.NodeletUtils;
 
 /**
  * Transform XML file for ORM, "mapping" node statement.
- * @author: xiangping_yu
- * @data  : 2014-1-22
- * @since : 1.5
+ * @author yy
  */
 public class MappingStatement extends BaseStatement implements StatementHandler {
 

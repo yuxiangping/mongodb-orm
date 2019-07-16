@@ -9,10 +9,7 @@ import org.yy.mongodb.orm.executor.MqlExecutor;
 
 /**
  * Xml node entry.
- * 
- * @author: xiangping_yu
- * @data : 2014-7-16
- * @since : 1.5
+ * @author yy
  */
 public class NodeEntry implements Serializable {
 
@@ -32,10 +29,12 @@ public class NodeEntry implements Serializable {
    * Node elements mapping entry.
    */
   private List<Entry> nodeMappings;
+  
   /**
    * Getting data into, and out of a mapped statement.
    */
   private TypeHandler<?> typeHandler;
+  
   /**
    * Mql node executor
    */

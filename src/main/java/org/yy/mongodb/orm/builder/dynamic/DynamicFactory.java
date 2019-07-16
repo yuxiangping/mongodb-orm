@@ -4,10 +4,7 @@ import org.w3c.dom.Node;
 
 /**
  * Factory for build dynamic function.
- * 
- * @author: xiangping_yu
- * @data : 2014-9-12
- * @since : 1.5
+ * @author yy
  */
 public class DynamicFactory {
 

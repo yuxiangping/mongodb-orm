@@ -2,46 +2,47 @@ package org.yy.mongodb.orm.engine.config;
 
 import org.yy.mongodb.orm.engine.Config;
 import org.yy.mongodb.orm.engine.entry.NodeEntry;
+import org.yy.mongodb.orm.engine.entry.Script;
 
 /**
- * XML Update config
+ * XML MapReduce config
  * @author yy
  */
-public class UpdateConfig implements Config {
+public class MapReduceConfig implements Config {
 
-  private static final long serialVersionUID = -6774384486124325755L;
-
+  private static final long serialVersionUID = 1289646863161628083L;
+  
   /**
    * ORM config namespace.
    */
   private String namespace;
   
   /**
-   * ORM query config id.
+   * ORM mapreduce config id.
    */
   private String id;
-
+  
   /**
-   * mongo db collection.
+   * Mongo db collection.
    */
   private String collection;
-
-  /**
-   * Update parameter.
-   */
-  private NodeEntry query;
   
   /**
-   * Update action.
+   * MapReduce map.
    */
-  private NodeEntry action;
+  private Script map;
   
   /**
-   * Return field for <code>findAndModify</code>.
+   * MapReduce reduce.
+   */
+  private Script reduce;
+  
+  /**
+   * MapReduce return field.
    */
   private NodeEntry field;
-
-  public UpdateConfig(String id, String collection) {
+  
+  public MapReduceConfig(String id, String collection) {
     this.id = id;
     this.collection = collection;
   }
@@ -53,21 +54,21 @@ public class UpdateConfig implements Config {
   public String getCollection() {
     return collection;
   }
-  
-  public NodeEntry getQuery() {
-    return query;
+
+  public Script getMap() {
+    return map;
   }
 
-  public void setQuery(NodeEntry query) {
-    this.query = query;
+  public void setMap(Script map) {
+    this.map = map;
   }
 
-  public NodeEntry getAction() {
-    return action;
+  public Script getReduce() {
+    return reduce;
   }
 
-  public void setAction(NodeEntry action) {
-    this.action = action;
+  public void setReduce(Script reduce) {
+    this.reduce = reduce;
   }
 
   public NodeEntry getField() {

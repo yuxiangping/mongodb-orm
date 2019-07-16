@@ -10,10 +10,7 @@ import org.yy.mongodb.util.BeanUtils;
 
 /**
  * Script text entry.
- * 
- * @author: xiangping_yu
- * @data : 2015-9-01
- * @since : 1.5
+ * @author yy
  */
 public class Script {
 

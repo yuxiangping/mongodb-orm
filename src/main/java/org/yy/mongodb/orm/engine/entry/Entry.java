@@ -9,10 +9,7 @@ import org.yy.mongodb.orm.engine.type.ColumnHandler;
 
 /**
  * Element base entry.
- * 
- * @author: xiangping_yu
- * @data : 2014-7-17
- * @since : 1.5
+ * @author yy
  */
 public class Entry implements Serializable {
 
@@ -40,7 +37,7 @@ public class Entry implements Serializable {
    * '$set', '$lt', '$elementMatch'
    * </p>
    */
-  private Operator operate;
+  private String operate;
   /**
    * Whether to ignore null.
    */
@@ -90,11 +87,11 @@ public class Entry implements Serializable {
     this.columnHandler = columnHandler;
   }
 
-  public Operator getOperate() {
+  public String getOperate() {
     return operate;
   }
 
-  public void setOperate(Operator operate) {
+  public void setOperate(String operate) {
     this.operate = operate;
   }
 

@@ -25,10 +25,7 @@ import org.yy.mongodb.util.NodeletUtils;
 
 /**
  * Base statement handler for convenience.
- * 
- * @author: xiangping_yu
- * @data : 2014-7-31
- * @since : 1.5
+ * @author yy
  */
 public abstract class BaseStatement implements StatementHandler {
   

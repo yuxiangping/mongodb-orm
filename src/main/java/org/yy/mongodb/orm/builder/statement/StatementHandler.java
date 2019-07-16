@@ -8,10 +8,7 @@ import org.yy.mongodb.orm.engine.Config;
 
 /**
  * Xml element node builder handler.
- * 
- * @author: xiangping_yu
- * @data : 2014-3-7
- * @since : 1.5
+ * @author yy
  */
 public interface StatementHandler {
 

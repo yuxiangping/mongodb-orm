@@ -23,12 +23,11 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.yy.mongodb.constant.ORM;
 
 /**
- * XML node parser 
- * @author: xiangping_yu
- * @data : 2014-3-6
- * @since : 1.5
+ * XML node parser. 
+ * @author yy
  */
 public class NodeletParser {
   
@@ -76,35 +75,39 @@ public class NodeletParser {
    */
   public void parse(Node node) {
     Path path = new Path();
-    process(node, path);
+    process(node, null, path);
   }
   
   /**
    * A recursive method that walkes the DOM tree, registers XPaths and
    * calls Nodelets registered under those XPaths.
    */
-  private void process(Node node, Path path) {
+  private void process(Node node, String namespace, Path path) {
     if (node instanceof Element) {
       // Element
       String elementName = node.getNodeName();
+      if (namespace == null && "mql".equals(elementName)) {
+        namespace = ((Element) node).getAttribute(ORM.TAG_NAMESPACE);
+      }
+      
       path.add(elementName);
-      processNodelet(node, path.toString());
-      processNodelet(node, new StringBuffer("//").append(elementName).toString());
+      processNodelet(node, namespace, path.toString());
+      processNodelet(node, namespace, new StringBuffer("//").append(elementName).toString());
 
       // Children
       NodeList children = node.getChildNodes();
       for (int i = 0; i < children.getLength(); i++) {
-        process(children.item(i), path);
+        process(children.item(i), namespace, path);
       }
       path.remove();
     }
   }
 
-  private void processNodelet(Node node, String pathString) {
+  private void processNodelet(Node node, String namespace, String pathString) {
     Nodelet nodelet = (Nodelet) letMap.get(pathString);
     if (nodelet != null) {
       try {
-        nodelet.process(node);
+        nodelet.process(namespace, node);
       } catch (Exception e) {
         throw new RuntimeException("Error parsing XPath '" + pathString + "'.  Cause: " + e, e);
       }
@@ -114,8 +117,7 @@ public class NodeletParser {
   /**
    * Creates a JAXP Document from a reader.
    */
-  private Document createDocument(Reader reader) throws ParserConfigurationException, FactoryConfigurationError,
-      SAXException, IOException {
+  private Document createDocument(Reader reader) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setValidating(validation);
     factory.setIgnoringComments(true);
@@ -142,8 +144,7 @@ public class NodeletParser {
   /**
    * Creates a JAXP Document from an InoutStream.
    */
-  private Document createDocument(InputStream inputStream) throws ParserConfigurationException, FactoryConfigurationError,
-      SAXException, IOException {
+  private Document createDocument(InputStream inputStream) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setValidating(validation);
     factory.setIgnoringElementContentWhitespace(true);

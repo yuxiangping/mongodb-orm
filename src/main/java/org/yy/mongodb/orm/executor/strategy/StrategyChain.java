@@ -8,9 +8,7 @@ import org.yy.mongodb.orm.MqlMapConfiguration;
 
 /**
  * Mql value strategy chain 
- * @author: xiangping_yu
- * @data : 2015-9-16
- * @since : 1.5
+ * @author yy
  */
 public class StrategyChain {
   

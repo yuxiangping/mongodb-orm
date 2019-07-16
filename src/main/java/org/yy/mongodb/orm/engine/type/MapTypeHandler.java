@@ -4,9 +4,7 @@ import java.util.Map;
 
 /**
  * Map implementation of TypeHandler
- * @author: xiangping_yu
- * @data : 2014-7-25
- * @since : 1.5
+ * @author yy
  */
 @SuppressWarnings("unchecked")
 public class MapTypeHandler implements TypeHandler<Map<Object, Object>> {

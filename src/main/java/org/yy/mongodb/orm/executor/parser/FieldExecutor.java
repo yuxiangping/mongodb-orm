@@ -20,9 +20,7 @@ import org.yy.mongodb.orm.executor.MqlExecutor;
  *     </field>
  * </select> 
  * 
- * @author: xiangping_yu
- * @data : 2015-09-28
- * @since : 1.5
+ * @author yy
  */
 public class FieldExecutor implements MqlExecutor<Map<String, Object>> {
 

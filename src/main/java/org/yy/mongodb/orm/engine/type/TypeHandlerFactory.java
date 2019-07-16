@@ -13,10 +13,7 @@ import org.yy.mongodb.orm.engine.entry.ColumnType;
 
 /**
  * Not much of a suprise, this is a factory class for TypeHandler objects.
- * 
- * @author: xiangping_yu
- * @data : 2014-7-28
- * @since : 1.5
+ * @author yy
  */
 public class TypeHandlerFactory {
 

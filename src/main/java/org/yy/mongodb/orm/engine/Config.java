@@ -4,9 +4,7 @@ import java.io.Serializable;
 
 /**
  * ORM config, transfer xml data.  
- * @author: xiangping_yu
- * @data : 2014-3-6
- * @since : 1.5
+ * @author yy
  */
 public interface Config extends Serializable {
 }

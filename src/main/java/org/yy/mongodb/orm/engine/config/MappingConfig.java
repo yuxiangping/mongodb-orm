@@ -9,35 +9,42 @@ import org.yy.mongodb.orm.engine.type.TypeHandler;
 
 /**
  * XML Mapping config
- * 
- * @author: xiangping_yu
- * @data : 2014-3-6
- * @since : 1.5
+ * @author yy
  */
 public class MappingConfig implements Config {
 
   private static final long serialVersionUID = -7995688169314848530L;
 
   /**
+   * ORM config namespace.
+   */
+  private String namespace;
+  
+  /**
    * Mapping id
    */
-  private String id;    
+  private String id;
+  
   /**
    * Mapping parameter class type
    */
   private Class<?> clazz;
+  
   /**
    * Mapping extends partent.
    */
   private String extend;
+  
   /**
    * Node children nodes.
    */
   private List<Entry> nodes = new ArrayList<Entry>();
+  
   /**
    * Getting data into, and out of a mapped statement.
    */
   private TypeHandler<?> typeHandler;
+  
   /**
    * Has merge extend mapping.
    */

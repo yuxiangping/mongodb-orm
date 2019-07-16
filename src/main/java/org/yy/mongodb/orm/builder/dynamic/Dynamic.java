@@ -5,10 +5,7 @@ import org.yy.mongodb.orm.builder.dynamic.Function.FunctionData;
 
 /**
  * Dynamic script query language.
- * 
- * @author: xiangping_yu
- * @data : 2014-9-12
- * @since : 1.5
+ * @author yy
  */
 public class Dynamic {
 

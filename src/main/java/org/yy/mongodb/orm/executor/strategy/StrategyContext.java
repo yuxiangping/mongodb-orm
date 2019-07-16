@@ -6,9 +6,7 @@ import org.yy.mongodb.orm.executor.MqlExecutor.CallBack;
 
 /**
  * Strategy context 
- * @author: xiangping_yu
- * @data : 2015-9-16
- * @since : 1.5
+ * @author yy
  */
 public class StrategyContext {
 

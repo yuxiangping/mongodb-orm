@@ -19,10 +19,7 @@ import org.yy.mongodb.util.NodeletUtils;
 
 /**
  * Transform SQL file for ORM, "aggregate" node statement.
- * 
- * @author: xiangping_yu
- * @data : 2014-1-22
- * @since : 1.5
+ * @author yy
  */
 public class AggregateStatement extends BaseStatement implements StatementHandler {
 

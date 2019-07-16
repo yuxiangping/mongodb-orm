@@ -9,10 +9,7 @@ import org.yy.mongodb.exception.StatementException;
 
 /**
  * ByteArray implementation of TypeHandler
- * 
- * @author: xiangping_yu
- * @data : 2014-7-25
- * @since : 1.5
+ * @author yy
  */
 public class ByteArrayTypeHandler implements TypeHandler<byte[]> {
 

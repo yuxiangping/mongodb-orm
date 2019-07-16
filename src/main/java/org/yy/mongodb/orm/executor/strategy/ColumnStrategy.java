@@ -6,9 +6,7 @@ import org.yy.mongodb.orm.engine.type.ColumnHandler;
 
 /**
  * Column strategy  
- * @author: xiangping_yu
- * @data : 2015-9-16
- * @since : 1.5
+ * @author yy
  */
 public class ColumnStrategy implements Strategy {
 

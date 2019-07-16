@@ -10,6 +10,10 @@ public class ORM {
   private ORM() {}
 
   /**
+   * XML file namespace
+   */
+  public static final String TAG_NAMESPACE = "namespace";
+  /**
    * XML file orm id
    */
   public static final String TAG_ORM_ID = "id";
@@ -122,6 +126,11 @@ public class ORM {
    */
   public static final String NODE_CONDITION = "condition";
 
+  /**
+   * XML file node 'map'
+   */
+  public static final String NODE_MAP = "map";
+  
   /**
    * XML file node 'reduce'
    */

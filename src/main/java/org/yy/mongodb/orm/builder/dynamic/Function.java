@@ -4,10 +4,7 @@ import org.w3c.dom.Node;
 
 /**
  * Dynamic function.
- * 
- * @author: xiangping_yu
- * @data : 2014-1-22
- * @since : 1.5
+ * @author yy
  */
 public interface Function {
 

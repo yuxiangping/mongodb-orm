@@ -24,9 +24,7 @@ import org.yy.mongodb.util.ObjectUtils;
  *     </field>
  * </select> 
  * 
- * @author: xiangping_yu
- * @data : 2015-09-28
- * @since : 1.5
+ * @author yy
  */
 @SuppressWarnings("unchecked")
 public class ResultExecutor implements MqlExecutor<Object> {

@@ -8,15 +8,17 @@ import org.yy.mongodb.orm.engine.entry.NodeEntry;
 
 /**
  * XML Select config
- * 
- * @author: xiangping_yu
- * @data : 2014-3-6
- * @since : 1.5
+ * @author yy
  */
 public class SelectConfig implements Config {
 
   private static final long serialVersionUID = 8093241263645912723L;
-
+  
+  /**
+   * ORM config namespace.
+   */
+  private String namespace;
+  
   /**
    * ORM query config id.
    */
@@ -31,10 +33,12 @@ public class SelectConfig implements Config {
    * Query parameter.
    */
   private NodeEntry query;
+  
   /**
    * Query return field.
    */
   private NodeEntry field;
+  
   /**
    * Query order.
    */

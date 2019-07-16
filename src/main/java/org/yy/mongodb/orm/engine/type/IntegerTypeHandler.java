@@ -2,9 +2,7 @@ package org.yy.mongodb.orm.engine.type;
 
 /**
  * Integer implementation of TypeHandler
- * @author: xiangping_yu
- * @data : 2014-7-25
- * @since : 1.5
+ * @author yy
  */
 public class IntegerTypeHandler implements TypeHandler<Integer> {
 

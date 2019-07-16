@@ -5,15 +5,17 @@ import org.yy.mongodb.orm.engine.entry.NodeEntry;
 
 /**
  * XML Command config
- * 
- * @author: xiangping_yu
- * @data : 2014-3-6
- * @since : 1.5
+ * @author yy
  */
 public class CommandConfig implements Config {
 
   private static final long serialVersionUID = 1289646863161628083L;
-
+  
+  /**
+   * ORM config namespace.
+   */
+  private String namespace;
+  
   /**
    * ORM command config id.
    */
