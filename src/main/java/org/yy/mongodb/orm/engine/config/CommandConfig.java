@@ -31,7 +31,8 @@ public class CommandConfig implements Config {
    */
   private NodeEntry field;
 
-  public CommandConfig(String id) {
+  public CommandConfig(String namespace, String id) {
+    this.namespace = namespace;
     this.id = id;
   }
 
@@ -53,6 +54,10 @@ public class CommandConfig implements Config {
 
   public String getId() {
     return id;
+  }
+
+  public String getNamespace() {
+    return namespace;
   }
 
 }

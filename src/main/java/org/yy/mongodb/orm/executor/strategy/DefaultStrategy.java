@@ -10,13 +10,13 @@ import org.yy.mongodb.orm.engine.entry.Entry;
 public class DefaultStrategy implements Strategy {
 
   @Override
-  public void doStrategy(MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain) {
+  public void doStrategy(String namespace, MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain) {
     Entry entry = context.getEntry();
     Object value = entry.getValue();
     if(value != null) {
         context.setValue(value);
     }
-    chain.doStrategy(configuration, context);
+    chain.doStrategy(namespace, configuration, context);
   }
 
 }

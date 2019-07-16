@@ -50,7 +50,8 @@ public class MappingConfig implements Config {
    */
   private boolean hasMerge;
 
-  public MappingConfig(String id, Class<?> clazz, String extend, List<Entry> nodes) {
+  public MappingConfig(String namespace, String id, Class<?> clazz, String extend, List<Entry> nodes) {
+    this.namespace = namespace;
     this.id = id;
     this.clazz = clazz;
     this.extend = extend;
@@ -90,4 +91,7 @@ public class MappingConfig implements Config {
     this.typeHandler = typeHandler;
   }
 
+  public String getNamespace() {
+    return namespace;
+  }
 }

@@ -42,7 +42,8 @@ public class MapReduceConfig implements Config {
    */
   private NodeEntry field;
   
-  public MapReduceConfig(String id, String collection) {
+  public MapReduceConfig(String namespace, String id, String collection) {
+    this.namespace = namespace;
     this.id = id;
     this.collection = collection;
   }
@@ -79,4 +80,7 @@ public class MapReduceConfig implements Config {
     this.field = field;
   }
 
+  public String getNamespace() {
+    return namespace;
+  }
 }

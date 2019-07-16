@@ -8,6 +8,6 @@ import org.yy.mongodb.orm.MqlMapConfiguration;
  */
 public interface Strategy {
 
-  void doStrategy(MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain);
+  void doStrategy(String namespace, MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain);
   
 }

@@ -62,7 +62,8 @@ public class GroupConfig implements Config {
    */
   private NodeEntry field;
 
-  public GroupConfig(String id, String collection) {
+  public GroupConfig(String namespace, String id, String collection) {
+    this.namespace = namespace;
     this.id = id;
     this.collection = collection;
   }
@@ -129,6 +130,10 @@ public class GroupConfig implements Config {
 
   public String getCollection() {
     return collection;
+  }
+  
+  public String getNamespace() {
+    return namespace;
   }
 
 }

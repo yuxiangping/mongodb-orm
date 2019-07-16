@@ -41,7 +41,8 @@ public class UpdateConfig implements Config {
    */
   private NodeEntry field;
 
-  public UpdateConfig(String id, String collection) {
+  public UpdateConfig(String namespace, String id, String collection) {
+    this.namespace = namespace;
     this.id = id;
     this.collection = collection;
   }
@@ -78,4 +79,7 @@ public class UpdateConfig implements Config {
     this.field = field;
   }
 
+  public String getNamespace() {
+    return namespace;
+  }
 }

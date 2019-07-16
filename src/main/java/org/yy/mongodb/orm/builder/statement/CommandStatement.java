@@ -36,8 +36,8 @@ public class CommandStatement extends BaseStatement implements StatementHandler 
   }
   
   @Override
-  public Config handler(Node node) {
-    CommandConfig command = new CommandConfig(id);
+  public Config handler(String namespace, Node node) {
+    CommandConfig command = new CommandConfig(namespace, id);
 
     NodeList childNodes = node.getChildNodes();
     for (int i = 0; i < childNodes.getLength(); i++) {

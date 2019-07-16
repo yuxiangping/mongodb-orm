@@ -2,6 +2,8 @@ package org.yy.mongodb.orm.engine.type;
 
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
+
 /**
  * Map implementation of TypeHandler
  * @author yy
@@ -11,6 +13,9 @@ public class MapTypeHandler implements TypeHandler<Map<Object, Object>> {
   
   @Override
   public Object getParameter(String name, Map<Object, Object> instance) {
+    if (MapUtils.isEmpty(instance)) {
+      return null;
+    }    
     return instance.get(name);
   }
 

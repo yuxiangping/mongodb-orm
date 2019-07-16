@@ -14,6 +14,12 @@ public interface StatementHandler {
 
   Logger logger = LoggerFactory.getLogger(StatementHandler.class);
 
-  Config handler(Node node);
+  /**
+   * Handler for mql node. 
+   * @param namespace Mql namespace
+   * @param node Mql node
+   * @return Return the mql config.
+   */
+  Config handler(String namespace, Node node);
 
 }

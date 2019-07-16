@@ -29,12 +29,12 @@ import org.yy.mongodb.util.ObjectUtils;
 public class QueryExecutor implements MqlExecutor<Map<String, Object>> {
 
   @Override
-  public Map<String, Object> parser(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
+  public Map<String, Object> parser(String namespace, MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
     List<Entry> entrys = entry.getNodeMappings();
     TypeHandler<?> typeHandler = entry.getTypeHandler();
     String mappingId = entry.getMappingId();
     if (mappingId != null) {
-      MappingConfig mapping = (MappingConfig) configuration.getMapping(mappingId);
+      MappingConfig mapping = (MappingConfig) configuration.getMapping(namespace, mappingId);
       entrys = mapping.getNodes();
       typeHandler = mapping.getTypeHandler();
     }
@@ -44,7 +44,7 @@ public class QueryExecutor implements MqlExecutor<Map<String, Object>> {
       StrategyContext context = new StrategyContext(ety, target, callback);
       context.setTypeHandler(typeHandler);
       
-      new StrategyChain().doStrategy(configuration, context);
+      new StrategyChain().doStrategy(namespace, configuration, context);
       
       Object value = context.getValue();
       if(!ObjectUtils.checkValueNull(value, ety)) {
@@ -69,8 +69,8 @@ public class QueryExecutor implements MqlExecutor<Map<String, Object>> {
 
   CallBack<Map<String, Object>> callback = new CallBack<Map<String, Object>>() {
     @Override
-    public Map<String, Object> callBack(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
-      return parser(configuration, entry, target);
+    public Map<String, Object> callback(String namespace, MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
+      return parser(namespace, configuration, entry, target);
     }
   };
 

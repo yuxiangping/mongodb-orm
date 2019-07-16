@@ -12,7 +12,7 @@ import org.yy.mongodb.orm.engine.type.TypeHandler;
 public class ValueStrategy implements Strategy {
 
   @Override
-  public void doStrategy(MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain) {
+  public void doStrategy(String namespace, MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain) {
     Entry entry = context.getEntry();
     TypeHandler<Object> typeHandler = (TypeHandler<Object>)context.getTypeHandler();
     if(typeHandler != null) {
@@ -21,7 +21,7 @@ public class ValueStrategy implements Strategy {
         context.setValue(parameter);
       }
     }
-    chain.doStrategy(configuration, context);
+    chain.doStrategy(namespace, configuration, context);
   }
 
 }

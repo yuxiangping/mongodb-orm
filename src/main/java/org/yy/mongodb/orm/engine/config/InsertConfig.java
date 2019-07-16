@@ -37,7 +37,8 @@ public class InsertConfig implements Config {
    */
   private Entry selectKey;
 
-  public InsertConfig(String id, String collection) {
+  public InsertConfig(String namespace, String id, String collection) {
+    this.namespace = namespace;
     this.id = id;
     this.collection = collection;
   }
@@ -66,4 +67,7 @@ public class InsertConfig implements Config {
     return collection;
   }
 
+  public String getNamespace() {
+    return namespace;
+  }
 }

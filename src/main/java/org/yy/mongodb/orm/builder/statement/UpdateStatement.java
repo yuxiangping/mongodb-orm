@@ -43,11 +43,11 @@ public class UpdateStatement extends BaseStatement implements StatementHandler {
   }
 
   @Override
-  public Config handler(Node node) {
+  public Config handler(String namespace, Node node) {
     Properties attributes = NodeletUtils.parseAttributes(node);
     String collection = attributes.getProperty(ORM.TAG_DB_COLLECTION);
 
-    UpdateConfig update = new UpdateConfig(id, collection);
+    UpdateConfig update = new UpdateConfig(namespace, id, collection);
 
     NodeList childNodes = node.getChildNodes();
     for (int i = 0; i < childNodes.getLength(); i++) {

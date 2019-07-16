@@ -361,6 +361,9 @@
 				}
 			]]>
 		</reduce>
-		<field></field>
+		<field class="java.util.Map">
+			<property column="_id" name="id" />
+			<property column="total" name="count" />
+		</field>
 	</mapreduce>
 </mql>

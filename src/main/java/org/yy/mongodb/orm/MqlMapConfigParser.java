@@ -91,7 +91,7 @@ public class MqlMapConfigParser {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
-        configuration.addMapping(id, new MappingStatement(id).handler(node));
+        configuration.addMapping(namespace, id, new MappingStatement(id).handler(namespace, node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [mapping] '" + id + "' has finished.");
         }
@@ -106,7 +106,7 @@ public class MqlMapConfigParser {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
-        configuration.addConfig(id, new SelectStatement(id).handler(node));
+        configuration.addConfig(namespace, id, new SelectStatement(id).handler(namespace, node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [select] '" + id + "' has finished.");
         }
@@ -121,7 +121,7 @@ public class MqlMapConfigParser {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
-        configuration.addConfig(id, new UpdateStatement(id).handler(node));
+        configuration.addConfig(namespace, id, new UpdateStatement(id).handler(namespace, node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [update] '" + id + "' has finished.");
         }
@@ -136,7 +136,7 @@ public class MqlMapConfigParser {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
-        configuration.addConfig(id, new InsertStatement(id).handler(node));
+        configuration.addConfig(namespace, id, new InsertStatement(id).handler(namespace, node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [insert] '" + id + "' has finished.");
         }
@@ -151,7 +151,7 @@ public class MqlMapConfigParser {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
-        configuration.addConfig(id, new DeleteStatement(id).handler(node));
+        configuration.addConfig(namespace, id, new DeleteStatement(id).handler(namespace, node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [delete] '" + id + "' has finished.");
         }
@@ -166,7 +166,7 @@ public class MqlMapConfigParser {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
-        configuration.addConfig(id, new CommandStatement(id).handler(node));
+        configuration.addConfig(namespace, id, new CommandStatement(id).handler(namespace, node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [command] '" + id + "' has finished.");
         }
@@ -181,7 +181,7 @@ public class MqlMapConfigParser {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
-        configuration.addConfig(id, new GroupStatement(id).handler(node));
+        configuration.addConfig(namespace, id, new GroupStatement(id).handler(namespace, node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [group] '" + id + "' has finished.");
         }
@@ -196,7 +196,7 @@ public class MqlMapConfigParser {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
-        configuration.addConfig(id, new AggregateStatement(id).handler(node));
+        configuration.addConfig(namespace, id, new AggregateStatement(id).handler(namespace, node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [aggregate] '" + id + "' has finished.");
         }
@@ -211,7 +211,7 @@ public class MqlMapConfigParser {
         Properties attributes = NodeletUtils.parseAttributes(node);
         String id = attributes.getProperty("id");
 
-        configuration.addConfig(id, new MapReduceStatement(id).handler(node));
+        configuration.addConfig(namespace, id, new MapReduceStatement(id).handler(namespace, node));
         if (logger.isDebugEnabled()) {
           logger.debug("Mql configuration load [mapreduce] '" + id + "' has finished.");
         }
@@ -222,7 +222,7 @@ public class MqlMapConfigParser {
   private void getMappingExtendsNode(MappingConfig target) {
     String extend = target.getExtend();
     if(extend != null) {
-      MappingConfig mc = (MappingConfig)configuration.getMapping(extend);
+      MappingConfig mc = (MappingConfig)configuration.getMapping(target.getNamespace(), extend);
       if(mc == null) {
         throw new StatementException("This extends mapping '"+extend+"' not found. Mapping id '"+target.getId()+"'");
       }

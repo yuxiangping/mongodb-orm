@@ -3,6 +3,7 @@ package org.yy.mongodb.orm;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.yy.mongodb.exception.StatementException;
 import org.yy.mongodb.orm.engine.Config;
 
@@ -27,29 +28,40 @@ public class MqlMapConfiguration {
     mappings = new HashMap<String, Config>();
   }
   
-  
-  
-  public Config getConfig(String key) {
-    return configs.get(key);
+  public Config getStatement(String statement) {
+    return configs.get(statement);
   }
 
-  public MqlMapConfiguration addConfig(String key, Config value) {
-    if (configs.containsKey(key)) {
+  public MqlMapConfiguration addConfig(String namespace, String key, Config value) {
+    String statement = key;
+    if (!StringUtils.isBlank(namespace) && key.indexOf(".") == -1) {
+      statement = namespace + "." + key;
+    }
+    
+    if (configs.containsKey(statement)) {
       throw new StatementException("Alias name conflict occurred.  This mql '"+key+"' is already exists."); 
     }
-    configs.put(key, value);
+    configs.put(statement, value);
     return this;
   }
 
-  public Config getMapping(String key) {
-    return mappings.get(key);
+  public Config getMapping(String namespace, String key) {
+    String statement = key;
+    if (!StringUtils.isBlank(namespace) && key.indexOf(".") == -1) {
+      statement = namespace + "." + key;
+    }
+    return mappings.get(statement);
   }
 
-  public MqlMapConfiguration addMapping(String key, Config value) {
-    if (mappings.containsKey(key)) {
+  public MqlMapConfiguration addMapping(String namespace, String key, Config value) {
+    String statement = key;
+    if (!StringUtils.isBlank(namespace) && key.indexOf(".") == -1) {
+      statement = namespace + "." + key;
+    }
+    if (mappings.containsKey(statement)) {
       throw new StatementException("Alias name conflict occurred.  This mapping '"+key+"' is already exists.");
     }
-    mappings.put(key, value);
+    mappings.put(statement, value);
     return this;
   }
 

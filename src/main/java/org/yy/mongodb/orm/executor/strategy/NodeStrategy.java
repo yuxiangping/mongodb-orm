@@ -15,7 +15,7 @@ import org.yy.mongodb.util.ObjectUtils;
 public class NodeStrategy implements Strategy {
 
   @Override
-  public void doStrategy(MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain) {
+  public void doStrategy(String namespace, MqlMapConfiguration configuration, StrategyContext context, StrategyChain chain) {
     Entry entry = context.getEntry();
     List<NodeEntry> nodes = entry.getNodes();
     if(!ObjectUtils.isEmpty(nodes)) {
@@ -23,7 +23,7 @@ public class NodeStrategy implements Strategy {
       Object[] array = new Object[count];
       CallBack<?> callback = context.getCallback();
       for(int i=0; i<count; i++) {
-        array[i] = callback.callBack(configuration, nodes.get(i), context.getTarget());
+        array[i] = callback.callback(namespace, configuration, nodes.get(i), context.getTarget());
       }
       
       if(count == 1) {
@@ -32,7 +32,7 @@ public class NodeStrategy implements Strategy {
         context.setValue(array);
       }
     }
-    chain.doStrategy(configuration, context);
+    chain.doStrategy(namespace, configuration, context);
   }
 
 }

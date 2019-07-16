@@ -43,11 +43,11 @@ public class SelectStatement extends BaseStatement implements StatementHandler {
   }
 
   @Override
-  public Config handler(Node node) {
+  public Config handler(String namespace, Node node) {
     Properties attributes = NodeletUtils.parseAttributes(node);
     String collection = attributes.getProperty(ORM.TAG_DB_COLLECTION);
 
-    SelectConfig select = new SelectConfig(id, collection);
+    SelectConfig select = new SelectConfig(namespace, id, collection);
 
     NodeList childNodes = node.getChildNodes();
     for (int i = 0; i < childNodes.getLength(); i++) {

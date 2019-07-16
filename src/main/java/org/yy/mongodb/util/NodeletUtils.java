@@ -37,7 +37,7 @@ public class NodeletUtils {
   private static void getEntrys(List<Entry> list, MappingConfig mapping, MqlMapConfiguration configuration) {
     String extend = mapping.getExtend();
     if (extend != null) {
-      getEntrys(list, (MappingConfig)configuration.getMapping(mapping.getId()), configuration);
+      getEntrys(list, (MappingConfig)configuration.getMapping(mapping.getNamespace(), mapping.getId()), configuration);
     }
     list.addAll(mapping.getNodes());
   }

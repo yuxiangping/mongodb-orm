@@ -10,14 +10,14 @@ import org.yy.mongodb.orm.engine.entry.NodeEntry;
  */
 public interface MqlExecutor<T> {
     
-    public T parser(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException;
+    public T parser(String namespace, MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException;
     
     /**
      * SqlExecutor callback 
      * @author yy
      */
     public static interface CallBack<T> {
-        T callBack(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException;
+        T callback(String namespace, MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException;
     }
     
 }

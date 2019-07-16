@@ -29,10 +29,10 @@ public class StrategyChain {
     iterator = strategys.iterator();
   }
   
-  public void doStrategy(MqlMapConfiguration configuration, StrategyContext context) {
+  public void doStrategy(String namespace, MqlMapConfiguration configuration, StrategyContext context) {
     if(iterator.hasNext()) {
       Strategy nextStrategy = iterator.next();
-      nextStrategy.doStrategy(configuration, context, this);
+      nextStrategy.doStrategy(namespace, configuration, context, this);
     }
   }
   

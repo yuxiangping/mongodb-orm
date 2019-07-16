@@ -27,7 +27,7 @@ public class MappingStatement extends BaseStatement implements StatementHandler 
   }
   
   @Override
-  public Config handler(Node node) {
+  public Config handler(String namespace, Node node) {
     Properties attributes = NodeletUtils.parseAttributes(node);
     String className = attributes.getProperty(ORM.ORM_CLASS);
     String extend = attributes.getProperty(ORM.ORM_EXTENDS);
@@ -45,7 +45,7 @@ public class MappingStatement extends BaseStatement implements StatementHandler 
     
     List<Entry> nodes = getEntry(node.getChildNodes(), clazz);
     
-    MappingConfig config = new MappingConfig(id, clazz, extend, nodes);
+    MappingConfig config = new MappingConfig(namespace, id, clazz, extend, nodes);
     config.setTypeHandler(TypeHandlerFactory.getTypeHandler(clazz));
     
     logger.info("Mongodb orm inited mapping config with mapping id '"+id+"'.");

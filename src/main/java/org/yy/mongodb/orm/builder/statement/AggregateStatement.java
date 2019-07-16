@@ -41,11 +41,11 @@ public class AggregateStatement extends BaseStatement implements StatementHandle
   }
 
   @Override
-  public Config handler(Node node) {
+  public Config handler(String namespace, Node node) {
     Properties attributes = NodeletUtils.parseAttributes(node);
     String collection = attributes.getProperty(ORM.TAG_DB_COLLECTION);
 
-    AggregateConfig aggregate = new AggregateConfig(id, collection);
+    AggregateConfig aggregate = new AggregateConfig(namespace, id, collection);
 
     NodeList childNodes = node.getChildNodes();
     for (int i = 0; i < childNodes.getLength(); i++) {

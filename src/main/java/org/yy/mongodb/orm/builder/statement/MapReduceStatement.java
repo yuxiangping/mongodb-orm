@@ -40,11 +40,11 @@ public class MapReduceStatement extends BaseStatement implements StatementHandle
   }
   
   @Override
-  public Config handler(Node node) {
+  public Config handler(String namespace, Node node) {
     Properties attributes = NodeletUtils.parseAttributes(node);
     String collection = attributes.getProperty(ORM.TAG_DB_COLLECTION);
     
-    MapReduceConfig mapreduce = new MapReduceConfig(id, collection);
+    MapReduceConfig mapreduce = new MapReduceConfig(namespace, id, collection);
     NodeList childNodes = node.getChildNodes();
     for (int i = 0; i < childNodes.getLength(); i++) {
       Node n = childNodes.item(i);
@@ -64,10 +64,10 @@ public class MapReduceStatement extends BaseStatement implements StatementHandle
   private class MapNodeAnalyze implements NodeAnalyze<MapReduceConfig> {
     @Override
     public void analyze(MapReduceConfig config, Node node) {
-      if (config.getReduce() != null) {
+      if (config.getMap() != null) {
         throw new StatementException("Alias name conflict occurred.  The node 'map' is already exists in '" + config.getId() + "'.");
       }
-      config.setReduce(new Script(node.getTextContent(), null));
+      config.setMap(new Script(node.getTextContent(), null));
     }
   }
   

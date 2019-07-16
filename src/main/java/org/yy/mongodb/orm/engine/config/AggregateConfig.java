@@ -39,7 +39,8 @@ public class AggregateConfig implements Config {
    */
   private NodeEntry field;
 
-  public AggregateConfig(String id, String collection) {
+  public AggregateConfig(String namespace, String id, String collection) {
+    this.namespace = namespace;
     this.id = id;
     this.collection = collection;
   }
@@ -61,6 +62,10 @@ public class AggregateConfig implements Config {
 
   public void setField(NodeEntry field) {
     this.field = field;
+  }
+
+  public String getNamespace() {
+    return namespace;
   }
 
   public String getId() {

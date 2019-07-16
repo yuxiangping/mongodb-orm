@@ -44,7 +44,8 @@ public class SelectConfig implements Config {
    */
   private NodeEntry order;
 
-  public SelectConfig(String id, String collection) {
+  public SelectConfig(String namespace, String id, String collection) {
+    this.namespace = namespace;
     this.id = id;
     this.collection = collection;
   }
@@ -120,4 +121,7 @@ public class SelectConfig implements Config {
     return collection;
   }
 
+  public String getNamespace() {
+    return namespace;
+  }
 }

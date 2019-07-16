@@ -31,7 +31,8 @@ public class DeleteConfig implements Config {
    */
   private NodeEntry query;
 
-  public DeleteConfig(String id, String collection) {
+  public DeleteConfig(String namespace, String id, String collection) {
+    this.namespace = namespace;
     this.id = id;
     this.collection = collection;
   }
@@ -52,4 +53,7 @@ public class DeleteConfig implements Config {
     return collection;
   }
 
+  public String getNamespace() {
+    return namespace;
+  }
 }

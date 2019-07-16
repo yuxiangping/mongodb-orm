@@ -40,8 +40,8 @@ public class NodeEntry implements Serializable {
    */
   private MqlExecutor<?> executor;
   
-  public Object executorNode(MqlMapConfiguration configuration, Object target) {
-    return executor.parser(configuration, this, target);
+  public Object executorNode(String namespace, MqlMapConfiguration configuration, Object target) {
+    return executor.parser(namespace, configuration, this, target);
   }
   
   public String getMappingId() {

@@ -30,13 +30,13 @@ import org.yy.mongodb.util.ObjectUtils;
 public class ResultExecutor implements MqlExecutor<Object> {
 
   @Override
-  public Object parser(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
+  public Object parser(String namespace, MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
     List<Entry> entrys = entry.getNodeMappings();
     Class<?> clazz = entry.getClazz();
     TypeHandler<?> typeHandler = entry.getTypeHandler();
     String mappingId = entry.getMappingId();
     if (mappingId != null) {
-      MappingConfig mapping = (MappingConfig) configuration.getMapping(mappingId);
+      MappingConfig mapping = (MappingConfig) configuration.getMapping(namespace, mappingId);
       entrys = mapping.getNodes();
       clazz = mapping.getClazz();
       typeHandler = mapping.getTypeHandler();
@@ -50,11 +50,11 @@ public class ResultExecutor implements MqlExecutor<Object> {
     if(target instanceof List) {
       List<Object> list = new ArrayList<Object>();
       for(Object result : (List<Map<String, Object>>)target) {
-        list.add(getResult(configuration, typeHandler, clazz, entrys, result));
+        list.add(getResult(namespace, configuration, typeHandler, clazz, entrys, result));
       }
       return list;
     } else {
-      return getResult(configuration, typeHandler, clazz, entrys, target);
+      return getResult(namespace, configuration, typeHandler, clazz, entrys, target);
     }
   }
 
@@ -74,7 +74,7 @@ public class ResultExecutor implements MqlExecutor<Object> {
     }
   }
   
-  private Object getResult(MqlMapConfiguration configuration, TypeHandler<?> handler, Class<?> clazz, List<Entry> entryNodes, Object target) {
+  private Object getResult(String namespace, MqlMapConfiguration configuration, TypeHandler<?> handler, Class<?> clazz, List<Entry> entryNodes, Object target) {
     Object instance = buildInstance(clazz, target);
     Map<String, Object> resultSet = (Map<String, Object>)target;
     for (Entry ety : entryNodes) {
@@ -85,18 +85,18 @@ public class ResultExecutor implements MqlExecutor<Object> {
       if(value instanceof List) {
         List<Object> result = new ArrayList<Object>();
         for(Object _value : (List<Object>)value) {
-          result.add(getValue(_value, columnHandler, ety, configuration));
+          result.add(getValue(namespace, _value, columnHandler, ety, configuration));
         } 
         value = result;
       } else {
-        value = getValue(value, columnHandler, ety, configuration);
+        value = getValue(namespace, value, columnHandler, ety, configuration);
       }
       instance = handler.getResult(name, instance, value);
     }
     return instance;
   }
   
-  private Object getValue(Object value, ColumnHandler<Object> columnHandler, Entry ety, MqlMapConfiguration configuration) {
+  private Object getValue(String namespace, Object value, ColumnHandler<Object> columnHandler, Entry ety, MqlMapConfiguration configuration) {
     if(columnHandler != null) {
       value = columnHandler.resovleValue(value);
     }
@@ -105,7 +105,7 @@ public class ResultExecutor implements MqlExecutor<Object> {
     if(!ObjectUtils.isEmpty(nodes)) {
       List<Object> array = new ArrayList<Object>();
       for(NodeEntry node : nodes) {
-        array.add(callback.callBack(configuration, node, value));
+        array.add(callback.callback(namespace, configuration, node, value));
       }
       
       if(nodes.size() == 1) {
@@ -119,8 +119,8 @@ public class ResultExecutor implements MqlExecutor<Object> {
   
   CallBack<Object> callback = new CallBack<Object>() {
     @Override
-    public Object callBack(MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
-      return parser(configuration, entry, target);
+    public Object callback(String namespace, MqlMapConfiguration configuration, NodeEntry entry, Object target) throws MongoORMException {
+      return parser(namespace, configuration, entry, target);
     }
   };
   
