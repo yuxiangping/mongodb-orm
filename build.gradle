@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 group = "com.github.yuxiangping"
-version = "1.0.0.RELEASE"
+version = "1.0.0.SNAPSHOT"
 
 compileJava {
 	sourceCompatibility = 1.8
@@ -57,5 +57,6 @@ task javadocJar(type: Jar) {
 }
 
 tasks.withType(Javadoc) {  
-    options.encoding = "UTF-8"  
+    options.encoding = "UTF-8"
+    options.addStringOption('Xdoclint:none', '-quiet')
 }
